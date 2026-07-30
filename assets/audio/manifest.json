@@ -1,0 +1,3869 @@
+{
+  "artifacts": [
+    {
+      "cue_id": "music.title",
+      "duration_seconds": 17.019841,
+      "file": "music/title.wav",
+      "frames": 750575,
+      "layers": [
+        {
+          "end_seconds": 17.019841,
+          "fold_seconds": 4.0,
+          "provider": "minimax_music",
+          "source": "assets/audio/source/minimax/block-evening.mp3",
+          "source_cue": "block-evening",
+          "start_seconds": 0.0
+        }
+      ],
+      "loop": true,
+      "peak": 0.28182983,
+      "recording_sources": [],
+      "rms": 0.03469995,
+      "seam": {
+        "head_rms": 0.00973051,
+        "largest_step": 0.12554932,
+        "level_ratio": 0.99756232,
+        "seamless": true,
+        "step": 9.155e-05,
+        "step_ratio": 0.00072922,
+        "tail_rms": 0.00970679
+      },
+      "sha256": "0b0fa9a4c031b8fbb716476fe0a2778e897949cc3d718586be77b467d2c33899",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "music.build",
+      "duration_seconds": 39.50932,
+      "file": "music/build.wav",
+      "frames": 1742361,
+      "layers": [
+        {
+          "end_seconds": 56.529161,
+          "fold_seconds": 4.0,
+          "provider": "minimax_music",
+          "source": "assets/audio/source/minimax/block-evening.mp3",
+          "source_cue": "block-evening",
+          "start_seconds": 17.019841
+        }
+      ],
+      "loop": true,
+      "peak": 0.31622314,
+      "recording_sources": [],
+      "rms": 0.04961405,
+      "seam": {
+        "head_rms": 0.05671973,
+        "largest_step": 0.32583618,
+        "level_ratio": 1.00065275,
+        "seamless": true,
+        "step": 0.00170898,
+        "step_ratio": 0.00524492,
+        "tail_rms": 0.05675676
+      },
+      "sha256": "368a46c83b2493bb3c0ece069750d4706f00354badfcb531b57a7f6157b5c423",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "music.wave",
+      "duration_seconds": 53.994671,
+      "file": "music/wave.wav",
+      "frames": 2381165,
+      "layers": [
+        {
+          "end_seconds": 110.523832,
+          "fold_seconds": 4.0,
+          "provider": "minimax_music",
+          "source": "assets/audio/source/minimax/block-evening.mp3",
+          "source_cue": "block-evening",
+          "start_seconds": 56.529161
+        }
+      ],
+      "loop": true,
+      "peak": 0.37582397,
+      "recording_sources": [],
+      "rms": 0.06074918,
+      "seam": {
+        "head_rms": 0.07772971,
+        "largest_step": 0.34637451,
+        "level_ratio": 1.00000886,
+        "seamless": true,
+        "step": 0.00100708,
+        "step_ratio": 0.00290749,
+        "tail_rms": 0.0777304
+      },
+      "sha256": "c1ad8ce67d86aad74e10ae8d32b885b667136d36dded6444313828faac3f553d",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "music.boss",
+      "duration_seconds": 37.029909,
+      "file": "music/boss.wav",
+      "frames": 1633019,
+      "layers": [
+        {
+          "end_seconds": 165.508866,
+          "fold_seconds": 4.0,
+          "provider": "minimax_music",
+          "source": "assets/audio/source/minimax/block-evening.mp3",
+          "source_cue": "block-evening",
+          "start_seconds": 128.478957
+        }
+      ],
+      "loop": true,
+      "peak": 0.44665527,
+      "recording_sources": [],
+      "rms": 0.08156623,
+      "seam": {
+        "head_rms": 0.07914065,
+        "largest_step": 0.48614502,
+        "level_ratio": 0.99532212,
+        "seamless": true,
+        "step": 0.00030518,
+        "step_ratio": 0.00062775,
+        "tail_rms": 0.07877044
+      },
+      "sha256": "e69bb614e7c2dd76c27e7985d00be50cf063b22282bd0159cfbe01c94d2bab6b",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "music.victory",
+      "duration_seconds": 19.171043,
+      "file": "music/victory.wav",
+      "frames": 845443,
+      "layers": [
+        {
+          "end_seconds": 184.679909,
+          "fold_seconds": 0.0,
+          "provider": "minimax_music",
+          "source": "assets/audio/source/minimax/block-evening.mp3",
+          "source_cue": "block-evening",
+          "start_seconds": 165.508866
+        }
+      ],
+      "loop": false,
+      "peak": 0.50115967,
+      "recording_sources": [],
+      "rms": 0.06892873,
+      "sha256": "2077f55849e04b5e1b883f0b1fe6119df42d4498093a83962416dac39caa0ede",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "music.defeat",
+      "duration_seconds": 17.955125,
+      "file": "music/defeat.wav",
+      "frames": 791821,
+      "layers": [
+        {
+          "end_seconds": 128.478957,
+          "fold_seconds": 0.0,
+          "provider": "minimax_music",
+          "source": "assets/audio/source/minimax/block-evening.mp3",
+          "source_cue": "block-evening",
+          "start_seconds": 110.523832
+        }
+      ],
+      "loop": false,
+      "peak": 0.42169189,
+      "recording_sources": [],
+      "rms": 0.05427323,
+      "sha256": "1cddaf3a5ff1018823b6aa4965f493fc5b0596ebd223d294af2ab8fb2bd74fd5",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "ui.cursor",
+      "duration_seconds": 0.031995,
+      "file": "sfx/ui/cursor_01.wav",
+      "frames": 1411,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "style": "scifi"
+          },
+          "procedural_sources": [],
+          "provider": "ui",
+          "recording_sources": [],
+          "seed": 1599189906578672477,
+          "source_cue": "menu_move"
+        }
+      ],
+      "loop": false,
+      "peak": 0.25119019,
+      "recording_sources": [],
+      "rms": 0.06155629,
+      "sha256": "55c0be0efce9510a685a980ae8c0b0ccd52d025ce1e9a11948717cb2dcf3f59e",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "ui.cursor",
+      "duration_seconds": 0.031995,
+      "file": "sfx/ui/cursor_02.wav",
+      "frames": 1411,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "style": "scifi"
+          },
+          "procedural_sources": [],
+          "provider": "ui",
+          "recording_sources": [],
+          "seed": 5185666160244924786,
+          "source_cue": "menu_move"
+        }
+      ],
+      "loop": false,
+      "peak": 0.25119019,
+      "recording_sources": [],
+      "rms": 0.0598212,
+      "sha256": "de584b67850198a5e94afcf21d0eca7c5d9103f28c0ad26444e86e13675b6093",
+      "sources": [],
+      "variation": 2
+    },
+    {
+      "cue_id": "ui.cursor",
+      "duration_seconds": 0.031995,
+      "file": "sfx/ui/cursor_03.wav",
+      "frames": 1411,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "style": "scifi"
+          },
+          "procedural_sources": [],
+          "provider": "ui",
+          "recording_sources": [],
+          "seed": 1260142167473432632,
+          "source_cue": "menu_move"
+        }
+      ],
+      "loop": false,
+      "peak": 0.25119019,
+      "recording_sources": [],
+      "rms": 0.06062764,
+      "sha256": "c1779b7b01d676f2eebfc3e61fbed246740ed1a9ad40edeb62c731a67844b1b3",
+      "sources": [],
+      "variation": 3
+    },
+    {
+      "cue_id": "ui.confirm",
+      "duration_seconds": 0.120317,
+      "file": "sfx/ui/confirm.wav",
+      "frames": 5306,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "style": "scifi"
+          },
+          "procedural_sources": [],
+          "provider": "ui",
+          "recording_sources": [],
+          "seed": 3094222394542083475,
+          "source_cue": "menu_accept"
+        }
+      ],
+      "loop": false,
+      "peak": 0.35479736,
+      "recording_sources": [],
+      "rms": 0.12095126,
+      "sha256": "ccaba352d1c2409b05345a1ff2b537992f6e12bb4eca045e95958cf89b6690b9",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "ui.cancel",
+      "duration_seconds": 0.119841,
+      "file": "sfx/ui/cancel.wav",
+      "frames": 5285,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "style": "scifi"
+          },
+          "procedural_sources": [],
+          "provider": "ui",
+          "recording_sources": [],
+          "seed": 8300412124379731293,
+          "source_cue": "menu_cancel"
+        }
+      ],
+      "loop": false,
+      "peak": 0.31622314,
+      "recording_sources": [],
+      "rms": 0.1275041,
+      "sha256": "65c578b33be5afa2ffadbfaa26960f4f758a53e14b0d09209729fb63071d1cd5",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "ui.invalid",
+      "duration_seconds": 0.106485,
+      "file": "sfx/ui/invalid_01.wav",
+      "frames": 4696,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "style": "scifi"
+          },
+          "procedural_sources": [],
+          "provider": "ui",
+          "recording_sources": [],
+          "seed": 7701261703312072405,
+          "source_cue": "menu_invalid"
+        }
+      ],
+      "loop": false,
+      "peak": 0.35479736,
+      "recording_sources": [],
+      "rms": 0.13176459,
+      "sha256": "7c9d19db8d2429068b617e35b85ce272abbb9adecfa0179cb862f2bc39a2ef34",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "ui.invalid",
+      "duration_seconds": 0.107438,
+      "file": "sfx/ui/invalid_02.wav",
+      "frames": 4738,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "style": "scifi"
+          },
+          "procedural_sources": [],
+          "provider": "ui",
+          "recording_sources": [],
+          "seed": 3997912248735034180,
+          "source_cue": "menu_invalid"
+        }
+      ],
+      "loop": false,
+      "peak": 0.35479736,
+      "recording_sources": [],
+      "rms": 0.13534776,
+      "sha256": "595e53d107a12f68493475b1c67c6f264d7cf9f384cf141fed81e2cc4d5a2e4d",
+      "sources": [],
+      "variation": 2
+    },
+    {
+      "cue_id": "ui.invalid",
+      "duration_seconds": 0.106576,
+      "file": "sfx/ui/invalid_03.wav",
+      "frames": 4700,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "style": "scifi"
+          },
+          "procedural_sources": [],
+          "provider": "ui",
+          "recording_sources": [],
+          "seed": 97734503999894277,
+          "source_cue": "menu_invalid"
+        }
+      ],
+      "loop": false,
+      "peak": 0.35479736,
+      "recording_sources": [],
+      "rms": 0.12899998,
+      "sha256": "c5faf7c8655670f41739fcbbe7574ffc7a380a2d073d4c8d60e2f6e90e800dea",
+      "sources": [],
+      "variation": 3
+    },
+    {
+      "cue_id": "build.place",
+      "duration_seconds": 0.66,
+      "file": "sfx/build/place.wav",
+      "frames": 29106,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.72,
+            "style": "suburban"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 8993623033317617839,
+          "source_cue": "gadget_use"
+        }
+      ],
+      "loop": false,
+      "peak": 0.44665527,
+      "recording_sources": [],
+      "rms": 0.15398285,
+      "sha256": "e93f0e4083dd93021252607bb2ec3a9c4ac27bc7d20c05b1620298726e87c583",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "build.upgrade",
+      "duration_seconds": 1.05,
+      "file": "sfx/build/upgrade.wav",
+      "frames": 46305,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.76,
+            "style": "suburban"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 8563199314733170303,
+          "source_cue": "level_up"
+        }
+      ],
+      "loop": false,
+      "peak": 0.50115967,
+      "recording_sources": [],
+      "rms": 0.19206484,
+      "sha256": "4ac328b0ab8d501f805cfc5b4cadcbd7fbaabb942c7cd17c732ce6a3c5853e67",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "build.sell",
+      "duration_seconds": 0.58,
+      "file": "sfx/build/sell.wav",
+      "frames": 25578,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.68,
+            "style": "suburban"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 6988684492750168877,
+          "source_cue": "atm"
+        }
+      ],
+      "loop": false,
+      "peak": 0.39810181,
+      "recording_sources": [],
+      "rms": 0.14350924,
+      "sha256": "cc8fbedf3935229b85d020308367e9c03908c8480a54b642f51ff7dcb3b46cda",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "build.repair",
+      "duration_seconds": 0.84,
+      "file": "sfx/build/repair.wav",
+      "frames": 37044,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.72,
+            "style": "suburban"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 6504456393744826992,
+          "source_cue": "gadget_repair"
+        }
+      ],
+      "loop": false,
+      "peak": 0.44665527,
+      "recording_sources": [],
+      "rms": 0.13263239,
+      "sha256": "a7947f1bfaf69d27872abd941e4d62ff08fd9c809682ec137dfaad6f49d67fc4",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "build.mode",
+      "duration_seconds": 0.12,
+      "file": "sfx/build/mode_01.wav",
+      "frames": 5292,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.58,
+            "style": "corporate"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 296212374106319634,
+          "source_cue": "terminal_key"
+        }
+      ],
+      "loop": false,
+      "peak": 0.28182983,
+      "recording_sources": [],
+      "rms": 0.05315265,
+      "sha256": "debcf5af32646eb4729af2a58a09e937be17e0bc9fe425a936788a8f522a4635",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "build.mode",
+      "duration_seconds": 0.12,
+      "file": "sfx/build/mode_02.wav",
+      "frames": 5292,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.58,
+            "style": "corporate"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 5849827937802152682,
+          "source_cue": "terminal_key"
+        }
+      ],
+      "loop": false,
+      "peak": 0.28182983,
+      "recording_sources": [],
+      "rms": 0.0577455,
+      "sha256": "300e61ca090885c5d33a8eba3f61637edcfd1b0f33d37a19638543f51b55edbf",
+      "sources": [],
+      "variation": 2
+    },
+    {
+      "cue_id": "build.mode",
+      "duration_seconds": 0.12,
+      "file": "sfx/build/mode_03.wav",
+      "frames": 5292,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.58,
+            "style": "corporate"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 4450614631340080202,
+          "source_cue": "terminal_key"
+        }
+      ],
+      "loop": false,
+      "peak": 0.28182983,
+      "recording_sources": [],
+      "rms": 0.05641278,
+      "sha256": "7514b234d7b54433d8451c9ec1bc4208639f536ab5691d6436aa5206fbafceaa",
+      "sources": [],
+      "variation": 3
+    },
+    {
+      "cue_id": "build.reroute",
+      "duration_seconds": 0.76,
+      "file": "sfx/build/reroute.wav",
+      "frames": 33516,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.66,
+            "style": "noir"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 2973985312017450916,
+          "source_cue": "scan_ping"
+        }
+      ],
+      "loop": false,
+      "peak": 0.39810181,
+      "recording_sources": [],
+      "rms": 0.13073493,
+      "sha256": "5abf07d74c12998ae9794852f3d2d2027193abb97bb239b3c0265d9f1efbbbd8",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "fire.rapid",
+      "duration_seconds": 0.5,
+      "file": "sfx/fire/rapid_01.wav",
+      "frames": 22050,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.66,
+            "weapon": "smg"
+          },
+          "procedural_sources": [],
+          "provider": "weapons",
+          "recording_sources": [],
+          "seed": 7867035659075770698,
+          "source_cue": "fire"
+        }
+      ],
+      "loop": false,
+      "peak": 0.56231689,
+      "recording_sources": [],
+      "rms": 0.07586805,
+      "sha256": "867ccca74565670db357d92c48c9fe755b12779702abe47f0d4b2020aceada43",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "fire.rapid",
+      "duration_seconds": 0.5,
+      "file": "sfx/fire/rapid_02.wav",
+      "frames": 22050,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.66,
+            "weapon": "smg"
+          },
+          "procedural_sources": [],
+          "provider": "weapons",
+          "recording_sources": [],
+          "seed": 4532133968780950701,
+          "source_cue": "fire"
+        }
+      ],
+      "loop": false,
+      "peak": 0.56231689,
+      "recording_sources": [],
+      "rms": 0.07428141,
+      "sha256": "57321f1faff131bc7176eafba354a41b0e9d49705d746189ea96499c9a3126bd",
+      "sources": [],
+      "variation": 2
+    },
+    {
+      "cue_id": "fire.rapid",
+      "duration_seconds": 0.5,
+      "file": "sfx/fire/rapid_03.wav",
+      "frames": 22050,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.66,
+            "weapon": "smg"
+          },
+          "procedural_sources": [],
+          "provider": "weapons",
+          "recording_sources": [],
+          "seed": 7655494242593364793,
+          "source_cue": "fire"
+        }
+      ],
+      "loop": false,
+      "peak": 0.56231689,
+      "recording_sources": [],
+      "rms": 0.07782769,
+      "sha256": "63129f88981fe75eeb684fca00350753a7bec78d45be7919f5b5e26b0219d147",
+      "sources": [],
+      "variation": 3
+    },
+    {
+      "cue_id": "fire.artillery",
+      "duration_seconds": 2.45,
+      "file": "sfx/fire/artillery.wav",
+      "frames": 108045,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.9,
+            "weapon": "artillery"
+          },
+          "procedural_sources": [],
+          "provider": "weapons",
+          "recording_sources": [],
+          "seed": 8539622605754862408,
+          "source_cue": "fire"
+        }
+      ],
+      "loop": false,
+      "peak": 0.74987793,
+      "recording_sources": [],
+      "rms": 0.20083327,
+      "sha256": "1c838d1175987cd4098bc17e290cd54c759aeee8a89c1aa5019e58135265fdc4",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "fire.control",
+      "duration_seconds": 0.62,
+      "file": "sfx/fire/control.wav",
+      "frames": 27342,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.68,
+            "style": "corporate"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 7864736410692863743,
+          "source_cue": "program_attack"
+        }
+      ],
+      "loop": false,
+      "peak": 0.44665527,
+      "recording_sources": [],
+      "rms": 0.10996241,
+      "sha256": "ba988338e6eeec2ec59014a8f5bfe13ac67dedae6a6feb625ad0310337eb415f",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "fire.antiair",
+      "duration_seconds": 1.28,
+      "file": "sfx/fire/antiair_01.wav",
+      "frames": 56448,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.7,
+            "weapon": "autocannon"
+          },
+          "procedural_sources": [],
+          "provider": "weapons",
+          "recording_sources": [],
+          "seed": 5903039380366482321,
+          "source_cue": "fire"
+        }
+      ],
+      "loop": false,
+      "peak": 0.59564209,
+      "recording_sources": [],
+      "rms": 0.11630416,
+      "sha256": "e824f3b23254ffa44151dbd0167f2445ce4ad3035d41d489728b74fe6cfcb02a",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "fire.antiair",
+      "duration_seconds": 1.28,
+      "file": "sfx/fire/antiair_02.wav",
+      "frames": 56448,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.7,
+            "weapon": "autocannon"
+          },
+          "procedural_sources": [],
+          "provider": "weapons",
+          "recording_sources": [],
+          "seed": 2479092999249793573,
+          "source_cue": "fire"
+        }
+      ],
+      "loop": false,
+      "peak": 0.59564209,
+      "recording_sources": [],
+      "rms": 0.12016538,
+      "sha256": "07cd1b13ecf0f4a91142182f6e5bf275ef84a4805a251f867311183e55ca771d",
+      "sources": [],
+      "variation": 2
+    },
+    {
+      "cue_id": "fire.antiair",
+      "duration_seconds": 1.28,
+      "file": "sfx/fire/antiair_03.wav",
+      "frames": 56448,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.7,
+            "weapon": "autocannon"
+          },
+          "procedural_sources": [],
+          "provider": "weapons",
+          "recording_sources": [],
+          "seed": 1383200360696462370,
+          "source_cue": "fire"
+        }
+      ],
+      "loop": false,
+      "peak": 0.59564209,
+      "recording_sources": [],
+      "rms": 0.12204934,
+      "sha256": "227604b84b073ab026f087e8ffcc58787794033541050fec8ce556c66a4da132",
+      "sources": [],
+      "variation": 3
+    },
+    {
+      "cue_id": "fire.disable",
+      "duration_seconds": 0.95,
+      "file": "sfx/fire/disable.wav",
+      "frames": 41895,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.78,
+            "style": "electric"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 5693270589752332277,
+          "source_cue": "emp_blast"
+        }
+      ],
+      "loop": false,
+      "peak": 0.63095093,
+      "recording_sources": [],
+      "rms": 0.1802128,
+      "sha256": "089798fd5097b7befe468b9bc9c3bf76aaed25f26c2210a7367d2b60f4c2e496",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "impact.impact",
+      "duration_seconds": 0.795737,
+      "file": "sfx/impact/impact_01.wav",
+      "frames": 35092,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.66,
+            "material": "metal",
+            "projectile": "bullet"
+          },
+          "procedural_sources": [],
+          "provider": "projectiles",
+          "recording_sources": [
+            "projectile_sounds/sources/kenney_impact_metal_medium_004.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_06.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_hit_06.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_falling_02.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_02.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_falling_05.wav"
+          ],
+          "seed": 5393394444496560640,
+          "source_cue": "impact"
+        }
+      ],
+      "loop": false,
+      "peak": 0.56231689,
+      "recording_sources": [
+        "projectile_sounds/sources/kenney_impact_metal_medium_004.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_06.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_06.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_02.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_02.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_05.wav"
+      ],
+      "rms": 0.03098953,
+      "sha256": "dcd185b0e15f5d6bfb87b21044a62b6a9cfc80b1282336f8b21057db5cedc034",
+      "sources": [
+        "projectile_sounds/sources/kenney_impact_metal_medium_004.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_06.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_06.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_02.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_02.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_05.wav"
+      ],
+      "variation": 1
+    },
+    {
+      "cue_id": "impact.impact",
+      "duration_seconds": 0.795737,
+      "file": "sfx/impact/impact_02.wav",
+      "frames": 35092,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.66,
+            "material": "metal",
+            "projectile": "bullet"
+          },
+          "procedural_sources": [],
+          "provider": "projectiles",
+          "recording_sources": [
+            "projectile_sounds/sources/kenney_impact_plate_light_002.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_03.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_06.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_falling_03.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_hit_02.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_01.wav"
+          ],
+          "seed": 727713954736086795,
+          "source_cue": "impact"
+        }
+      ],
+      "loop": false,
+      "peak": 0.56231689,
+      "recording_sources": [
+        "projectile_sounds/sources/kenney_impact_plate_light_002.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_03.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_06.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_03.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_hit_02.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_01.wav"
+      ],
+      "rms": 0.03868011,
+      "sha256": "8520d7c76a9deaf16c98a4b0739edafc84e8840b2851a9fc5662b9e3361420b6",
+      "sources": [
+        "projectile_sounds/sources/kenney_impact_plate_light_002.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_03.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_06.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_03.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_hit_02.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_01.wav"
+      ],
+      "variation": 2
+    },
+    {
+      "cue_id": "impact.impact",
+      "duration_seconds": 0.795737,
+      "file": "sfx/impact/impact_03.wav",
+      "frames": 35092,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.66,
+            "material": "metal",
+            "projectile": "bullet"
+          },
+          "procedural_sources": [],
+          "provider": "projectiles",
+          "recording_sources": [
+            "projectile_sounds/sources/kenney_impact_metal_light_003.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_falling_03.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_04.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_03.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_hit_04.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_hit_03.wav"
+          ],
+          "seed": 926235944976222856,
+          "source_cue": "impact"
+        }
+      ],
+      "loop": false,
+      "peak": 0.56231689,
+      "recording_sources": [
+        "projectile_sounds/sources/kenney_impact_metal_light_003.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_03.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_04.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_03.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_04.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_03.wav"
+      ],
+      "rms": 0.06587345,
+      "sha256": "191b1a86c0f5e96f418bdfd7725d96b88f8aff686847f47747d2bfd2198e05b5",
+      "sources": [
+        "projectile_sounds/sources/kenney_impact_metal_light_003.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_03.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_04.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_03.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_04.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_03.wav"
+      ],
+      "variation": 3
+    },
+    {
+      "cue_id": "impact.pierce",
+      "duration_seconds": 0.885714,
+      "file": "sfx/impact/pierce_01.wav",
+      "frames": 39060,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.78,
+            "material": "metal",
+            "projectile": "shell"
+          },
+          "procedural_sources": [],
+          "provider": "projectiles",
+          "recording_sources": [
+            "projectile_sounds/sources/kenney_impact_metal_light_001.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_hit_06.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_hit_04.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_01.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_hit_02.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_05.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_hit_03.wav"
+          ],
+          "seed": 315402059933309409,
+          "source_cue": "impact"
+        }
+      ],
+      "loop": false,
+      "peak": 0.66833496,
+      "recording_sources": [
+        "projectile_sounds/sources/kenney_impact_metal_light_001.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_06.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_04.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_01.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_02.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_05.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_03.wav"
+      ],
+      "rms": 0.0688416,
+      "sha256": "c2a76796859e5b8849e1a6baa4406d19749cc3d903fd2e7d7a04cb4256322341",
+      "sources": [
+        "projectile_sounds/sources/kenney_impact_metal_light_001.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_06.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_04.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_01.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_02.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_05.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_03.wav"
+      ],
+      "variation": 1
+    },
+    {
+      "cue_id": "impact.pierce",
+      "duration_seconds": 0.885714,
+      "file": "sfx/impact/pierce_02.wav",
+      "frames": 39060,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.78,
+            "material": "metal",
+            "projectile": "shell"
+          },
+          "procedural_sources": [],
+          "provider": "projectiles",
+          "recording_sources": [
+            "projectile_sounds/sources/kenney_impact_plate_medium_004.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_falling_04.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_hit_03.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_05.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_hit_06.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_hit_01.wav"
+          ],
+          "seed": 3284503892294391719,
+          "source_cue": "impact"
+        }
+      ],
+      "loop": false,
+      "peak": 0.66833496,
+      "recording_sources": [
+        "projectile_sounds/sources/kenney_impact_plate_medium_004.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_04.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_03.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_05.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_06.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_hit_01.wav"
+      ],
+      "rms": 0.07950407,
+      "sha256": "66fd19a3d9a09efc89ab1daccc3da243821cf5d78b46c9f07f15df0f786d2c02",
+      "sources": [
+        "projectile_sounds/sources/kenney_impact_plate_medium_004.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_04.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_03.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_05.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_06.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_hit_01.wav"
+      ],
+      "variation": 2
+    },
+    {
+      "cue_id": "impact.pierce",
+      "duration_seconds": 0.885714,
+      "file": "sfx/impact/pierce_03.wav",
+      "frames": 39060,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.78,
+            "material": "metal",
+            "projectile": "shell"
+          },
+          "procedural_sources": [],
+          "provider": "projectiles",
+          "recording_sources": [
+            "projectile_sounds/sources/kenney_impact_metal_light_003.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_hit_04.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_01.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_falling_04.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_falling_01.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_hit_01.wav"
+          ],
+          "seed": 936457013177873395,
+          "source_cue": "impact"
+        }
+      ],
+      "loop": false,
+      "peak": 0.66833496,
+      "recording_sources": [
+        "projectile_sounds/sources/kenney_impact_metal_light_003.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_04.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_01.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_04.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_01.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_hit_01.wav"
+      ],
+      "rms": 0.0887751,
+      "sha256": "e4af478ca92ff6db57a374fdda1b87309c8382acad437e152817863b9278ffec",
+      "sources": [
+        "projectile_sounds/sources/kenney_impact_metal_light_003.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_04.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_01.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_04.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_01.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_hit_01.wav"
+      ],
+      "variation": 3
+    },
+    {
+      "cue_id": "impact.splash",
+      "duration_seconds": 1.05,
+      "file": "sfx/impact/splash_01.wav",
+      "frames": 46305,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.72,
+            "material": "water",
+            "projectile": "shell"
+          },
+          "procedural_sources": [],
+          "provider": "projectiles",
+          "recording_sources": [
+            "projectile_sounds/sources/rubberduck_splash_08.wav",
+            "projectile_sounds/sources/rubberduck_bubble_01.wav",
+            "projectile_sounds/sources/rubberduck_splash_04.wav",
+            "projectile_sounds/sources/rubberduck_splash_13.wav",
+            "projectile_sounds/sources/rubberduck_splash_03.wav"
+          ],
+          "seed": 2570010283031539122,
+          "source_cue": "impact"
+        },
+        {
+          "gain": 0.35,
+          "offset_seconds": 0.0,
+          "options": {
+            "explosive": "grenade",
+            "intensity": 0.58
+          },
+          "procedural_sources": [],
+          "provider": "weapons",
+          "recording_sources": [],
+          "seed": 2205457184656298516,
+          "source_cue": "explosion"
+        }
+      ],
+      "loop": false,
+      "peak": 0.70791626,
+      "recording_sources": [
+        "projectile_sounds/sources/rubberduck_splash_08.wav",
+        "projectile_sounds/sources/rubberduck_bubble_01.wav",
+        "projectile_sounds/sources/rubberduck_splash_04.wav",
+        "projectile_sounds/sources/rubberduck_splash_13.wav",
+        "projectile_sounds/sources/rubberduck_splash_03.wav"
+      ],
+      "rms": 0.07623494,
+      "sha256": "06faf5a32ec7a333269e57e45985e1b74c13657dbdacadee78ebd51388f27cdb",
+      "sources": [
+        "projectile_sounds/sources/rubberduck_splash_08.wav",
+        "projectile_sounds/sources/rubberduck_bubble_01.wav",
+        "projectile_sounds/sources/rubberduck_splash_04.wav",
+        "projectile_sounds/sources/rubberduck_splash_13.wav",
+        "projectile_sounds/sources/rubberduck_splash_03.wav"
+      ],
+      "variation": 1
+    },
+    {
+      "cue_id": "impact.splash",
+      "duration_seconds": 1.05,
+      "file": "sfx/impact/splash_02.wav",
+      "frames": 46305,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.72,
+            "material": "water",
+            "projectile": "shell"
+          },
+          "procedural_sources": [],
+          "provider": "projectiles",
+          "recording_sources": [
+            "projectile_sounds/sources/rubberduck_splash_12.wav",
+            "projectile_sounds/sources/rubberduck_bubble_02.wav",
+            "projectile_sounds/sources/rubberduck_splash_09.wav",
+            "projectile_sounds/sources/rubberduck_splash_15.wav"
+          ],
+          "seed": 4913697715858021340,
+          "source_cue": "impact"
+        },
+        {
+          "gain": 0.35,
+          "offset_seconds": 0.0,
+          "options": {
+            "explosive": "grenade",
+            "intensity": 0.58
+          },
+          "procedural_sources": [],
+          "provider": "weapons",
+          "recording_sources": [],
+          "seed": 4234959708657534726,
+          "source_cue": "explosion"
+        }
+      ],
+      "loop": false,
+      "peak": 0.70791626,
+      "recording_sources": [
+        "projectile_sounds/sources/rubberduck_splash_12.wav",
+        "projectile_sounds/sources/rubberduck_bubble_02.wav",
+        "projectile_sounds/sources/rubberduck_splash_09.wav",
+        "projectile_sounds/sources/rubberduck_splash_15.wav"
+      ],
+      "rms": 0.06675253,
+      "sha256": "5e2e3dd5230f2d2da60927472daf2309774c9547487eb9b7d9c631a78756ae99",
+      "sources": [
+        "projectile_sounds/sources/rubberduck_splash_12.wav",
+        "projectile_sounds/sources/rubberduck_bubble_02.wav",
+        "projectile_sounds/sources/rubberduck_splash_09.wav",
+        "projectile_sounds/sources/rubberduck_splash_15.wav"
+      ],
+      "variation": 2
+    },
+    {
+      "cue_id": "impact.splash",
+      "duration_seconds": 1.05,
+      "file": "sfx/impact/splash_03.wav",
+      "frames": 46305,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.72,
+            "material": "water",
+            "projectile": "shell"
+          },
+          "procedural_sources": [],
+          "provider": "projectiles",
+          "recording_sources": [
+            "projectile_sounds/sources/rubberduck_splash_01.wav",
+            "projectile_sounds/sources/rubberduck_bubble_02.wav",
+            "projectile_sounds/sources/rubberduck_splash_06.wav",
+            "projectile_sounds/sources/rubberduck_splash_04.wav"
+          ],
+          "seed": 1324276930996988096,
+          "source_cue": "impact"
+        },
+        {
+          "gain": 0.35,
+          "offset_seconds": 0.0,
+          "options": {
+            "explosive": "grenade",
+            "intensity": 0.58
+          },
+          "procedural_sources": [],
+          "provider": "weapons",
+          "recording_sources": [],
+          "seed": 8455718074153553590,
+          "source_cue": "explosion"
+        }
+      ],
+      "loop": false,
+      "peak": 0.70791626,
+      "recording_sources": [
+        "projectile_sounds/sources/rubberduck_splash_01.wav",
+        "projectile_sounds/sources/rubberduck_bubble_02.wav",
+        "projectile_sounds/sources/rubberduck_splash_06.wav",
+        "projectile_sounds/sources/rubberduck_splash_04.wav"
+      ],
+      "rms": 0.07801606,
+      "sha256": "055aa2ebe462722a45fd0ccbb3a2908b920d139b182f992d14b645c8b9007e82",
+      "sources": [
+        "projectile_sounds/sources/rubberduck_splash_01.wav",
+        "projectile_sounds/sources/rubberduck_bubble_02.wav",
+        "projectile_sounds/sources/rubberduck_splash_06.wav",
+        "projectile_sounds/sources/rubberduck_splash_04.wav"
+      ],
+      "variation": 3
+    },
+    {
+      "cue_id": "impact.deflect",
+      "duration_seconds": 0.780385,
+      "file": "sfx/impact/deflect_01.wav",
+      "frames": 34415,
+      "layers": [
+        {
+          "gain": 0.38,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.55,
+            "material": "metal",
+            "projectile": "bullet"
+          },
+          "procedural_sources": [],
+          "provider": "projectiles",
+          "recording_sources": [
+            "projectile_sounds/sources/kenney_impact_plate_heavy_001.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_falling_03.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_hit_01.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_01.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_06.wav"
+          ],
+          "seed": 6025548801917533686,
+          "source_cue": "impact"
+        },
+        {
+          "gain": 0.88,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.7,
+            "material": "metal",
+            "projectile": "bullet"
+          },
+          "procedural_sources": [],
+          "provider": "weapons",
+          "recording_sources": [],
+          "seed": 5266161025106100472,
+          "source_cue": "ricochet"
+        }
+      ],
+      "loop": false,
+      "peak": 0.56231689,
+      "recording_sources": [
+        "projectile_sounds/sources/kenney_impact_plate_heavy_001.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_03.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_hit_01.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_01.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_06.wav"
+      ],
+      "rms": 0.10765084,
+      "sha256": "320005329aa6264798e5b7a701879a39b11cf1ae083561a2b8f30276515f4956",
+      "sources": [
+        "projectile_sounds/sources/kenney_impact_plate_heavy_001.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_03.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_hit_01.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_01.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_06.wav"
+      ],
+      "variation": 1
+    },
+    {
+      "cue_id": "impact.deflect",
+      "duration_seconds": 0.780385,
+      "file": "sfx/impact/deflect_02.wav",
+      "frames": 34415,
+      "layers": [
+        {
+          "gain": 0.38,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.55,
+            "material": "metal",
+            "projectile": "bullet"
+          },
+          "procedural_sources": [],
+          "provider": "projectiles",
+          "recording_sources": [
+            "projectile_sounds/sources/kenney_impact_metal_heavy_000.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_03.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_falling_03.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_04.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_hit_04.wav"
+          ],
+          "seed": 4048291017758220507,
+          "source_cue": "impact"
+        },
+        {
+          "gain": 0.88,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.7,
+            "material": "metal",
+            "projectile": "bullet"
+          },
+          "procedural_sources": [],
+          "provider": "weapons",
+          "recording_sources": [],
+          "seed": 5369191403619156932,
+          "source_cue": "ricochet"
+        }
+      ],
+      "loop": false,
+      "peak": 0.56231689,
+      "recording_sources": [
+        "projectile_sounds/sources/kenney_impact_metal_heavy_000.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_03.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_03.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_04.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_04.wav"
+      ],
+      "rms": 0.10874259,
+      "sha256": "b7a898c289b126edd29a9870b6d526a768214b72910051ff9001ad868d388183",
+      "sources": [
+        "projectile_sounds/sources/kenney_impact_metal_heavy_000.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_03.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_03.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_04.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_04.wav"
+      ],
+      "variation": 2
+    },
+    {
+      "cue_id": "impact.deflect",
+      "duration_seconds": 0.780385,
+      "file": "sfx/impact/deflect_03.wav",
+      "frames": 34415,
+      "layers": [
+        {
+          "gain": 0.38,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.55,
+            "material": "metal",
+            "projectile": "bullet"
+          },
+          "procedural_sources": [],
+          "provider": "projectiles",
+          "recording_sources": [
+            "projectile_sounds/sources/kenney_impact_plate_light_004.wav",
+            "projectile_sounds/sources/rubberduck_sfx2_metal_04.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_falling_03.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_hit_05.wav",
+            "projectile_sounds/sources/rubberduck_break_metal_falling_01.wav"
+          ],
+          "seed": 8529368681520360888,
+          "source_cue": "impact"
+        },
+        {
+          "gain": 0.88,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.7,
+            "material": "metal",
+            "projectile": "bullet"
+          },
+          "procedural_sources": [],
+          "provider": "weapons",
+          "recording_sources": [],
+          "seed": 6070436078023107888,
+          "source_cue": "ricochet"
+        }
+      ],
+      "loop": false,
+      "peak": 0.56231689,
+      "recording_sources": [
+        "projectile_sounds/sources/kenney_impact_plate_light_004.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_04.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_03.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_05.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_01.wav"
+      ],
+      "rms": 0.10682148,
+      "sha256": "400c4401a002243226e7b782736bb9016abbd4341b891785773b5e90878cde52",
+      "sources": [
+        "projectile_sounds/sources/kenney_impact_plate_light_004.wav",
+        "projectile_sounds/sources/rubberduck_sfx2_metal_04.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_03.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_hit_05.wav",
+        "projectile_sounds/sources/rubberduck_break_metal_falling_01.wav"
+      ],
+      "variation": 3
+    },
+    {
+      "cue_id": "impact.shield_break",
+      "duration_seconds": 0.64,
+      "file": "sfx/impact/shield_break_01.wav",
+      "frames": 28224,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.82,
+            "style": "psychedelic"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 4563648427755666413,
+          "source_cue": "shield_break"
+        }
+      ],
+      "loop": false,
+      "peak": 0.63095093,
+      "recording_sources": [],
+      "rms": 0.10372913,
+      "sha256": "81ff149e198ae86e982663d387e4a10e54eb1031c16114d68cc87daaa21514bd",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "impact.shield_break",
+      "duration_seconds": 0.64,
+      "file": "sfx/impact/shield_break_02.wav",
+      "frames": 28224,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.82,
+            "style": "psychedelic"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 8557170303143658151,
+          "source_cue": "shield_break"
+        }
+      ],
+      "loop": false,
+      "peak": 0.63095093,
+      "recording_sources": [],
+      "rms": 0.10879654,
+      "sha256": "1e5b534f9dbe9b1ae3cd1e5c04e1d9cf1eae8b16455cba1a40950566730dc1ec",
+      "sources": [],
+      "variation": 2
+    },
+    {
+      "cue_id": "impact.shield_break",
+      "duration_seconds": 0.64,
+      "file": "sfx/impact/shield_break_03.wav",
+      "frames": 28224,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.82,
+            "style": "psychedelic"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 3145494242659318678,
+          "source_cue": "shield_break"
+        }
+      ],
+      "loop": false,
+      "peak": 0.63095093,
+      "recording_sources": [],
+      "rms": 0.10952281,
+      "sha256": "e51100bb82cf73c847bf4152d973cb78442acaee39496b3b07d07c71f05d8e78",
+      "sources": [],
+      "variation": 3
+    },
+    {
+      "cue_id": "impact.hardened",
+      "duration_seconds": 0.845737,
+      "file": "sfx/impact/hardened_01.wav",
+      "frames": 37297,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.66,
+            "material": "stone",
+            "projectile": "bullet"
+          },
+          "procedural_sources": [],
+          "provider": "projectiles",
+          "recording_sources": [
+            "projectile_sounds/sources/rubberduck_break_rock_breaking_02.wav",
+            "projectile_sounds/sources/rubberduck_break_rock_falling_02.wav",
+            "projectile_sounds/sources/rubberduck_break_rock_falling_09.wav",
+            "projectile_sounds/sources/rubberduck_break_rock_breaking_01.wav",
+            "projectile_sounds/sources/rubberduck_break_rock_falling_07.wav",
+            "projectile_sounds/sources/rubberduck_break_rock_falling_01.wav"
+          ],
+          "seed": 2804888374091315342,
+          "source_cue": "impact"
+        }
+      ],
+      "loop": false,
+      "peak": 0.56231689,
+      "recording_sources": [
+        "projectile_sounds/sources/rubberduck_break_rock_breaking_02.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_02.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_09.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_breaking_01.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_07.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_01.wav"
+      ],
+      "rms": 0.01918426,
+      "sha256": "530e73bceb50b85561086ed3398166153fec72902f6b03b696a2cb54a0710ebe",
+      "sources": [
+        "projectile_sounds/sources/rubberduck_break_rock_breaking_02.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_02.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_09.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_breaking_01.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_07.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_01.wav"
+      ],
+      "variation": 1
+    },
+    {
+      "cue_id": "impact.hardened",
+      "duration_seconds": 0.845737,
+      "file": "sfx/impact/hardened_02.wav",
+      "frames": 37297,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.66,
+            "material": "stone",
+            "projectile": "bullet"
+          },
+          "procedural_sources": [],
+          "provider": "projectiles",
+          "recording_sources": [
+            "projectile_sounds/sources/kenney_impact_mining_000.wav",
+            "projectile_sounds/sources/rubberduck_break_rock_falling_03.wav",
+            "projectile_sounds/sources/rubberduck_break_rock_breaking_03.wav",
+            "projectile_sounds/sources/rubberduck_break_rock_falling_08.wav",
+            "projectile_sounds/sources/rubberduck_break_rock_breaking_02.wav",
+            "projectile_sounds/sources/rubberduck_break_rock_falling_01.wav"
+          ],
+          "seed": 2839734586629692999,
+          "source_cue": "impact"
+        }
+      ],
+      "loop": false,
+      "peak": 0.56231689,
+      "recording_sources": [
+        "projectile_sounds/sources/kenney_impact_mining_000.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_03.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_breaking_03.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_08.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_breaking_02.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_01.wav"
+      ],
+      "rms": 0.08181303,
+      "sha256": "60dd2b41ab39de6c6f8837da619b1c8abde0c07069cc2b2271b07c4f8213e90f",
+      "sources": [
+        "projectile_sounds/sources/kenney_impact_mining_000.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_03.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_breaking_03.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_08.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_breaking_02.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_01.wav"
+      ],
+      "variation": 2
+    },
+    {
+      "cue_id": "impact.hardened",
+      "duration_seconds": 0.845737,
+      "file": "sfx/impact/hardened_03.wav",
+      "frames": 37297,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.66,
+            "material": "stone",
+            "projectile": "bullet"
+          },
+          "procedural_sources": [],
+          "provider": "projectiles",
+          "recording_sources": [
+            "projectile_sounds/sources/rubberduck_sfx2_stones_01.wav",
+            "projectile_sounds/sources/rubberduck_break_rock_breaking_01.wav",
+            "projectile_sounds/sources/rubberduck_break_rock_falling_07.wav",
+            "projectile_sounds/sources/rubberduck_break_rock_falling_05.wav",
+            "projectile_sounds/sources/rubberduck_break_rock_breaking_03.wav",
+            "projectile_sounds/sources/rubberduck_break_rock_falling_04.wav",
+            "projectile_sounds/sources/rubberduck_break_rock_falling_09.wav"
+          ],
+          "seed": 8068515860679795167,
+          "source_cue": "impact"
+        }
+      ],
+      "loop": false,
+      "peak": 0.56231689,
+      "recording_sources": [
+        "projectile_sounds/sources/rubberduck_sfx2_stones_01.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_breaking_01.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_07.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_05.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_breaking_03.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_04.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_09.wav"
+      ],
+      "rms": 0.022245,
+      "sha256": "9b128ba84ba35c3e0e17362128aaf151b134022d388bfaeffd25bc4b30a7d8bd",
+      "sources": [
+        "projectile_sounds/sources/rubberduck_sfx2_stones_01.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_breaking_01.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_07.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_05.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_breaking_03.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_04.wav",
+        "projectile_sounds/sources/rubberduck_break_rock_falling_09.wav"
+      ],
+      "variation": 3
+    },
+    {
+      "cue_id": "unit.spawn",
+      "duration_seconds": 0.78,
+      "file": "sfx/unit/spawn_01.wav",
+      "frames": 34398,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.64,
+            "style": "corporate"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 1210466096221188089,
+          "source_cue": "ice_spawn"
+        }
+      ],
+      "loop": false,
+      "peak": 0.39810181,
+      "recording_sources": [],
+      "rms": 0.09007748,
+      "sha256": "1bbe05fa2acc4a4aaf9a0d0b2a11b8680f20531eca3dce6f0a3f3ea5fc9f604c",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "unit.spawn",
+      "duration_seconds": 0.78,
+      "file": "sfx/unit/spawn_02.wav",
+      "frames": 34398,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.64,
+            "style": "corporate"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 6281105944197624954,
+          "source_cue": "ice_spawn"
+        }
+      ],
+      "loop": false,
+      "peak": 0.39810181,
+      "recording_sources": [],
+      "rms": 0.09918009,
+      "sha256": "1fcba94db21058b0e8bcc3370990b36dd8a56017674b278d0451c8203f0221b7",
+      "sources": [],
+      "variation": 2
+    },
+    {
+      "cue_id": "unit.spawn",
+      "duration_seconds": 0.78,
+      "file": "sfx/unit/spawn_03.wav",
+      "frames": 34398,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.64,
+            "style": "corporate"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 1480499473655542849,
+          "source_cue": "ice_spawn"
+        }
+      ],
+      "loop": false,
+      "peak": 0.39810181,
+      "recording_sources": [],
+      "rms": 0.08663174,
+      "sha256": "2d987ef3a821802fd0bad8a52ad4fa9244c7e1c542fe14412b4ab415b5bb0183",
+      "sources": [],
+      "variation": 3
+    },
+    {
+      "cue_id": "unit.death",
+      "duration_seconds": 0.86,
+      "file": "sfx/unit/death_01.wav",
+      "frames": 37926,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.68,
+            "style": "noir"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 4379218825142503327,
+          "source_cue": "runner_downed"
+        }
+      ],
+      "loop": false,
+      "peak": 0.50115967,
+      "recording_sources": [],
+      "rms": 0.09128872,
+      "sha256": "e1a6a2e9d01e37b8f1b048d73ee63cc0228fe3b56398b62741244617915d48be",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "unit.death",
+      "duration_seconds": 0.86,
+      "file": "sfx/unit/death_02.wav",
+      "frames": 37926,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.68,
+            "style": "noir"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 1085736588111883813,
+          "source_cue": "runner_downed"
+        }
+      ],
+      "loop": false,
+      "peak": 0.50115967,
+      "recording_sources": [],
+      "rms": 0.08953152,
+      "sha256": "bbbae3756970fcee2cd5dd0a7cf93c9059d6b838e64c226c4fa85a0567c66248",
+      "sources": [],
+      "variation": 2
+    },
+    {
+      "cue_id": "unit.death",
+      "duration_seconds": 0.86,
+      "file": "sfx/unit/death_03.wav",
+      "frames": 37926,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.68,
+            "style": "noir"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 4053892857324264100,
+          "source_cue": "runner_downed"
+        }
+      ],
+      "loop": false,
+      "peak": 0.50115967,
+      "recording_sources": [],
+      "rms": 0.09458909,
+      "sha256": "3ee8da85a4ca01a92d2fe7073e876178fd446a360bea9badcd2e4e448c5615e8",
+      "sources": [],
+      "variation": 3
+    },
+    {
+      "cue_id": "unit.split",
+      "duration_seconds": 0.72,
+      "file": "sfx/unit/split_01.wav",
+      "frames": 31752,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.72,
+            "style": "psychedelic"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 2121510711016206753,
+          "source_cue": "mimic"
+        }
+      ],
+      "loop": false,
+      "peak": 0.50115967,
+      "recording_sources": [],
+      "rms": 0.12304725,
+      "sha256": "993c075c198cba96661aa712f6a88c862b4bfe8900473a35d4a752475730e97c",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "unit.split",
+      "duration_seconds": 0.72,
+      "file": "sfx/unit/split_02.wav",
+      "frames": 31752,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.72,
+            "style": "psychedelic"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 4767622117747885021,
+          "source_cue": "mimic"
+        }
+      ],
+      "loop": false,
+      "peak": 0.50115967,
+      "recording_sources": [],
+      "rms": 0.11892887,
+      "sha256": "7dcf58763b5922f57f5d2a8094f163dcdb091ab5ad92d39535094021cb80443c",
+      "sources": [],
+      "variation": 2
+    },
+    {
+      "cue_id": "unit.split",
+      "duration_seconds": 0.72,
+      "file": "sfx/unit/split_03.wav",
+      "frames": 31752,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.72,
+            "style": "psychedelic"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 2164539173880750992,
+          "source_cue": "mimic"
+        }
+      ],
+      "loop": false,
+      "peak": 0.50115967,
+      "recording_sources": [],
+      "rms": 0.12749638,
+      "sha256": "1ee9663111480e2c3d8109651284f9763517c713852f51095770207423ea488a",
+      "sources": [],
+      "variation": 3
+    },
+    {
+      "cue_id": "unit.boss_entrance",
+      "duration_seconds": 2.0,
+      "file": "sfx/unit/boss_entrance.wav",
+      "frames": 88200,
+      "layers": [
+        {
+          "gain": 0.3,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.88,
+            "seconds": 2.0
+          },
+          "procedural_sources": [],
+          "provider": "ambience",
+          "recording_sources": [],
+          "seed": 6280883128861719523,
+          "source_cue": "mechanical"
+        },
+        {
+          "gain": 0.92,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.88,
+            "style": "psychedelic"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 5307061964745088436,
+          "source_cue": "boss_start"
+        }
+      ],
+      "loop": false,
+      "peak": 0.74987793,
+      "recording_sources": [],
+      "rms": 0.09454432,
+      "sha256": "3879ba12c8d4d620479a1ba6177ca08589aa1c4d2216733cac13ac37222e16cf",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "unit.boss_split",
+      "duration_seconds": 0.88,
+      "file": "sfx/unit/boss_split.wav",
+      "frames": 38808,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.84,
+            "style": "psychedelic"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 3653796518434657451,
+          "source_cue": "strange_event"
+        },
+        {
+          "gain": 0.48,
+          "offset_seconds": 0.05,
+          "options": {
+            "intensity": 0.7,
+            "style": "noir"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 4098739079225857985,
+          "source_cue": "ice_spawn"
+        }
+      ],
+      "loop": false,
+      "peak": 0.66833496,
+      "recording_sources": [],
+      "rms": 0.16839057,
+      "sha256": "5d41d752c124e6380a1db95e0e6e5605a0441580b51f027cf37e3d67450ab03a",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "unit.emit",
+      "duration_seconds": 0.92,
+      "file": "sfx/unit/emit_01.wav",
+      "frames": 40572,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.72,
+            "style": "corporate"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 6110210173194008448,
+          "source_cue": "transport_arrive"
+        }
+      ],
+      "loop": false,
+      "peak": 0.56231689,
+      "recording_sources": [],
+      "rms": 0.2585634,
+      "sha256": "001b910d62937e37e46a9c389af23b657b1700f51436d9342b009c30482bb8f2",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "unit.emit",
+      "duration_seconds": 0.92,
+      "file": "sfx/unit/emit_02.wav",
+      "frames": 40572,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.72,
+            "style": "corporate"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 5790760389955850291,
+          "source_cue": "transport_arrive"
+        }
+      ],
+      "loop": false,
+      "peak": 0.56231689,
+      "recording_sources": [],
+      "rms": 0.27020055,
+      "sha256": "38918c97b328edb97cf77ea35ab969430196590a1a39941b610c28d39ca7a3e3",
+      "sources": [],
+      "variation": 2
+    },
+    {
+      "cue_id": "unit.emit",
+      "duration_seconds": 0.92,
+      "file": "sfx/unit/emit_03.wav",
+      "frames": 40572,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.72,
+            "style": "corporate"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 6917342147263769189,
+          "source_cue": "transport_arrive"
+        }
+      ],
+      "loop": false,
+      "peak": 0.56231689,
+      "recording_sources": [],
+      "rms": 0.26454815,
+      "sha256": "9a1c43965d41c9f395068dcd4a96f2f5a3ec6396bd80ebe3450c1aea85473311",
+      "sources": [],
+      "variation": 3
+    },
+    {
+      "cue_id": "unit.suppressor_halt",
+      "duration_seconds": 0.46,
+      "file": "sfx/unit/suppressor_halt_01.wav",
+      "frames": 20286,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.68,
+            "style": "noir"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 7074406216141291189,
+          "source_cue": "overwatch_ready"
+        }
+      ],
+      "loop": false,
+      "peak": 0.44665527,
+      "recording_sources": [],
+      "rms": 0.08991131,
+      "sha256": "aab2329e8b951c5423d785b63a0d05a4f878f8248e1439b75185d0b6bced5134",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "unit.suppressor_halt",
+      "duration_seconds": 0.46,
+      "file": "sfx/unit/suppressor_halt_02.wav",
+      "frames": 20286,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.68,
+            "style": "noir"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 2034251436780521234,
+          "source_cue": "overwatch_ready"
+        }
+      ],
+      "loop": false,
+      "peak": 0.44665527,
+      "recording_sources": [],
+      "rms": 0.08780958,
+      "sha256": "ab8dada6f217b2c10d59c4d7dafac6f48ea035c18a2ac4e9bea2b5d7e619ab39",
+      "sources": [],
+      "variation": 2
+    },
+    {
+      "cue_id": "unit.suppressor_halt",
+      "duration_seconds": 0.46,
+      "file": "sfx/unit/suppressor_halt_03.wav",
+      "frames": 20286,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.68,
+            "style": "noir"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 6722923024974328701,
+          "source_cue": "overwatch_ready"
+        }
+      ],
+      "loop": false,
+      "peak": 0.44665527,
+      "recording_sources": [],
+      "rms": 0.08579865,
+      "sha256": "1e0daea13a9494b0590cbf90afc577832dda0af933603d0bd85914c74905805f",
+      "sources": [],
+      "variation": 3
+    },
+    {
+      "cue_id": "fixture.hit",
+      "duration_seconds": 0.344376,
+      "file": "sfx/fixture/hit_01.wav",
+      "frames": 15187,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "target": "plate",
+            "weapon": "mace"
+          },
+          "procedural_sources": [],
+          "provider": "combat",
+          "recording_sources": [],
+          "seed": 2213783765819016599,
+          "source_cue": "strike"
+        }
+      ],
+      "loop": false,
+      "peak": 0.56231689,
+      "recording_sources": [],
+      "rms": 0.10066531,
+      "sha256": "8cc9298186b26710517dca55985f64635037ff53416b1e62abceb14053141dc9",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "fixture.hit",
+      "duration_seconds": 0.344376,
+      "file": "sfx/fixture/hit_02.wav",
+      "frames": 15187,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "target": "plate",
+            "weapon": "mace"
+          },
+          "procedural_sources": [],
+          "provider": "combat",
+          "recording_sources": [],
+          "seed": 4840743272813236412,
+          "source_cue": "strike"
+        }
+      ],
+      "loop": false,
+      "peak": 0.56231689,
+      "recording_sources": [],
+      "rms": 0.10229555,
+      "sha256": "cdca492d8bc0b7aaa04d2b4b9ddb63c0a461744f5c4ffa63c6741c63c2bde86d",
+      "sources": [],
+      "variation": 2
+    },
+    {
+      "cue_id": "fixture.hit",
+      "duration_seconds": 0.344376,
+      "file": "sfx/fixture/hit_03.wav",
+      "frames": 15187,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "target": "plate",
+            "weapon": "mace"
+          },
+          "procedural_sources": [],
+          "provider": "combat",
+          "recording_sources": [],
+          "seed": 9032859837565517625,
+          "source_cue": "strike"
+        }
+      ],
+      "loop": false,
+      "peak": 0.56231689,
+      "recording_sources": [],
+      "rms": 0.10519068,
+      "sha256": "ce237534d184f4f376e54ffac71a8f33262a9cb72d862c00d458e20f9bf29d85",
+      "sources": [],
+      "variation": 3
+    },
+    {
+      "cue_id": "fixture.critical",
+      "duration_seconds": 0.557007,
+      "file": "sfx/fixture/critical_01.wav",
+      "frames": 24564,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "style": "acoustic"
+          },
+          "procedural_sources": [],
+          "provider": "ui",
+          "recording_sources": [],
+          "seed": 4339408691059234650,
+          "source_cue": "warning"
+        }
+      ],
+      "loop": false,
+      "peak": 0.50115967,
+      "recording_sources": [],
+      "rms": 0.18840808,
+      "sha256": "72e5caeb96a3b0b2277e6fb7aae41d431d47c88976bb7b36591fb705552bf61e",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "fixture.critical",
+      "duration_seconds": 0.557007,
+      "file": "sfx/fixture/critical_02.wav",
+      "frames": 24564,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "style": "acoustic"
+          },
+          "procedural_sources": [],
+          "provider": "ui",
+          "recording_sources": [],
+          "seed": 1919073934117885116,
+          "source_cue": "warning"
+        }
+      ],
+      "loop": false,
+      "peak": 0.50115967,
+      "recording_sources": [],
+      "rms": 0.18001939,
+      "sha256": "68d1b46b91c2a11753cbde060bdcab05419e9b17df67832b1b522f478b12ffc8",
+      "sources": [],
+      "variation": 2
+    },
+    {
+      "cue_id": "fixture.critical",
+      "duration_seconds": 0.557007,
+      "file": "sfx/fixture/critical_03.wav",
+      "frames": 24564,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "style": "acoustic"
+          },
+          "procedural_sources": [],
+          "provider": "ui",
+          "recording_sources": [],
+          "seed": 7601028709916953118,
+          "source_cue": "warning"
+        }
+      ],
+      "loop": false,
+      "peak": 0.50115967,
+      "recording_sources": [],
+      "rms": 0.1716754,
+      "sha256": "6d9d54e9c322680e7be72ddd93dc14af1caecc776ca631d00958eac7a870f415",
+      "sources": [],
+      "variation": 3
+    },
+    {
+      "cue_id": "fixture.destroyed",
+      "duration_seconds": 2.432993,
+      "file": "sfx/fixture/destroyed_01.wav",
+      "frames": 107295,
+      "layers": [
+        {
+          "gain": 0.82,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.86,
+            "style": "suburban"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 549293462883356885,
+          "source_cue": "gadget_break"
+        },
+        {
+          "gain": 0.42,
+          "offset_seconds": 0.025,
+          "options": {
+            "intensity": 0.38
+          },
+          "procedural_sources": [],
+          "provider": "ambience",
+          "recording_sources": [],
+          "seed": 2065656788508834044,
+          "source_cue": "rockfall"
+        }
+      ],
+      "loop": false,
+      "peak": 0.74987793,
+      "recording_sources": [],
+      "rms": 0.17658731,
+      "sha256": "2037936b5fab00d5ff53fb51d6a2ba8cbc0920693d8b31ab324fe30901b690f5",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "fixture.destroyed",
+      "duration_seconds": 2.432993,
+      "file": "sfx/fixture/destroyed_02.wav",
+      "frames": 107295,
+      "layers": [
+        {
+          "gain": 0.82,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.86,
+            "style": "suburban"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 4444937741679252227,
+          "source_cue": "gadget_break"
+        },
+        {
+          "gain": 0.42,
+          "offset_seconds": 0.025,
+          "options": {
+            "intensity": 0.38
+          },
+          "procedural_sources": [],
+          "provider": "ambience",
+          "recording_sources": [],
+          "seed": 4919280717863220488,
+          "source_cue": "rockfall"
+        }
+      ],
+      "loop": false,
+      "peak": 0.74987793,
+      "recording_sources": [],
+      "rms": 0.17502645,
+      "sha256": "44d2a13b52e305a26324382868b425d969d348960b12b46798b3ee11e70e9c1f",
+      "sources": [],
+      "variation": 2
+    },
+    {
+      "cue_id": "fixture.destroyed",
+      "duration_seconds": 2.432993,
+      "file": "sfx/fixture/destroyed_03.wav",
+      "frames": 107295,
+      "layers": [
+        {
+          "gain": 0.82,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.86,
+            "style": "suburban"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 8346952468857520144,
+          "source_cue": "gadget_break"
+        },
+        {
+          "gain": 0.42,
+          "offset_seconds": 0.025,
+          "options": {
+            "intensity": 0.38
+          },
+          "procedural_sources": [],
+          "provider": "ambience",
+          "recording_sources": [],
+          "seed": 1121389953658454967,
+          "source_cue": "rockfall"
+        }
+      ],
+      "loop": false,
+      "peak": 0.74987793,
+      "recording_sources": [],
+      "rms": 0.17392687,
+      "sha256": "09eb831878eed5c34d1eeee6723edd89230d63ec728485b9c858374db9960237",
+      "sources": [],
+      "variation": 3
+    },
+    {
+      "cue_id": "fixture.repaired",
+      "duration_seconds": 0.86,
+      "file": "sfx/fixture/repaired_01.wav",
+      "frames": 37926,
+      "layers": [
+        {
+          "gain": 0.94,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.78,
+            "style": "suburban"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 9177659370679291974,
+          "source_cue": "gadget_repair"
+        },
+        {
+          "gain": 0.12,
+          "offset_seconds": 0.04,
+          "options": {
+            "intensity": 0.42,
+            "mass": "droplet"
+          },
+          "procedural_sources": [],
+          "provider": "water",
+          "recording_sources": [
+            "projectile_sounds/sources/rubberduck_bubble_03.wav",
+            "projectile_sounds/sources/rubberduck_bubble_01.wav"
+          ],
+          "seed": 3883154801107039015,
+          "source_cue": "bubble"
+        }
+      ],
+      "loop": false,
+      "peak": 0.50115967,
+      "recording_sources": [
+        "projectile_sounds/sources/rubberduck_bubble_03.wav",
+        "projectile_sounds/sources/rubberduck_bubble_01.wav"
+      ],
+      "rms": 0.14969392,
+      "sha256": "ec706ddd633a939d5c119c699ddbe917218df103c2e52302d2516dd204c01073",
+      "sources": [
+        "projectile_sounds/sources/rubberduck_bubble_03.wav",
+        "projectile_sounds/sources/rubberduck_bubble_01.wav"
+      ],
+      "variation": 1
+    },
+    {
+      "cue_id": "fixture.repaired",
+      "duration_seconds": 0.86,
+      "file": "sfx/fixture/repaired_02.wav",
+      "frames": 37926,
+      "layers": [
+        {
+          "gain": 0.94,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.78,
+            "style": "suburban"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 2671955786548159401,
+          "source_cue": "gadget_repair"
+        },
+        {
+          "gain": 0.12,
+          "offset_seconds": 0.04,
+          "options": {
+            "intensity": 0.42,
+            "mass": "droplet"
+          },
+          "procedural_sources": [],
+          "provider": "water",
+          "recording_sources": [
+            "projectile_sounds/sources/rubberduck_bubble_03.wav",
+            "projectile_sounds/sources/rubberduck_bubble_01.wav",
+            "projectile_sounds/sources/rubberduck_bubble_02.wav"
+          ],
+          "seed": 2288918360604598552,
+          "source_cue": "bubble"
+        }
+      ],
+      "loop": false,
+      "peak": 0.50115967,
+      "recording_sources": [
+        "projectile_sounds/sources/rubberduck_bubble_03.wav",
+        "projectile_sounds/sources/rubberduck_bubble_01.wav",
+        "projectile_sounds/sources/rubberduck_bubble_02.wav"
+      ],
+      "rms": 0.15572606,
+      "sha256": "e41144931d507025d2c0a873d292d506b41f05fa4620cff9115387ddeae19073",
+      "sources": [
+        "projectile_sounds/sources/rubberduck_bubble_03.wav",
+        "projectile_sounds/sources/rubberduck_bubble_01.wav",
+        "projectile_sounds/sources/rubberduck_bubble_02.wav"
+      ],
+      "variation": 2
+    },
+    {
+      "cue_id": "fixture.repaired",
+      "duration_seconds": 0.86,
+      "file": "sfx/fixture/repaired_03.wav",
+      "frames": 37926,
+      "layers": [
+        {
+          "gain": 0.94,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.78,
+            "style": "suburban"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 5499828788708793999,
+          "source_cue": "gadget_repair"
+        },
+        {
+          "gain": 0.12,
+          "offset_seconds": 0.04,
+          "options": {
+            "intensity": 0.42,
+            "mass": "droplet"
+          },
+          "procedural_sources": [],
+          "provider": "water",
+          "recording_sources": [
+            "projectile_sounds/sources/rubberduck_bubble_03.wav",
+            "projectile_sounds/sources/rubberduck_bubble_02.wav",
+            "projectile_sounds/sources/rubberduck_bubble_01.wav"
+          ],
+          "seed": 6073947886717001292,
+          "source_cue": "bubble"
+        }
+      ],
+      "loop": false,
+      "peak": 0.50115967,
+      "recording_sources": [
+        "projectile_sounds/sources/rubberduck_bubble_03.wav",
+        "projectile_sounds/sources/rubberduck_bubble_02.wav",
+        "projectile_sounds/sources/rubberduck_bubble_01.wav"
+      ],
+      "rms": 0.14904582,
+      "sha256": "9170ba42903a6ff4c9ec97eb024b53afa882eba757604e8fd26a33b459279587",
+      "sources": [
+        "projectile_sounds/sources/rubberduck_bubble_03.wav",
+        "projectile_sounds/sources/rubberduck_bubble_02.wav",
+        "projectile_sounds/sources/rubberduck_bubble_01.wav"
+      ],
+      "variation": 3
+    },
+    {
+      "cue_id": "state.wave_incoming",
+      "duration_seconds": 0.82,
+      "file": "sfx/state/wave_incoming.wav",
+      "frames": 36162,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.8,
+            "style": "corporate"
+          },
+          "procedural_sources": [],
+          "provider": "cyberpunk",
+          "recording_sources": [],
+          "seed": 8588125764682551138,
+          "source_cue": "combat_start"
+        }
+      ],
+      "loop": false,
+      "peak": 0.63095093,
+      "recording_sources": [],
+      "rms": 0.12119606,
+      "sha256": "914d46f453f4acede3585912446f0e8b910aad57e12a26676ef98568c80fd1c3",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "state.wave_cleared",
+      "duration_seconds": 0.68,
+      "file": "sfx/state/wave_cleared.wav",
+      "frames": 29988,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.76,
+            "style": "suburban"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 7546079936407194137,
+          "source_cue": "run_success"
+        }
+      ],
+      "loop": false,
+      "peak": 0.56231689,
+      "recording_sources": [],
+      "rms": 0.22331284,
+      "sha256": "5202746599a582aba4ffd68028e49ac9a1a0ea8f47320feda10fea0276f3c9c1",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "state.integrity_lost",
+      "duration_seconds": 0.34,
+      "file": "sfx/state/integrity_lost_01.wav",
+      "frames": 14994,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.76,
+            "style": "suburban"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 8239731582316578310,
+          "source_cue": "player_hit"
+        }
+      ],
+      "loop": false,
+      "peak": 0.59564209,
+      "recording_sources": [],
+      "rms": 0.13850666,
+      "sha256": "30ad612813952c8efc0ef9e7824207a298b8d7d4b93f1f588f3b9fca8b7e14cf",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "state.integrity_lost",
+      "duration_seconds": 0.34,
+      "file": "sfx/state/integrity_lost_02.wav",
+      "frames": 14994,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.76,
+            "style": "suburban"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 2525677723877654461,
+          "source_cue": "player_hit"
+        }
+      ],
+      "loop": false,
+      "peak": 0.59564209,
+      "recording_sources": [],
+      "rms": 0.13865017,
+      "sha256": "a3cb71f569413d30523d85e5adc7940e7f8f70cc487cce3812f8a787012bf24b",
+      "sources": [],
+      "variation": 2
+    },
+    {
+      "cue_id": "state.integrity_lost",
+      "duration_seconds": 0.34,
+      "file": "sfx/state/integrity_lost_03.wav",
+      "frames": 14994,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.76,
+            "style": "suburban"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 6289255442618130980,
+          "source_cue": "player_hit"
+        }
+      ],
+      "loop": false,
+      "peak": 0.59564209,
+      "recording_sources": [],
+      "rms": 0.1393304,
+      "sha256": "da649c05c83870ac7dd857bc48823bb2f905296ea0ad2fa8339ca9f67949150f",
+      "sources": [],
+      "variation": 3
+    },
+    {
+      "cue_id": "state.integrity_critical",
+      "duration_seconds": 0.8,
+      "file": "sfx/state/integrity_critical.wav",
+      "frames": 35280,
+      "layers": [
+        {
+          "gain": 0.68,
+          "offset_seconds": 0.0,
+          "options": {
+            "style": "scifi"
+          },
+          "procedural_sources": [],
+          "provider": "ui",
+          "recording_sources": [],
+          "seed": 5017360905291975784,
+          "source_cue": "warning"
+        },
+        {
+          "gain": 0.72,
+          "offset_seconds": 0.04,
+          "options": {
+            "intensity": 0.84,
+            "style": "suburban"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 1967102556767820727,
+          "source_cue": "mortal_warning"
+        }
+      ],
+      "loop": false,
+      "peak": 0.70791626,
+      "recording_sources": [],
+      "rms": 0.17716209,
+      "sha256": "113a3a3bc4ac69debbf6072e29b6759ed583bd7c5399feb69826f8b948768e60",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "state.victory",
+      "duration_seconds": 1.24,
+      "file": "sfx/state/victory.wav",
+      "frames": 54684,
+      "layers": [
+        {
+          "gain": 0.58,
+          "offset_seconds": 0.0,
+          "options": {
+            "style": "acoustic"
+          },
+          "procedural_sources": [],
+          "provider": "ui",
+          "recording_sources": [],
+          "seed": 5900129705297095467,
+          "source_cue": "win"
+        },
+        {
+          "gain": 0.82,
+          "offset_seconds": 0.06,
+          "options": {
+            "intensity": 0.88,
+            "style": "suburban"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 1406937608112021818,
+          "source_cue": "victory"
+        }
+      ],
+      "loop": false,
+      "peak": 0.74987793,
+      "recording_sources": [],
+      "rms": 0.25567877,
+      "sha256": "03b85b0bd80fec6f400af490bde9dfbd62f4704f0bd428b6396ad2a23c5f195c",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "state.defeat",
+      "duration_seconds": 1.12,
+      "file": "sfx/state/defeat.wav",
+      "frames": 49392,
+      "layers": [
+        {
+          "gain": 0.62,
+          "offset_seconds": 0.0,
+          "options": {
+            "style": "acoustic"
+          },
+          "procedural_sources": [],
+          "provider": "ui",
+          "recording_sources": [],
+          "seed": 6379732343552177646,
+          "source_cue": "lose"
+        },
+        {
+          "gain": 0.78,
+          "offset_seconds": 0.06,
+          "options": {
+            "intensity": 0.84,
+            "style": "suburban"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 1216758596530501468,
+          "source_cue": "party_down"
+        }
+      ],
+      "loop": false,
+      "peak": 0.66833496,
+      "recording_sources": [],
+      "rms": 0.253436,
+      "sha256": "8b5507c9526b0d1de5af0a04ffb5f53241a8d2052debac634076a6a2bba2936e",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "state.pause",
+      "duration_seconds": 0.26,
+      "file": "sfx/state/pause.wav",
+      "frames": 11466,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "style": "scifi"
+          },
+          "procedural_sources": [],
+          "provider": "ui",
+          "recording_sources": [],
+          "seed": 7324243277374334122,
+          "source_cue": "pause"
+        }
+      ],
+      "loop": false,
+      "peak": 0.39810181,
+      "recording_sources": [],
+      "rms": 0.12502285,
+      "sha256": "4091678f8340888b2e5e513a43631509ed3a9fbd4c44c3fef1d334c600c2670d",
+      "sources": [],
+      "variation": 1
+    },
+    {
+      "cue_id": "state.campaign_unlock",
+      "duration_seconds": 0.92,
+      "file": "sfx/state/campaign_unlock.wav",
+      "frames": 40572,
+      "layers": [
+        {
+          "gain": 1.0,
+          "offset_seconds": 0.0,
+          "options": {
+            "intensity": 0.86,
+            "style": "suburban"
+          },
+          "procedural_sources": [],
+          "provider": "quirky-rpg",
+          "recording_sources": [],
+          "seed": 4281957630902276002,
+          "source_cue": "secret_found"
+        }
+      ],
+      "loop": false,
+      "peak": 0.63095093,
+      "recording_sources": [],
+      "rms": 0.21788758,
+      "sha256": "c276634d8364a1f928a11a2d0c09c89a73602475b37c04d8f04704e1fa0e932d",
+      "sources": [],
+      "variation": 1
+    }
+  ],
+  "buses": {
+    "music": {
+      "default_gain": 0.62
+    },
+    "sfx": {
+      "default_gain": 1.0
+    }
+  },
+  "commercial_reference_audio_used": false,
+  "counts": {
+    "logical_cues": 46,
+    "music_duration_seconds": 184.68,
+    "music_scenes": 6,
+    "recording_inputs": 51,
+    "seamless_loops": 4,
+    "sfx_cues": 40,
+    "sfx_duration_seconds": 62.802,
+    "total_duration_seconds": 247.482,
+    "wav_files": 88
+  },
+  "coverage": {
+    "approved_providers": [
+      "ui",
+      "weapons",
+      "combat",
+      "projectiles",
+      "water",
+      "cyberpunk",
+      "quirky-rpg",
+      "ambience"
+    ],
+    "frozen_cues": [
+      "build.mode",
+      "build.place",
+      "build.repair",
+      "build.reroute",
+      "build.sell",
+      "build.upgrade",
+      "fire.antiair",
+      "fire.artillery",
+      "fire.control",
+      "fire.disable",
+      "fire.rapid",
+      "fixture.critical",
+      "fixture.destroyed",
+      "fixture.hit",
+      "fixture.repaired",
+      "impact.deflect",
+      "impact.hardened",
+      "impact.impact",
+      "impact.pierce",
+      "impact.shield_break",
+      "impact.splash",
+      "state.campaign_unlock",
+      "state.defeat",
+      "state.integrity_critical",
+      "state.integrity_lost",
+      "state.pause",
+      "state.victory",
+      "state.wave_cleared",
+      "state.wave_incoming",
+      "ui.cancel",
+      "ui.confirm",
+      "ui.cursor",
+      "ui.invalid",
+      "unit.boss_entrance",
+      "unit.boss_split",
+      "unit.death",
+      "unit.emit",
+      "unit.spawn",
+      "unit.split",
+      "unit.suppressor_halt"
+    ],
+    "frozen_scenes": [
+      "boss",
+      "build",
+      "defeat",
+      "title",
+      "victory",
+      "wave"
+    ]
+  },
+  "cues": {
+    "build.mode": {
+      "bus": "sfx",
+      "cooldown_ms": 35,
+      "description": "Cycle a fixture targeting mode.",
+      "files": [
+        "sfx/build/mode_01.wav",
+        "sfx/build/mode_02.wav",
+        "sfx/build/mode_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 4,
+      "priority": 50,
+      "stable_id": 14,
+      "variations": 3
+    },
+    "build.place": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "Residents place a fixture on a pad.",
+      "files": [
+        "sfx/build/place.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 4,
+      "priority": 50,
+      "stable_id": 10,
+      "variations": 1
+    },
+    "build.repair": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "A damaged fixture is repaired.",
+      "files": [
+        "sfx/build/repair.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 4,
+      "priority": 50,
+      "stable_id": 13,
+      "variations": 1
+    },
+    "build.reroute": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "The Decoy Beacon gathers a lane group.",
+      "files": [
+        "sfx/build/reroute.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 4,
+      "priority": 62,
+      "stable_id": 15,
+      "variations": 1
+    },
+    "build.sell": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "Allocation is returned for a sold fixture.",
+      "files": [
+        "sfx/build/sell.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 4,
+      "priority": 50,
+      "stable_id": 12,
+      "variations": 1
+    },
+    "build.upgrade": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "A fixture gains a tier.",
+      "files": [
+        "sfx/build/upgrade.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 4,
+      "priority": 60,
+      "stable_id": 11,
+      "variations": 1
+    },
+    "fire.antiair": {
+      "bus": "sfx",
+      "cooldown_ms": 28,
+      "description": "Fast anti-air autocannon report.",
+      "files": [
+        "sfx/fire/antiair_01.wav",
+        "sfx/fire/antiair_02.wav",
+        "sfx/fire/antiair_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 6,
+      "priority": 50,
+      "stable_id": 23,
+      "variations": 3
+    },
+    "fire.artillery": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "Heavy cul-de-sac artillery report.",
+      "files": [
+        "sfx/fire/artillery.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 3,
+      "priority": 70,
+      "stable_id": 21,
+      "variations": 1
+    },
+    "fire.control": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "Control fixture broadcasts its command packet.",
+      "files": [
+        "sfx/fire/control.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 4,
+      "priority": 50,
+      "stable_id": 22,
+      "variations": 1
+    },
+    "fire.disable": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "Disabling electromagnetic pulse.",
+      "files": [
+        "sfx/fire/disable.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 4,
+      "priority": 68,
+      "stable_id": 24,
+      "variations": 1
+    },
+    "fire.rapid": {
+      "bus": "sfx",
+      "cooldown_ms": 28,
+      "description": "Rapid improvised gun report.",
+      "files": [
+        "sfx/fire/rapid_01.wav",
+        "sfx/fire/rapid_02.wav",
+        "sfx/fire/rapid_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 6,
+      "priority": 50,
+      "stable_id": 20,
+      "variations": 3
+    },
+    "fixture.critical": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "A fixture crosses its critical-integrity threshold.",
+      "files": [
+        "sfx/fixture/critical_01.wav",
+        "sfx/fixture/critical_02.wav",
+        "sfx/fixture/critical_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 2,
+      "priority": 78,
+      "stable_id": 51,
+      "variations": 3
+    },
+    "fixture.destroyed": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "An improvised fixture comes apart.",
+      "files": [
+        "sfx/fixture/destroyed_01.wav",
+        "sfx/fixture/destroyed_02.wav",
+        "sfx/fixture/destroyed_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 4,
+      "priority": 88,
+      "stable_id": 52,
+      "variations": 3
+    },
+    "fixture.hit": {
+      "bus": "sfx",
+      "cooldown_ms": 20,
+      "description": "Machine fire strikes a resident fixture.",
+      "files": [
+        "sfx/fixture/hit_01.wav",
+        "sfx/fixture/hit_02.wav",
+        "sfx/fixture/hit_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 7,
+      "priority": 50,
+      "stable_id": 50,
+      "variations": 3
+    },
+    "fixture.repaired": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "A fixture repair completes.",
+      "files": [
+        "sfx/fixture/repaired_01.wav",
+        "sfx/fixture/repaired_02.wav",
+        "sfx/fixture/repaired_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 4,
+      "priority": 60,
+      "stable_id": 53,
+      "variations": 3
+    },
+    "impact.deflect": {
+      "bus": "sfx",
+      "cooldown_ms": 18,
+      "description": "Armour deflects a projectile.",
+      "files": [
+        "sfx/impact/deflect_01.wav",
+        "sfx/impact/deflect_02.wav",
+        "sfx/impact/deflect_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 7,
+      "priority": 50,
+      "stable_id": 33,
+      "variations": 3
+    },
+    "impact.hardened": {
+      "bus": "sfx",
+      "cooldown_ms": 18,
+      "description": "Projectile glances from hardened armour.",
+      "files": [
+        "sfx/impact/hardened_01.wav",
+        "sfx/impact/hardened_02.wav",
+        "sfx/impact/hardened_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 7,
+      "priority": 50,
+      "stable_id": 35,
+      "variations": 3
+    },
+    "impact.impact": {
+      "bus": "sfx",
+      "cooldown_ms": 18,
+      "description": "Conventional projectile contact on machine plate.",
+      "files": [
+        "sfx/impact/impact_01.wav",
+        "sfx/impact/impact_02.wav",
+        "sfx/impact/impact_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 8,
+      "priority": 50,
+      "stable_id": 30,
+      "variations": 3
+    },
+    "impact.pierce": {
+      "bus": "sfx",
+      "cooldown_ms": 22,
+      "description": "Heavy penetrator contact on machine plate.",
+      "files": [
+        "sfx/impact/pierce_01.wav",
+        "sfx/impact/pierce_02.wav",
+        "sfx/impact/pierce_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 6,
+      "priority": 50,
+      "stable_id": 31,
+      "variations": 3
+    },
+    "impact.shield_break": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "Machine shield collapses.",
+      "files": [
+        "sfx/impact/shield_break_01.wav",
+        "sfx/impact/shield_break_02.wav",
+        "sfx/impact/shield_break_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 4,
+      "priority": 65,
+      "stable_id": 34,
+      "variations": 3
+    },
+    "impact.splash": {
+      "bus": "sfx",
+      "cooldown_ms": 25,
+      "description": "Splash-damage projectile burst.",
+      "files": [
+        "sfx/impact/splash_01.wav",
+        "sfx/impact/splash_02.wav",
+        "sfx/impact/splash_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 5,
+      "priority": 50,
+      "stable_id": 32,
+      "variations": 3
+    },
+    "music.boss": {
+      "bus": "music",
+      "cooldown_ms": 0,
+      "description": "Boss score scene.",
+      "files": [
+        "music/boss.wav"
+      ],
+      "gain": 0.62,
+      "loop": true,
+      "max_instances": 1,
+      "priority": 10,
+      "scene_id": 4,
+      "variations": 1
+    },
+    "music.build": {
+      "bus": "music",
+      "cooldown_ms": 0,
+      "description": "Build score scene.",
+      "files": [
+        "music/build.wav"
+      ],
+      "gain": 0.62,
+      "loop": true,
+      "max_instances": 1,
+      "priority": 10,
+      "scene_id": 2,
+      "variations": 1
+    },
+    "music.defeat": {
+      "bus": "music",
+      "cooldown_ms": 0,
+      "description": "Defeat score scene.",
+      "files": [
+        "music/defeat.wav"
+      ],
+      "gain": 0.62,
+      "loop": false,
+      "max_instances": 1,
+      "priority": 100,
+      "scene_id": 6,
+      "variations": 1
+    },
+    "music.title": {
+      "bus": "music",
+      "cooldown_ms": 0,
+      "description": "Title score scene.",
+      "files": [
+        "music/title.wav"
+      ],
+      "gain": 0.62,
+      "loop": true,
+      "max_instances": 1,
+      "priority": 10,
+      "scene_id": 1,
+      "variations": 1
+    },
+    "music.victory": {
+      "bus": "music",
+      "cooldown_ms": 0,
+      "description": "Victory score scene.",
+      "files": [
+        "music/victory.wav"
+      ],
+      "gain": 0.62,
+      "loop": false,
+      "max_instances": 1,
+      "priority": 100,
+      "scene_id": 5,
+      "variations": 1
+    },
+    "music.wave": {
+      "bus": "music",
+      "cooldown_ms": 0,
+      "description": "Wave score scene.",
+      "files": [
+        "music/wave.wav"
+      ],
+      "gain": 0.62,
+      "loop": true,
+      "max_instances": 1,
+      "priority": 10,
+      "scene_id": 3,
+      "variations": 1
+    },
+    "state.campaign_unlock": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "Unlock the Cordon campaign.",
+      "files": [
+        "sfx/state/campaign_unlock.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 1,
+      "priority": 98,
+      "stable_id": 67,
+      "variations": 1
+    },
+    "state.defeat": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "Block integrity reaches zero.",
+      "files": [
+        "sfx/state/defeat.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 1,
+      "priority": 100,
+      "stable_id": 65,
+      "variations": 1
+    },
+    "state.integrity_critical": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "Block integrity becomes critical.",
+      "files": [
+        "sfx/state/integrity_critical.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 1,
+      "priority": 96,
+      "stable_id": 63,
+      "variations": 1
+    },
+    "state.integrity_lost": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "A machine leaks through and block integrity falls.",
+      "files": [
+        "sfx/state/integrity_lost_01.wav",
+        "sfx/state/integrity_lost_02.wav",
+        "sfx/state/integrity_lost_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 4,
+      "priority": 82,
+      "stable_id": 62,
+      "variations": 3
+    },
+    "state.pause": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "Pause the simulation.",
+      "files": [
+        "sfx/state/pause.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 1,
+      "priority": 90,
+      "stable_id": 66,
+      "variations": 1
+    },
+    "state.victory": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "The block survives the campaign.",
+      "files": [
+        "sfx/state/victory.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 1,
+      "priority": 100,
+      "stable_id": 64,
+      "variations": 1
+    },
+    "state.wave_cleared": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "The current wave is clear.",
+      "files": [
+        "sfx/state/wave_cleared.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 1,
+      "priority": 85,
+      "stable_id": 61,
+      "variations": 1
+    },
+    "state.wave_incoming": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "The next Array wave enters.",
+      "files": [
+        "sfx/state/wave_incoming.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 1,
+      "priority": 90,
+      "stable_id": 60,
+      "variations": 1
+    },
+    "ui.cancel": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "Cancel or close an interface.",
+      "files": [
+        "sfx/ui/cancel.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 4,
+      "priority": 65,
+      "stable_id": 3,
+      "variations": 1
+    },
+    "ui.confirm": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "Confirm a menu choice.",
+      "files": [
+        "sfx/ui/confirm.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 4,
+      "priority": 65,
+      "stable_id": 2,
+      "variations": 1
+    },
+    "ui.cursor": {
+      "bus": "sfx",
+      "cooldown_ms": 30,
+      "description": "Move one menu or build selection.",
+      "files": [
+        "sfx/ui/cursor_01.wav",
+        "sfx/ui/cursor_02.wav",
+        "sfx/ui/cursor_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 4,
+      "priority": 50,
+      "stable_id": 1,
+      "variations": 3
+    },
+    "ui.invalid": {
+      "bus": "sfx",
+      "cooldown_ms": 90,
+      "description": "Reject an unavailable action.",
+      "files": [
+        "sfx/ui/invalid_01.wav",
+        "sfx/ui/invalid_02.wav",
+        "sfx/ui/invalid_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 4,
+      "priority": 70,
+      "stable_id": 4,
+      "variations": 3
+    },
+    "unit.boss_entrance": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "Siege Frame enters the block.",
+      "files": [
+        "sfx/unit/boss_entrance.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 1,
+      "priority": 95,
+      "stable_id": 43,
+      "variations": 1
+    },
+    "unit.boss_split": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "Boss armour separates into new chassis.",
+      "files": [
+        "sfx/unit/boss_split.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 4,
+      "priority": 85,
+      "stable_id": 44,
+      "variations": 1
+    },
+    "unit.death": {
+      "bus": "sfx",
+      "cooldown_ms": 20,
+      "description": "Array chassis shuts down.",
+      "files": [
+        "sfx/unit/death_01.wav",
+        "sfx/unit/death_02.wav",
+        "sfx/unit/death_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 8,
+      "priority": 50,
+      "stable_id": 41,
+      "variations": 3
+    },
+    "unit.emit": {
+      "bus": "sfx",
+      "cooldown_ms": 35,
+      "description": "Siege Frame emits escorts.",
+      "files": [
+        "sfx/unit/emit_01.wav",
+        "sfx/unit/emit_02.wav",
+        "sfx/unit/emit_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 4,
+      "priority": 50,
+      "stable_id": 45,
+      "variations": 3
+    },
+    "unit.spawn": {
+      "bus": "sfx",
+      "cooldown_ms": 25,
+      "description": "Array unit resolves into the lane.",
+      "files": [
+        "sfx/unit/spawn_01.wav",
+        "sfx/unit/spawn_02.wav",
+        "sfx/unit/spawn_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 6,
+      "priority": 50,
+      "stable_id": 40,
+      "variations": 3
+    },
+    "unit.split": {
+      "bus": "sfx",
+      "cooldown_ms": 25,
+      "description": "Splitter chassis becomes two contacts.",
+      "files": [
+        "sfx/unit/split_01.wav",
+        "sfx/unit/split_02.wav",
+        "sfx/unit/split_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 6,
+      "priority": 50,
+      "stable_id": 42,
+      "variations": 3
+    },
+    "unit.suppressor_halt": {
+      "bus": "sfx",
+      "cooldown_ms": 0,
+      "description": "Suppressor halts and acquires a fixture.",
+      "files": [
+        "sfx/unit/suppressor_halt_01.wav",
+        "sfx/unit/suppressor_halt_02.wav",
+        "sfx/unit/suppressor_halt_03.wav"
+      ],
+      "gain": 1.0,
+      "loop": false,
+      "max_instances": 4,
+      "priority": 62,
+      "stable_id": 46,
+      "variations": 3
+    }
+  },
+  "format": {
+    "bits_per_sample": 16,
+    "channels": 1,
+    "container": "RIFF/WAVE",
+    "encoding": "signed 16-bit PCM little-endian",
+    "sample_rate": 44100
+  },
+  "freesound_download_required": false,
+  "game": "pleb-tower",
+  "generator": {
+    "base_seed": 5786075772448888645,
+    "name": "python-sound-generator",
+    "rebuild": "python3 tools/generate_audio.py",
+    "revision": "476ea448f9e60ac6a805a77c9d77806c6cf81280",
+    "seed_scheme": "stable-v2"
+  },
+  "provenance": "provenance.json",
+  "schema_version": 1,
+  "score_source": {
+    "boundary_detection": {
+      "analysis_hop_seconds": 0.5,
+      "boundaries": [
+        {
+          "novelty": 1.652145,
+          "search_end_seconds": 28.0,
+          "search_start_seconds": 12.0,
+          "seconds": 17.019841
+        },
+        {
+          "novelty": 1.7046,
+          "search_end_seconds": 75.0,
+          "search_start_seconds": 42.0,
+          "seconds": 56.529161
+        },
+        {
+          "novelty": 4.206483,
+          "search_end_seconds": 120.0,
+          "search_start_seconds": 90.0,
+          "seconds": 110.523832
+        },
+        {
+          "novelty": 4.140596,
+          "search_end_seconds": 140.0,
+          "search_start_seconds": 120.0,
+          "seconds": 128.478957
+        },
+        {
+          "novelty": 4.496663,
+          "search_end_seconds": 175.0,
+          "search_start_seconds": 150.0,
+          "seconds": 165.508866
+        }
+      ],
+      "method": "four-second before/after broad-band spectral and RMS novelty, refined to a nearby zero crossing",
+      "source_section_order": [
+        "title",
+        "build",
+        "wave",
+        "defeat",
+        "boss",
+        "victory"
+      ]
+    },
+    "decoded_duration_seconds": 184.679909,
+    "file": "assets/audio/source/minimax/block-evening.mp3",
+    "sha256": "36a382c4aae7fbaa9d1bd2a128c6dfbbcb0cd76422c7e98bbca32cdc9bded7f9"
+  },
+  "source_licensing": "CC0 1.0",
+  "source_licensing_scope": "All recording inputs used by effects are CC0/public domain. The original generated score has its own pinned provenance.",
+  "source_policy": "Original pinned score, procedural synthesis, and catalogued CC0/public-domain recording inputs only.",
+  "stable_ids": {
+    "file": "content/stable_ids.json",
+    "sha256": "b47640e34a960dbcb01ff8d0acf9b8603fe357f872c8518d95ccf738c45234d1"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "_comment": "Append-only. Numeric ids are never reused for a different meaning.",
+  "cues": {
+    "ui.cursor": 1, "ui.confirm": 2, "ui.cancel": 3, "ui.invalid": 4,
+    "build.place": 10, "build.upgrade": 11, "build.sell": 12,
+    "build.repair": 13, "build.mode": 14, "build.reroute": 15,
+    "fire.rapid": 20, "fire.artillery": 21, "fire.control": 22,
+    "fire.antiair": 23, "fire.disable": 24,
+    "impact.impact": 30, "impact.pierce": 31, "impact.splash": 32,
+    "impact.deflect": 33, "impact.shield_break": 34, "impact.hardened": 35,
+    "unit.spawn": 40, "unit.death": 41, "unit.split": 42,
+    "unit.boss_entrance": 43, "unit.boss_split": 44, "unit.emit": 45,
+    "unit.suppressor_halt": 46,
+    "fixture.hit": 50, "fixture.critical": 51, "fixture.destroyed": 52,
+    "fixture.repaired": 53,
+    "state.wave_incoming": 60, "state.wave_cleared": 61,
+    "state.integrity_lost": 62, "state.integrity_critical": 63,
+    "state.victory": 64, "state.defeat": 65, "state.pause": 66,
+    "state.campaign_unlock": 67
+  },
+  "scenes": {
+    "title": 1, "build": 2, "wave": 3, "boss": 4, "victory": 5, "defeat": 6
+  },
+  "flags": {
+    "holdout_cleared": 1, "cordon_unlocked": 2, "cordon_cleared": 3,
+    "tutorial_pad_seen": 4, "tutorial_upgrade_seen": 5
+  }
+}

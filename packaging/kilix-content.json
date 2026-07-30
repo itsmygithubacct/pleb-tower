@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "id": "pleb-tower",
+  "name": "Pleb Tower",
+  "summary": "Terminal-native tower defense. An autonomous pacification force has designated Maple Loop a non-compliant sector. Hold the block.",
+  "version": "0.1.0",
+  "launch": {
+    "mode": "graphics",
+    "executable": "pleb-tower",
+    "preferred_geometry": {"columns": 120, "rows": 34}
+  },
+  "build": {
+    "command": ["make"],
+    "artifacts": ["pleb-tower"]
+  },
+  "capabilities": ["kitty-graphics", "kitty-keyboard", "audio-optional"],
+  "requires": {
+    "c_standard": "c11",
+    "libraries": ["zlib", "pthread", "libm"]
+  }
+}

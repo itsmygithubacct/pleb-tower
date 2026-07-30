@@ -1,0 +1,6 @@
+build/
+images/
+work/
+pleb-tower
+*.o
+*.d

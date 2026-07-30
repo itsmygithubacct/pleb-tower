@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "game": "pleb-tower",
+  "generated_at": "2026-07-28",
+  "generator": {
+    "name": "Google Gemini gemini-3-pro-image",
+    "mode": "text-to-image from project-authored prompts",
+    "postprocess": "magenta chroma key, despill, connected-component sprite extraction, aspect-preserving fit to an exact cell grid"
+  },
+  "provenance": {
+    "original_project_material_only": true,
+    "statement": "All prompts were original Pleb Tower concepts written for this project. No reference image from any other work was supplied. This is a provenance record, not a legal opinion."
+  },
+  "atlases": [
+    {
+      "id": "units-array",
+      "path": "assets/graphics/atlases/units-array.png",
+      "source": "assets/graphics/source/units-array.png",
+      "sha256": "a662a169a734aa4655e50b7468f0db6ca8656bed8021cf3477931fe5789e26e7",
+      "sha256_source": "25092a6aae924aa5ad3e648b65553ebd8d0f1a602408912824f534eb765f8b7b",
+      "alpha_required": true,
+      "grid": {
+        "columns": 3,
+        "rows": 3,
+        "width": 96,
+        "height": 96,
+        "cell_width": 32,
+        "cell_height": 32
+      },
+      "row_labels": [
+        "walker/shielded/breacher",
+        "scout/splitter/suppressor",
+        "repair/siege/controller"
+      ],
+      "column_labels": [
+        "left",
+        "middle",
+        "right"
+      ],
+      "sprites_found": 9,
+      "prompt_brief": "Nine Array machine units, one per cell, silhouette-first."
+    },
+    {
+      "id": "fixtures-holdout",
+      "path": "assets/graphics/atlases/fixtures-holdout.png",
+      "source": "assets/graphics/source/fixtures-holdout.png",
+      "sha256": "ea59488f6c66b2f15f6ceda288985cf6e16f221f24c0abb226efdd6e87ff2cb5",
+      "sha256_source": "d40666d0b674ef3b15ddd4bf53f8b622cca8a5ac78fa6b20330a18d4cd7c11b4",
+      "alpha_required": true,
+      "grid": {
+        "columns": 3,
+        "rows": 3,
+        "width": 96,
+        "height": 96,
+        "cell_width": 32,
+        "cell_height": 32
+      },
+      "row_labels": [
+        "rail-spike/thermite-charge/entangler",
+        "decoy-beacon/jammer-mast/emp-coil",
+        "floodlight-array/block-workshop/spare"
+      ],
+      "column_labels": [
+        "left",
+        "middle",
+        "right"
+      ],
+      "sprites_found": 9,
+      "prompt_brief": "Nine improvised resident fixtures built from household hardware."
+    },
+    {
+      "id": "fixtures-cordon",
+      "path": "assets/graphics/atlases/fixtures-cordon.png",
+      "source": "assets/graphics/source/fixtures-cordon.png",
+      "sha256": "b158e833c170f274099993f13ff8d9a00de95abb1f42e841b2bce13024b4f89c",
+      "sha256_source": "46e614622363554f9493c6914aa50c005cfbb93237d352fa07d5692a24d97c46",
+      "alpha_required": true,
+      "grid": {
+        "columns": 3,
+        "rows": 3,
+        "width": 96,
+        "height": 96,
+        "cell_width": 32,
+        "cell_height": 32
+      },
+      "row_labels": [
+        "interdiction-turret/suppression-mortar/containment-field",
+        "compliance-broadcast/aerial-interceptor/stun-net-emitter",
+        "optical-sweep/sector-node/spare"
+      ],
+      "column_labels": [
+        "left",
+        "middle",
+        "right"
+      ],
+      "sprites_found": 9,
+      "prompt_brief": "Nine machined Array emplacements, cold palette."
+    },
+    {
+      "id": "units-civilian",
+      "path": "assets/graphics/atlases/units-civilian.png",
+      "source": "assets/graphics/source/units-civilian.png",
+      "sha256": "d9a7f0ffdad4983899dfc708b7c3032c270837dfab3edd2cd02d3921dffac63f",
+      "sha256_source": "2dfbf6890abad5c3530e1322802ce63e55d03dc25e83c5974914852e9f0e20f2",
+      "alpha_required": true,
+      "grid": {
+        "columns": 3,
+        "rows": 3,
+        "width": 96,
+        "height": 96,
+        "cell_width": 32,
+        "cell_height": 32
+      },
+      "row_labels": [
+        "resident/shield-line/barricade-crew",
+        "camera-drone/scatter-group/shouter",
+        "medic/convoy/assembly"
+      ],
+      "column_labels": [
+        "left",
+        "middle",
+        "right"
+      ],
+      "sprites_found": 9,
+      "prompt_brief": "Nine civilian groups, warm ordinary palette."
+    },
+    {
+      "id": "terrain",
+      "path": "assets/graphics/atlases/terrain.png",
+      "source": "assets/graphics/source/terrain-tiles.png",
+      "sha256": "32479f6bb28b038084c90d69a58e8dc5a404a6ff8753938a53316152e3b88d3d",
+      "sha256_source": "8c272c79e14ffe31d58e47b1fbc705036d726d249b063dcbc65843f142cc2071",
+      "alpha_required": true,
+      "grid": {
+        "columns": 4,
+        "rows": 4,
+        "width": 64,
+        "height": 64,
+        "cell_width": 16,
+        "cell_height": 16
+      },
+      "row_labels": [
+        "road",
+        "pads-a",
+        "pads-b",
+        "props"
+      ],
+      "column_labels": [
+        "c0",
+        "c1",
+        "c2",
+        "c3"
+      ],
+      "sprites_found": 15,
+      "prompt_brief": "Road, pad states, kerb and props."
+    }
+  ],
+  "bitmaps": [
+    {
+      "id": "maple-loop",
+      "path": "assets/graphics/bitmaps/levels/maple-loop.png",
+      "source": "assets/graphics/source/maple-loop-ground.png",
+      "sha256": "294748436e413b24292ac5b64ed525d6a14f8d52cdbaa8b02f2e0d0f72fe4b12",
+      "sha256_source": "7bf3202ec0b3c5aa04688d261d39dda80e60fb11fa97c8a5ee3fcfec6aa276cd",
+      "alpha_required": false,
+      "grid": {
+        "columns": 1,
+        "rows": 1,
+        "width": 480,
+        "height": 240,
+        "cell_width": 480,
+        "cell_height": 240
+      },
+      "prompt_brief": "Ground cover only \u2014 lawns, houses, driveways, fences. The lane is carried by terrain tiles so painted road and authored map cannot disagree."
+    }
+  ]
+}
