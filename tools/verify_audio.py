@@ -598,7 +598,7 @@ def parse_args() -> argparse.Namespace:
         default=(
             GAME_ROOT.parents[1]
             / "kilix-apps"
-            / "python_sound_generator"
+            / "python-sound-generator"
         ),
         help="python_sound_generator checkout used to audit exact source bytes",
     )

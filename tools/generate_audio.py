@@ -3,7 +3,7 @@
 
 The retained MiniMax score is decoded locally; this script never calls a
 network service.  Sound effects are rendered through the approved providers in
-the workspace kilix-apps/python_sound_generator checkout.
+the workspace kilix-apps/python-sound-generator checkout.
 """
 
 from __future__ import annotations
@@ -1438,7 +1438,7 @@ def parse_args() -> argparse.Namespace:
         default=(
             GAME_ROOT.parents[1]
             / "kilix-apps"
-            / "python_sound_generator"
+            / "python-sound-generator"
         ),
         help="python_sound_generator checkout",
     )
