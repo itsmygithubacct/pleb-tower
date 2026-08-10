@@ -1,4 +1,5 @@
 CC ?= cc
+NM ?= nm
 PYTHON ?= python3
 .DEFAULT_GOAL := all
 
@@ -99,7 +100,7 @@ test-deps:
 	$(MAKE) -C $(KILIX_STORY_ROOT) test
 
 verify-link: $(BIN)
-	tools/verify_link.sh ./$(BIN)
+	NM=$(NM) tools/verify_link.sh ./$(BIN)
 
 # Cleans both before and after: instrumented objects left in build/ would
 # otherwise fail to link into the next ordinary build with undefined __asan_*.
