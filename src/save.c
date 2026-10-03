@@ -15,10 +15,12 @@
 
 #define PT_SAVE_APP_ID "pleb-tower"
 #define PT_RECORDS_FILENAME "records.state"
-#define PT_RECORDS_VERSION UINT32_C(1)
+#define PT_RECORDS_VERSION UINT32_C(2)
 #define PT_RECORDS_MAX_PAYLOAD 256u
 #define PT_RECORDS_V1_BYTES \
     (4u + (size_t)PT_CAMPAIGN_COUNT * (2u + 4u + 4u + 4u + 1u))
+#define PT_RECORDS_V2_BYTES \
+    (4u + (size_t)PT_MAP_COUNT * PT_CAMPAIGN_COUNT * 15u)
 #define PT_SETTINGS_FILENAME "settings.state"
 #define PT_SETTINGS_VERSION UINT32_C(1)
 #define PT_SETTINGS_MAX_PAYLOAD 64u
@@ -197,7 +199,7 @@ bool pt_save_store_settings(const pt_settings *settings)
     return save_result == KILIXSTATE_OK;
 }
 
-static bool decode_records_v1(kilixstate_reader *reader, void *context)
+static bool decode_records(kilixstate_reader *reader, void *context, size_t map_count)
 {
     pt_records_decode_context *decoded = context;
     pt_records candidate;
@@ -205,30 +207,42 @@ static bool decode_records_v1(kilixstate_reader *reader, void *context)
 
     if (reader == NULL || decoded == NULL) return false;
     records_defaults(&candidate);
+    for (size_t map = 0u; map < map_count; ++map)
     for (campaign = 0u; campaign < PT_CAMPAIGN_COUNT; ++campaign) {
         bool cleared;
 
         if (!kilixstate_read_u16(
-                reader, &candidate.best_integrity[campaign]) ||
+                reader, &candidate.best_integrity[map][campaign]) ||
             !kilixstate_read_u32(
-                reader, &candidate.fastest_clear_ms[campaign]) ||
+                reader, &candidate.fastest_clear_ms[map][campaign]) ||
             !kilixstate_read_u32(
-                reader, &candidate.best_unspent[campaign]) ||
-            !kilixstate_read_u32(reader, &candidate.runs[campaign]) ||
+                reader, &candidate.best_unspent[map][campaign]) ||
+            !kilixstate_read_u32(reader, &candidate.runs[map][campaign]) ||
             !kilixstate_read_bool(reader, &cleared))
             return false;
-        candidate.cleared[campaign] = cleared ? 1u : 0u;
+        candidate.cleared[map][campaign] = cleared ? 1u : 0u;
     }
     if (!kilixstate_reader_require_finished(reader)) return false;
     decoded->records = candidate;
     return true;
 }
 
+/* Version 1 had only Maple Loop. Its records keep slot zero on migration. */
+static bool decode_records_v1(kilixstate_reader *reader, void *context)
+{
+    return decode_records(reader, context, 1u);
+}
+
+static bool decode_records_v2(kilixstate_reader *reader, void *context)
+{
+    return decode_records(reader, context, PT_MAP_COUNT);
+}
+
 bool pt_save_load_records(pt_records *records)
 {
     static const kilixstate_migration migrations[] = {
-        {PT_RECORDS_VERSION, PT_RECORDS_V1_BYTES, false,
-         decode_records_v1}
+        {1u, PT_RECORDS_V1_BYTES, false, decode_records_v1},
+        {PT_RECORDS_VERSION, PT_RECORDS_V2_BYTES, false, decode_records_v2}
     };
     kilixstate_store store;
     kilixstate_result load_result;
@@ -270,16 +284,17 @@ bool pt_save_store_records(const pt_records *records)
         kilixstate_store_close(&store);
         return false;
     }
+    for (size_t map = 0u; map < PT_MAP_COUNT; ++map)
     for (campaign = 0u; campaign < PT_CAMPAIGN_COUNT; ++campaign) {
         if (!kilixstate_write_u16(
-                &writer, records->best_integrity[campaign]) ||
+                &writer, records->best_integrity[map][campaign]) ||
             !kilixstate_write_u32(
-                &writer, records->fastest_clear_ms[campaign]) ||
+                &writer, records->fastest_clear_ms[map][campaign]) ||
             !kilixstate_write_u32(
-                &writer, records->best_unspent[campaign]) ||
-            !kilixstate_write_u32(&writer, records->runs[campaign]) ||
+                &writer, records->best_unspent[map][campaign]) ||
+            !kilixstate_write_u32(&writer, records->runs[map][campaign]) ||
             !kilixstate_write_bool(
-                &writer, records->cleared[campaign] != 0u)) {
+                &writer, records->cleared[map][campaign] != 0u)) {
             kilixstate_store_close(&store);
             return false;
         }
@@ -319,30 +334,32 @@ static uint32_t record_elapsed_ms(double elapsed)
 void pt_save_note_run(pt_records *records, const pt_game *game, bool cleared)
 {
     uint8_t campaign;
+    uint8_t map;
     uint16_t integrity;
     uint32_t unspent;
     uint32_t elapsed_ms;
 
     if (records == NULL || game == NULL ||
-        game->campaign >= PT_CAMPAIGN_COUNT)
+        game->campaign >= PT_CAMPAIGN_COUNT || game->board.map >= PT_MAP_COUNT)
         return;
     campaign = game->campaign;
-    if (records->runs[campaign] != UINT32_MAX)
-        ++records->runs[campaign];
+    map = game->board.map;
+    if (records->runs[map][campaign] != UINT32_MAX)
+        ++records->runs[map][campaign];
     if (!cleared) return;
 
     integrity = record_integrity(game->economy.integrity);
     unspent = record_currency(game->economy.currency);
     elapsed_ms = record_elapsed_ms(game->elapsed);
-    if (integrity > records->best_integrity[campaign])
-        records->best_integrity[campaign] = integrity;
-    if (unspent > records->best_unspent[campaign])
-        records->best_unspent[campaign] = unspent;
+    if (integrity > records->best_integrity[map][campaign])
+        records->best_integrity[map][campaign] = integrity;
+    if (unspent > records->best_unspent[map][campaign])
+        records->best_unspent[map][campaign] = unspent;
     if (elapsed_ms > 0u &&
-        (records->fastest_clear_ms[campaign] == 0u ||
-         elapsed_ms < records->fastest_clear_ms[campaign]))
-        records->fastest_clear_ms[campaign] = elapsed_ms;
-    records->cleared[campaign] = 1u;
+        (records->fastest_clear_ms[map][campaign] == 0u ||
+         elapsed_ms < records->fastest_clear_ms[map][campaign]))
+        records->fastest_clear_ms[map][campaign] = elapsed_ms;
+    records->cleared[map][campaign] = 1u;
 }
 
 bool pt_campaign_unlocked(const pt_records *records, uint8_t campaign)
@@ -356,5 +373,7 @@ bool pt_campaign_unlocked(const pt_records *records, uint8_t campaign)
     if (prerequisite < 0) return true;
     if (records == NULL || prerequisite >= PT_CAMPAIGN_COUNT)
         return false;
-    return records->cleared[(uint16_t)prerequisite] != 0u;
+    for (size_t map = 0u; map < PT_MAP_COUNT; ++map)
+        if (records->cleared[map][(uint16_t)prerequisite] != 0u) return true;
+    return false;
 }

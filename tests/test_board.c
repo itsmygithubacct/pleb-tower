@@ -127,4 +127,21 @@ void pt_test_board(void)
     test_both_campaigns_differ();
     test_bias_rebuild_is_safe();
     test_flow_sampling();
+    for (uint8_t campaign = 0u; campaign < PT_CAMPAIGN_COUNT; ++campaign) {
+        PT_CHECK(pt_board_init(&board, campaign), "distance sampling board");
+        const pt_campaign_def *definition = pt_campaign(campaign);
+        float x = (float)definition->goal_x + 0.5f;
+        float y = (float)definition->goal_y + 0.5f;
+        float direction = campaign == 0u ? -1.0f : 1.0f;
+        PT_CHECK(fabsf(pt_board_distance_at(&board, x, y)) < 0.001f,
+            "distance is zero at the goal");
+        PT_CHECK(fabsf(pt_board_distance_at(&board, x + direction, y) - 1.0f) < 0.001f,
+            "ground distance uses cells, as aircraft do");
+        PT_CHECK(fabsf(pt_board_distance_at(&board, x + 0.5f * direction, y) - 0.5f) < 0.001f,
+            "distance tracks fractional progress");
+        PT_CHECK(pt_board_distance_at(&board, NAN, y) == PT_DISTANCE_UNREACHABLE &&
+            pt_board_distance_at(&board, -1.0f, y) == PT_DISTANCE_UNREACHABLE &&
+            pt_board_distance_at(&board, 0.5f, 0.5f) == PT_DISTANCE_UNREACHABLE,
+            "invalid and off-road positions do not win First priority");
+    }
 }

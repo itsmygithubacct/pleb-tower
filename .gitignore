@@ -4,3 +4,4 @@ work/
 pleb-tower
 *.o
 *.d
+__pycache__/

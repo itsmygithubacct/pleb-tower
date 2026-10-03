@@ -11,6 +11,7 @@
 #include "soft_raster.h"
 
 #include <limits.h>
+#include <math.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -49,15 +50,15 @@ enum {
     HUD_BUILD_Y = 31,
     HUD_BUILD_WIDTH = 464,
     HUD_BUILD_HEIGHT = 207,
-    HUD_INSPECTOR_Y = 73,
+    HUD_INSPECTOR_Y = PT_INSPECTOR_Y,
     HUD_INSPECTOR_WIDTH = 464,
-    HUD_INSPECTOR_HEIGHT = 165,
+    HUD_INSPECTOR_HEIGHT = 207,
     HUD_PREVIEW_X = 3,
     HUD_PREVIEW_WIDTH = 474,
-    HUD_SELECTED_X = 184,
-    HUD_SELECTED_Y = 4,
-    HUD_SELECTED_WIDTH = 292,
-    HUD_SELECTED_HEIGHT = 64
+    HUD_SELECTED_X = 3,
+    HUD_SELECTED_Y = PT_PLAYFIELD_HEIGHT + PT_HUD_STATUS_HEIGHT + PT_HUD_PREVIEW_HEIGHT,
+    HUD_SELECTED_WIDTH = 474,
+    HUD_SELECTED_HEIGHT = PT_HUD_SELECTION_HEIGHT - 2
 };
 
 typedef struct pt_hud_preview_item {
@@ -76,9 +77,11 @@ typedef struct pt_hud_preview_layout {
 /* Shared presentation-state queries owned by input.c. */
 unsigned int pt_input_ui_panel(void);
 size_t pt_input_ui_focus(void);
+size_t pt_input_pause_focus(void);
 unsigned int pt_input_text_scale(void);
 bool pt_input_zoom_enabled(void);
 bool pt_input_campaign_is_unlocked(uint8_t campaign);
+pt_phase pt_input_help_return_phase(void);
 
 /* Pure query surfaces used by tests and by the renderer below. */
 void pt_hud_build_enabled(const pt_game *game,
@@ -255,7 +258,7 @@ void pt_hud_build_enabled(const pt_game *game,
     size_t index;
 
     if (enabled == NULL) return;
-    campaign = game != NULL ? pt_campaign(game->campaign) : NULL;
+    campaign = game != NULL ? pt_game_campaign(game) : NULL;
     balance = game != NULL && game->economy.currency > 0 ?
               (uint32_t)game->economy.currency : 0u;
     for (index = 0u; index < PT_ROLE_COUNT; ++index) {
@@ -299,10 +302,10 @@ size_t pt_hud_next_wave_preview(const pt_game *game,
     size_t group_index;
 
     if (game == NULL) return 0u;
-    campaign = pt_campaign(game->campaign);
+    campaign = pt_game_campaign(game);
     wave_index = preview_wave_index(game, campaign);
     if (wave_index == UINT16_MAX) return 0u;
-    wave = pt_wave_def_at(game->campaign, wave_index);
+    wave = pt_game_wave(game, wave_index);
     if (wave == NULL) return 0u;
 
     for (group_index = 0u; group_index < wave->group_count; ++group_index) {
@@ -465,7 +468,7 @@ static pt_hud_preview_layout preview_layout(
         layout.row_height = SR_FONT_H * scale + 2;
         layout.rows = 1;
         x = HUD_PREVIEW_X + HUD_PANEL_PADDING +
-            sr_text_width("NEXT", scale) + 8;
+            sr_text_width("NEXT [I]", scale) + 8;
         for (index = 0u; index < count; ++index) {
             int width = sr_text_width(text[index], scale) + 4;
 
@@ -481,10 +484,58 @@ static pt_hud_preview_layout preview_layout(
         }
         layout.height =
             HUD_PANEL_PADDING * 2 + layout.rows * layout.row_height;
-        if (fits && layout.height <= PT_PLAYFIELD_HEIGHT) return layout;
+        if (fits && layout.height <= PT_HUD_PREVIEW_HEIGHT) return layout;
     }
     (void)memset(&layout, 0, sizeof layout);
     return layout;
+}
+
+bool pt_hud_air_warning_text(const pt_game *game,
+    char lines[PT_AIR_WARNING_LINES][PT_AIR_WARNING_LINE_CAPACITY])
+{
+    if (lines == NULL) return false;
+    memset(lines, 0, PT_AIR_WARNING_LINES * PT_AIR_WARNING_LINE_CAPACITY);
+    if (game == NULL) return false;
+    pt_phase phase = game->phase == PT_PHASE_HELP ?
+        pt_input_help_return_phase() : (pt_phase)game->phase;
+    if (phase != PT_PHASE_BUILD && phase != PT_PHASE_WAVE) return false;
+    const pt_campaign_def *campaign = pt_game_campaign(game);
+    const pt_unit_def *air = NULL;
+    uint16_t first_wave = 0u;
+    for (; first_wave < campaign->wave_count && air == NULL; ++first_wave) {
+        const pt_wave_def *wave = pt_game_wave(game, first_wave);
+        for (uint16_t group = 0u; group < wave->group_count; ++group) {
+            const pt_unit_def *unit = pt_unit_def_at(game->campaign, wave->groups[group].type);
+            if (unit != NULL && unit->air && wave->groups[group].count > 0u) {
+                air = unit;
+                break;
+            }
+        }
+    }
+    /* first_wave is now the one-based number of the first air wave. Give a
+     * full round's notice, then retain it while preparing that air wave. */
+    if (air == NULL ||
+        !((game->wave.index + 2u == first_wave) ||
+          (phase == PT_PHASE_BUILD && game->wave.index + 1u == first_wave)))
+        return false;
+    const pt_fixture_def *antiair = NULL, *rapid = NULL;
+    for (uint16_t kind = 0u; kind < campaign->fixture_count; ++kind) {
+        const pt_fixture_def *fixture = pt_fixture_def_at(game->campaign, kind);
+        if (fixture->role == PT_ROLE_ANTIAIR) antiair = fixture;
+        if (fixture->role == PT_ROLE_RAPID) rapid = fixture;
+    }
+    (void)snprintf(lines[0], PT_AIR_WARNING_LINE_CAPACITY,
+        "AIR ALERT: %s in wave %u", air->name, (unsigned int)first_wave);
+    (void)snprintf(lines[1], PT_AIR_WARNING_LINE_CAPACITY,
+        "They fly to the goal. Ground-only towers can't hit them.");
+    if (antiair != NULL && rapid != NULL &&
+        (rapid->tiers[PT_MAX_TIER - 1u].targets & PT_TARGETS_AIR) != 0u)
+        (void)snprintf(lines[2], PT_AIR_WARNING_LINE_CAPACITY,
+            "Use %s or Tier %u %s.", antiair->name, PT_MAX_TIER, rapid->name);
+    else
+        (void)snprintf(lines[2], PT_AIR_WARNING_LINE_CAPACITY,
+            "Build %s to shoot them.", antiair != NULL ? antiair->name : "anti-air towers");
+    return true;
 }
 
 static void draw_wave_preview(pt_renderer *renderer, const pt_game *game,
@@ -502,20 +553,19 @@ static void draw_wave_preview(pt_renderer *renderer, const pt_game *game,
     int right = HUD_PREVIEW_X + HUD_PREVIEW_WIDTH - HUD_PANEL_PADDING;
 
     (void)memset(text, 0, sizeof text);
-    layout = preview_layout(
-        game, pt_input_text_scale(), text, items, &count);
+    layout = preview_layout(game, pt_input_text_scale(), text, items, &count);
     if (layout.scale == 0) return;
     set_style_scale(&style, layout.scale);
-    top = PT_PLAYFIELD_HEIGHT - layout.height;
+    top = PT_PLAYFIELD_HEIGHT + PT_HUD_STATUS_HEIGHT;
     kilix_ui_draw_panel(
         renderer->soft, view,
         (ki_td_rect){HUD_PREVIEW_X, top,
-                     HUD_PREVIEW_WIDTH, layout.height},
+                     HUD_PREVIEW_WIDTH, PT_HUD_PREVIEW_HEIGHT - 2},
         &style, panel_skin());
     x = HUD_PREVIEW_X + HUD_PANEL_PADDING;
     y = top + HUD_PANEL_PADDING;
-    draw_text(renderer, x, y, "NEXT", HUD_COLOUR_MUTED, layout.scale);
-    x += sr_text_width("NEXT", layout.scale) + 8;
+    draw_text(renderer, x, y, "NEXT [I]", HUD_COLOUR_MUTED, layout.scale);
+    x += sr_text_width("NEXT [I]", layout.scale) + 8;
     if (count == 0u) {
         draw_text(renderer, x, y, "--", HUD_COLOUR_MUTED, layout.scale);
         return;
@@ -538,14 +588,49 @@ static void draw_wave_preview(pt_renderer *renderer, const pt_game *game,
     }
 }
 
+bool pt_hud_preview_pick(const pt_game *game, int px, int py, uint16_t *kind)
+{
+    if (game == NULL || kind == NULL ||
+        (game->phase != PT_PHASE_BUILD && game->phase != PT_PHASE_WAVE)) return false;
+    pt_hud_preview_item items[PT_MAX_WAVE_GROUPS];
+    char text[PT_MAX_WAVE_GROUPS][64];
+    size_t count = 0u;
+    pt_hud_preview_layout layout = preview_layout(game, pt_input_text_scale(), text, items, &count);
+    if (layout.scale == 0) return false;
+    int x = HUD_PREVIEW_X + HUD_PANEL_PADDING;
+    int y = PT_PLAYFIELD_HEIGHT + PT_HUD_STATUS_HEIGHT + HUD_PANEL_PADDING;
+    int label_width = sr_text_width("NEXT [I]", layout.scale);
+    if (px >= x && px < x + label_width && py >= y && py < y + SR_FONT_H * layout.scale) {
+        *kind = count > 0u ? items[0].kind : 0u;
+        return true;
+    }
+    x += label_width + 8;
+    for (size_t i = 0u; i < count; ++i) {
+        int width = sr_text_width(text[i], layout.scale) + 4;
+        if (x + width > HUD_PREVIEW_X + HUD_PREVIEW_WIDTH - HUD_PANEL_PADDING) {
+            x = HUD_PREVIEW_X + HUD_PANEL_PADDING;
+            y += layout.row_height;
+        }
+        if (px >= x - 1 && px < x - 1 + width && py >= y - 1 &&
+            py < y + SR_FONT_H * layout.scale + 1) {
+            *kind = items[i].kind;
+            return true;
+        }
+        x += width + 4;
+    }
+    return false;
+}
+
 static void draw_hud_strip(pt_renderer *renderer, const pt_game *game,
                            const ki_td_view *view)
 {
-    const pt_campaign_def *campaign = pt_campaign(game->campaign);
+    const pt_campaign_def *campaign = pt_game_campaign(game);
     const pt_wave_def *wave =
-        pt_wave_def_at(game->campaign, game->wave.index);
+        pt_game_wave(game, game->wave.index);
     char currency[64];
     char wave_number[32];
+    char warning[PT_AIR_WARNING_LINES][PT_AIR_WARNING_LINE_CAPACITY];
+    bool show_warning = pt_hud_air_warning_text(game, warning);
 
     draw_integrity_meter(renderer, game, view);
     (void)snprintf(currency, sizeof currency, "%s %d",
@@ -553,37 +638,61 @@ static void draw_hud_strip(pt_renderer *renderer, const pt_game *game,
                    game->economy.currency);
     draw_text(renderer, 151, PT_PLAYFIELD_HEIGHT + 1,
               currency, HUD_COLOUR_ACCENT, 1);
-    (void)snprintf(wave_number, sizeof wave_number, "WAVE %u/%u",
+    (void)snprintf(wave_number, sizeof wave_number, "WAVE %u/%u%s",
                    (unsigned int)(game->wave.index + 1u),
                    campaign != NULL ?
-                       (unsigned int)campaign->wave_count : 0u);
+                       (unsigned int)campaign->wave_count : 0u,
+                   show_warning ? " AIR!" : "");
     draw_text(renderer, 151, PT_PLAYFIELD_HEIGHT + 14,
-              wave_number, HUD_COLOUR_TEXT, 1);
+              wave_number, show_warning ? HUD_COLOUR_ACCENT : HUD_COLOUR_TEXT, 1);
 
     if (game->phase == PT_PHASE_BUILD) {
         char countdown[48];
         uint32_t bonus =
             pt_economy_early_call_bonus(game->wave.build_remaining);
         int seconds = game->wave.build_remaining > 0.0 ?
-                      (int)game->wave.build_remaining + 1 : 0;
+                      (int)ceil(game->wave.build_remaining) : 0;
 
-        (void)snprintf(countdown, sizeof countdown,
-                       "BUILD %ds  [TAB] +%u", seconds,
-                       (unsigned int)bonus);
-        draw_text(renderer, 280, PT_PLAYFIELD_HEIGHT + 1,
+        if (game->wave.awaiting_call)
+            (void)snprintf(countdown, sizeof countdown, "READY [TAB] Start");
+        else
+            (void)snprintf(countdown, sizeof countdown,
+                           "BUILD %ds  [TAB] +%u", seconds,
+                           (unsigned int)bonus);
+        draw_text(renderer, PT_HUD_ACTION_X, PT_PLAYFIELD_HEIGHT + 1,
                   countdown, HUD_COLOUR_ACCENT, 1);
     } else if (game->phase == PT_PHASE_WAVE && wave != NULL) {
         char progress[40];
 
-        (void)snprintf(progress, sizeof progress, "INBOUND %u/%u",
-                       (unsigned int)game->wave.spawned,
-                       (unsigned int)wave->total_units);
-        draw_text(renderer, 280, PT_PLAYFIELD_HEIGHT + 1,
+        unsigned int incoming = wave->total_units > game->wave.spawned ?
+            (unsigned int)(wave->total_units - game->wave.spawned) : 0u;
+        (void)snprintf(progress, sizeof progress, "LIVE %u  IN %u",
+                       (unsigned int)game->units.live, incoming);
+        draw_text(renderer, PT_HUD_ACTION_X, PT_PLAYFIELD_HEIGHT + 1,
                   progress, HUD_COLOUR_TEXT, 1);
+        draw_text(renderer, PT_HUD_SPEED_X, PT_PLAYFIELD_HEIGHT + 1,
+            game->speed == 2u ? "[F]2x" : "[F]1x", HUD_COLOUR_ACCENT, 1);
     }
-    if (game->phase != PT_PHASE_PAUSE &&
-        pt_input_ui_panel() == PT_UI_PANEL_NONE)
-        draw_wave_preview(renderer, game, view);
+    draw_text(renderer, PT_HUD_ACTION_X, PT_HUD_ACTION_Y,
+              selected_fixture(game) != NULL ? "[ENTER] Info" : "[ENTER] Build",
+              HUD_COLOUR_MUTED, 1);
+    draw_text(renderer, PT_HUD_HELP_X, PT_HUD_ACTION_Y,
+              show_warning ? "[H] Air!" : "[H] Help",
+              show_warning ? HUD_COLOUR_ACCENT : HUD_COLOUR_MUTED, 1);
+    draw_wave_preview(renderer, game, view);
+}
+
+static void selected_summary(const pt_game *game, const pt_fixture *fixture,
+                              char *text, size_t capacity)
+{
+    const pt_fixture_def *definition = pt_fixture_def_at(game->campaign, fixture->kind);
+    const char *mode = fixture->mode < PT_TARGET_MODE_COUNT ?
+        target_mode_names[fixture->mode] : "?";
+    if (definition->tiers[fixture->tier].targets == PT_TARGETS_NONE) mode = "Area";
+    (void)snprintf(text, capacity, "%s T%u  %s  Range %.1f  HP %d/%d",
+        definition->name, (unsigned int)fixture->tier + 1u, mode,
+        (double)pt_fixture_range(game, fixture, fixture->tier),
+        fixture->integrity, fixture->integrity_max);
 }
 
 static void draw_selected_card(pt_renderer *renderer, const pt_game *game,
@@ -593,18 +702,16 @@ static void draw_selected_card(pt_renderer *renderer, const pt_game *game,
     const pt_fixture_def *definition;
     kilix_ui_style style;
     char detail[96];
-    const char *mode;
 
-    if (fixture == NULL) return;
-    definition = pt_fixture_def_at(game->campaign, fixture->kind);
-    if (definition == NULL) return;
-    mode = fixture->mode < PT_TARGET_MODE_COUNT ?
-           target_mode_names[fixture->mode] : "?";
+    definition = fixture != NULL ? pt_fixture_def_at(game->campaign, fixture->kind) : NULL;
+    if (definition != NULL && pt_input_ui_panel() == PT_UI_PANEL_INSPECTOR) {
+        (void)snprintf(detail, sizeof detail, "%s  T%u  |  HP %d/%d",
+            definition->name, (unsigned int)fixture->tier + 1u,
+            fixture->integrity, fixture->integrity_max);
+        ki_td_soft_fill_rect_px(renderer->soft, 8, 4, 464, 23, HUD_COLOUR_PANEL, 0.96f);
+        draw_text(renderer, 14, 8, detail, HUD_COLOUR_ACCENT, 1);
+    }
     style = ui_style();
-    /* The card is split into semantic rows so even the longest CORDON name
-     * remains complete. Its compact overlay intentionally stays at scale 1;
-     * larger accessibility text is used by the expandable panels and preview.
-     */
     style.font_scale = 1;
     style.row_height = 18;
     kilix_ui_draw_panel(renderer->soft, view,
@@ -612,24 +719,25 @@ static void draw_selected_card(pt_renderer *renderer, const pt_game *game,
                                      HUD_SELECTED_WIDTH,
                                      HUD_SELECTED_HEIGHT},
                         &style, panel_skin());
-    draw_text(renderer, HUD_SELECTED_X + 6, HUD_SELECTED_Y + 5,
-              definition->name, HUD_COLOUR_TEXT, 1);
-    (void)snprintf(detail, sizeof detail, "Tier %u | Target: %s",
-                   (unsigned int)fixture->tier + 1u, mode);
-    draw_text(renderer, HUD_SELECTED_X + 6, HUD_SELECTED_Y + 23,
+    if (definition != NULL)
+        selected_summary(game, fixture, detail, sizeof detail);
+    else if (game->cursor.pad != 0u)
+        (void)snprintf(detail, sizeof detail, "Pad %u: empty. [ENTER] Build a weapon.",
+            (unsigned int)game->cursor.pad);
+    else if (game->wave.awaiting_call)
+        (void)snprintf(detail, sizeof detail, "%s", game->campaign == 0u ?
+            "Pick a green pad. Build two Rail Spikes. [H] Help" :
+            "Pick a green pad. Build two Turrets. [H] Help");
+    else
+        (void)snprintf(detail, sizeof detail, "Select a pad to build or inspect. [ESC] Menu");
+    draw_text(renderer, HUD_SELECTED_X + 5, HUD_SELECTED_Y + 3,
               detail, HUD_COLOUR_ACCENT, 1);
-    kilix_ui_draw_meter(renderer->soft, view,
-                        (ki_td_rect){HUD_SELECTED_X + 6,
-                                     HUD_SELECTED_Y + 42,
-                                     HUD_SELECTED_WIDTH - 12, 18},
-                        &style, (float)fixture->integrity,
-                        (float)fixture->integrity_max, "INTEGRITY");
 }
 
 static void draw_build_menu(pt_renderer *renderer, const pt_game *game,
                             const ki_td_view *view)
 {
-    const pt_campaign_def *campaign = pt_campaign(game->campaign);
+    const pt_campaign_def *campaign = pt_game_campaign(game);
     kilix_ui_shop_item items[PT_ROLE_COUNT];
     char layout_text[PT_ROLE_COUNT + 1u][160];
     const char *layout_strings[PT_ROLE_COUNT + 1u];
@@ -684,6 +792,15 @@ static void draw_build_menu(pt_renderer *renderer, const pt_game *game,
         &style, panel_skin(), &focus, items, PT_ROLE_COUNT,
         campaign != NULL ? campaign->currency_name : "Funds",
         game->economy.currency);
+    char description[PT_DESCRIPTION_LINES][PT_DESCRIPTION_CAPACITY];
+    pt_fixture preview = {0};
+    preview.kind = (uint16_t)pt_input_ui_focus();
+    if (pt_fixture_describe(game, &preview, false, description)) {
+        ki_td_soft_line_px(renderer->soft, 14, 200, 466, 200, 1, HUD_COLOUR_BORDER, 0.7f);
+        for (int line = 0; line < 2; ++line)
+            draw_text(renderer, 14, 202 + line * 17, description[line],
+                line == 0 ? HUD_COLOUR_ACCENT : HUD_COLOUR_TEXT, 1);
+    }
 }
 
 static void draw_inspector(pt_renderer *renderer, const pt_game *game,
@@ -719,7 +836,9 @@ static void draw_inspector(pt_renderer *renderer, const pt_game *game,
         uint32_t cost = definition->tiers[fixture->tier + 1u].cost;
         (void)snprintf(costs[PT_INSPECT_UPGRADE],
                        sizeof costs[PT_INSPECT_UPGRADE],
-                       "cost %u", (unsigned int)cost);
+                       "cost %u  range %.1f > %.1f", (unsigned int)cost,
+                       (double)pt_fixture_range(game, fixture, fixture->tier),
+                       (double)pt_fixture_range(game, fixture, fixture->tier + 1u));
         enabled[PT_INSPECT_UPGRADE] = cost <= currency;
     } else {
         (void)snprintf(costs[PT_INSPECT_UPGRADE],
@@ -787,6 +906,13 @@ static void draw_inspector(pt_renderer *renderer, const pt_game *game,
         (ki_td_rect){HUD_MENU_X, HUD_INSPECTOR_Y,
                      HUD_INSPECTOR_WIDTH, HUD_INSPECTOR_HEIGHT},
         &style, panel_skin(), &focus, commands, PT_INSPECT_COUNT);
+    char description[PT_DESCRIPTION_LINES][PT_DESCRIPTION_CAPACITY];
+    if (pt_fixture_describe(game, fixture, true, description)) {
+        ki_td_soft_line_px(renderer->soft, 14, 163, 466, 163, 1, HUD_COLOUR_BORDER, 0.7f);
+        for (int line = 0; line < PT_DESCRIPTION_LINES; ++line)
+            draw_text(renderer, 14, 166 + line * 17, description[line],
+                line == 0 ? HUD_COLOUR_ACCENT : HUD_COLOUR_TEXT, 1);
+    }
 }
 
 static void dim_playfield(pt_renderer *renderer)
@@ -822,16 +948,7 @@ static void apply_cursor_zoom(pt_renderer *renderer, const pt_game *game)
             canvas->px + (size_t)y * (size_t)canvas->w,
             (size_t)PT_LOGICAL_WIDTH * sizeof zoom_snapshot[0]);
 
-    source_x = (int)game->cursor.x * PT_CELL_PIXELS +
-               PT_CELL_PIXELS / 2 - PT_LOGICAL_WIDTH / 4;
-    source_y = (int)game->cursor.y * PT_CELL_PIXELS +
-               PT_CELL_PIXELS / 2 - PT_PLAYFIELD_HEIGHT / 4;
-    if (source_x < 0) source_x = 0;
-    if (source_y < 0) source_y = 0;
-    if (source_x > PT_LOGICAL_WIDTH / 2)
-        source_x = PT_LOGICAL_WIDTH / 2;
-    if (source_y > PT_PLAYFIELD_HEIGHT / 2)
-        source_y = PT_PLAYFIELD_HEIGHT / 2;
+    pt_input_zoom_origin(game, &source_x, &source_y);
 
     for (y = 0; y < PT_PLAYFIELD_HEIGHT; ++y) {
         int x;
@@ -860,7 +977,7 @@ static void draw_title_screen(pt_renderer *renderer,
         "One block. Two sides. Hold the line.",
         "Every wave is shown before it arrives.",
         "Fixtures can be destroyed. Plan repairs.",
-        "[ENTER / A] Campaigns   [Q] Quit"
+        "[ENTER / A] Campaigns   [ESC] Menu"
     };
 
     /* kilix-ui's dialogue prompt reserves a fixed 16px at the panel bottom,
@@ -877,7 +994,84 @@ static void draw_title_screen(pt_renderer *renderer,
         renderer->soft, view, (ki_td_rect){8, 39, 464, 162},
         &style, panel_skin(), NULL, "PLEB TOWER",
         lines, sizeof lines / sizeof lines[0],
-        "[ENTER / A] Campaigns   [Q] Quit");
+        "[ENTER / A] Campaigns   [ESC] Menu");
+    draw_text_center(renderer, PT_LOGICAL_WIDTH / 2, 216,
+                     "[H] How to play   [M] Mute", HUD_COLOUR_ACCENT, 1);
+}
+
+static void draw_help_screen(pt_renderer *renderer, const pt_game *game,
+                             const ki_td_view *view)
+{
+    const char *lines[] = {
+        "Protect the blue hub. Leaks cost Integrity.",
+        "Select a green pad; ENTER opens the shop.",
+        "Arrows / WASD: move    ENTER / click: choose",
+        "ESC: menu / back      P: pause    Z: zoom",
+        "U: upgrade   R: repair   BACKSPACE: sell",
+        "T: aim  TAB: wave  F: speed  I: intel  M: mute",
+        "Two Rail Spikes at the lower-left hairpin.",
+        "Drones: Jammers. Shooters: Floodlights.",
+        "Workshops boost and repair nearby towers.",
+        "First wave waits for TAB. Take your time."
+    };
+    kilix_ui_style style = ui_style();
+    char warning[PT_AIR_WARNING_LINES][PT_AIR_WARNING_LINE_CAPACITY];
+    bool show_warning = pt_hud_air_warning_text(game, warning);
+    if (show_warning) {
+        lines[6] = warning[0];
+        lines[7] = warning[1];
+        lines[8] = warning[2];
+        lines[9] = "Briefing pauses the game. Close it to resume.";
+    }
+    set_style_scale(&style, 1);
+    dim_playfield(renderer);
+    kilix_ui_draw_panel(renderer->soft, view,
+        (ki_td_rect){8, 4, 464, 232}, &style, panel_skin());
+    draw_text_center(renderer, 240, 10, "HOW TO HOLD THE BLOCK",
+                     HUD_COLOUR_ACCENT, 1);
+    for (size_t i = 0u; i < sizeof lines / sizeof lines[0]; ++i)
+        draw_text(renderer, 20, 34 + (int)i * 18, lines[i],
+            show_warning && i == 6u ? HUD_COLOUR_ACCENT : HUD_COLOUR_TEXT, 1);
+    draw_text_center(renderer, 240, 219,
+        "[H / ENTER / ESC] Back", HUD_COLOUR_ACCENT, 1);
+}
+
+static void draw_intel_screen(pt_renderer *renderer, const pt_game *game,
+                               const ki_td_view *view)
+{
+    uint16_t kind = pt_input_intel_kind();
+    const pt_unit_def *unit = pt_unit_def_at(game->campaign, kind);
+    char lines[PT_INTEL_LINES][PT_INTEL_LINE_CAPACITY];
+    if (unit == NULL || !pt_unit_describe(game->campaign, kind, lines)) return;
+    kilix_ui_style style = ui_style();
+    set_style_scale(&style, 1);
+    dim_playfield(renderer);
+    kilix_ui_draw_panel(renderer->soft, view,
+        (ki_td_rect){8, 4, 464, PT_LOGICAL_HEIGHT - 8}, &style, panel_skin());
+    draw_text_center(renderer, 240, 12, "ENEMY FIELD GUIDE - PAUSED", HUD_COLOUR_MUTED, 1);
+    pt_render_unit_icon(renderer, game->campaign, kind, 28, 36, 40);
+    draw_text_center(renderer, 240, 38, unit->name, HUD_COLOUR_ACCENT,
+        strings_scale_to_fit(&unit->name, 1u, 2, 432));
+    draw_text_center(renderer, 240, 73, unit->air ? "AIR / FLIES OVER THE ROAD" :
+        unit->hardened ? "GROUND / HARDENED" : "GROUND", HUD_COLOUR_MUTED, 1);
+    for (int row = 0; row < PT_INTEL_LINES; ++row) {
+        int y = 98 + row * 23;
+        draw_text(renderer, 20, y, lines[row],
+            row == 4 || row == 5 ? HUD_COLOUR_ACCENT : HUD_COLOUR_TEXT, 1);
+    }
+    char position[64];
+    (void)snprintf(position, sizeof position, "Enemy %u / %u  |  Arrows or D-pad to browse",
+        (unsigned int)kind + 1u, (unsigned int)pt_game_campaign(game)->unit_count);
+    draw_text_center(renderer, 240, 274, position, HUD_COLOUR_MUTED, 1);
+    const char *labels[] = {"< Previous", "Next >", "[ESC] Back"};
+    const int xs[] = {16, 176, 336};
+    const int widths[] = {144, 144, 128};
+    for (int i = 0; i < 3; ++i) {
+        kilix_ui_draw_panel(renderer->soft, view,
+            (ki_td_rect){xs[i], PT_INTEL_NAV_Y, widths[i], 24}, &style, panel_skin());
+        draw_text_center(renderer, xs[i] + widths[i] / 2, PT_INTEL_NAV_Y + 4,
+            labels[i], HUD_COLOUR_ACCENT, 1);
+    }
 }
 
 static void draw_campaign_screen(pt_renderer *renderer,
@@ -904,7 +1098,7 @@ static void draw_campaign_screen(pt_renderer *renderer,
     }
     /* kilix-ui reserves one additional character per prompt while packing. */
     layout_strings[PT_CAMPAIGN_COUNT] =
-        "[ENTER / A] Deploy  [ESC / B] Back";
+        "[ENTER / A] Maps  [ESC / B] Back";
     (void)fit_style_to_strings(
         &style, layout_strings, PT_CAMPAIGN_COUNT + 1u,
         420);
@@ -921,7 +1115,7 @@ static void draw_campaign_screen(pt_renderer *renderer,
         &style, panel_skin(), &focus, items, enabled, PT_CAMPAIGN_COUNT);
     {
         kilix_ui_prompt prompts[2] = {
-            {"ENTER / A", "Deploy", true},
+            {"ENTER / A", "Maps", true},
             {"ESC / B", "Back", true}
         };
         kilix_ui_draw_prompts(
@@ -930,18 +1124,68 @@ static void draw_campaign_screen(pt_renderer *renderer,
     }
 }
 
+static void draw_map_screen(pt_renderer *renderer, const ki_td_view *view)
+{
+    uint8_t map = pt_input_selected_map();
+    uint8_t campaign = pt_input_selected_campaign();
+    const pt_map_def *level = pt_map(map);
+    const pt_records *records = pt_input_records();
+    kilix_ui_style style = ui_style();
+    char text[128];
+    set_style_scale(&style, 1);
+    ki_td_soft_fill_rect_px(renderer->soft, 0, 0, PT_LOGICAL_WIDTH,
+                            PT_LOGICAL_HEIGHT, HUD_COLOUR_PANEL, 1.0f);
+    (void)snprintf(text, sizeof text, "%s / SELECT MAP", pt_campaign(campaign)->name);
+    draw_text_center(renderer, 240, 10, text, HUD_COLOUR_ACCENT, 1);
+    for (uint8_t i = 0u; i < PT_MAP_COUNT; ++i) {
+        int x = 8 + (int)i * PT_MAP_TAB_WIDTH;
+        kilix_ui_draw_panel(renderer->soft, view,
+            (ki_td_rect){x, PT_MAP_TABS_Y, PT_MAP_TAB_WIDTH - 8, 24}, &style, panel_skin());
+        (void)snprintf(text, sizeof text, "%s%s", i == map ? "> " : "", pt_map(i)->name);
+        draw_text_center(renderer, x + (PT_MAP_TAB_WIDTH - 8) / 2, PT_MAP_TABS_Y + 5,
+                          text, i == map ? HUD_COLOUR_ACCENT : HUD_COLOUR_MUTED, 1);
+    }
+    pt_render_map_preview(renderer, map, campaign, 82, 64, 316);
+    draw_text_center(renderer, 240, 230, level->description, HUD_COLOUR_TEXT, 1);
+    (void)snprintf(text, sizeof text, "%u build pads  |  Purple: entry  |  Blue: defend",
+                    (unsigned int)level->pad_count);
+    draw_text_center(renderer, 240, 247, text, HUD_COLOUR_MUTED, 1);
+    if (records->cleared[map][campaign]) {
+        uint32_t seconds = records->fastest_clear_ms[map][campaign] / 1000u;
+        (void)snprintf(text, sizeof text, "BEST  HP %u/20  Time %02u:%02u  Bank %u",
+            (unsigned int)records->best_integrity[map][campaign],
+            (unsigned int)(seconds / 60u), (unsigned int)(seconds % 60u),
+            (unsigned int)records->best_unspent[map][campaign]);
+    } else {
+        (void)snprintf(text, sizeof text, "No clear yet  |  %u runs on this map",
+                        (unsigned int)records->runs[map][campaign]);
+    }
+    draw_text_center(renderer, 240, 268, text, HUD_COLOUR_GOOD, 1);
+    draw_text_center(renderer, 240, 285, "ARROWS / D-PAD: choose map", HUD_COLOUR_MUTED, 1);
+    kilix_ui_draw_panel(renderer->soft, view,
+        (ki_td_rect){16, PT_MAP_DEPLOY_Y, 304, 24}, &style, panel_skin());
+    kilix_ui_draw_panel(renderer->soft, view,
+        (ki_td_rect){336, PT_MAP_DEPLOY_Y, 128, 24}, &style, panel_skin());
+    draw_text_center(renderer, 168, PT_MAP_DEPLOY_Y + 5, "[ENTER / A] Deploy", HUD_COLOUR_ACCENT, 1);
+    draw_text_center(renderer, 400, PT_MAP_DEPLOY_Y + 5, "[ESC / B] Back", HUD_COLOUR_MUTED, 1);
+}
+
 static void draw_pause_screen(pt_renderer *renderer,
                               const ki_td_view *view)
 {
     kilix_ui_style style = ui_style();
-    const char *items[1] = {"Resume operation"};
-    const char *layout_strings[2] = {
-        "Resume operation",
-        "[P / ESC / A] Resume "
+    const char *items[PT_PAUSE_MENU_COUNT] = {
+        "Resume operation", "Restart campaign", "Choose campaign", "Exit game"
     };
-    kilix_ui_focus focus = draw_focus(1u, 0u, 1u);
-    bool enabled[1] = {true};
+    const char *layout_strings[5] = {
+        "Resume operation",
+        "Restart campaign", "Choose campaign", "Exit game",
+        "[P / ESC] Resume  [ENTER / A] Choose"
+    };
+    kilix_ui_focus focus = draw_focus(PT_PAUSE_MENU_COUNT, pt_input_pause_focus(), PT_PAUSE_MENU_COUNT);
+    bool enabled[PT_PAUSE_MENU_COUNT] = {true, true, true, true};
 
+    set_style_scale(&style, 1);
     (void)fit_style_to_strings(
         &style, layout_strings,
         sizeof layout_strings / sizeof layout_strings[0], 420);
@@ -952,11 +1196,11 @@ static void draw_pause_screen(pt_renderer *renderer,
                          "PAUSED",
                          clamp_text_scale(pt_input_text_scale())));
     kilix_ui_draw_list(
-        renderer->soft, view, (ki_td_rect){8, 96, 464, 54},
-        &style, panel_skin(), &focus, items, enabled, 1u);
+        renderer->soft, view, (ki_td_rect){8, 73, 464, 94},
+        &style, panel_skin(), &focus, items, enabled, PT_PAUSE_MENU_COUNT);
     {
-        kilix_ui_prompt prompts[1] = {
-            {"P / ESC / A", "Resume", true}
+        kilix_ui_prompt prompts[2] = {
+            {"P / ESC", "Resume", true}, {"ENTER / A", "Choose", true}
         };
         kilix_ui_draw_prompts(
             renderer->soft, view, 30, 169, 420, &style,
@@ -969,15 +1213,18 @@ static void draw_outcome_screen(pt_renderer *renderer,
                                 const ki_td_view *view)
 {
     kilix_ui_style style = ui_style();
+    char operation[96];
     char integrity[64];
     char elapsed[64];
     char currency[64];
-    const char *lines[3] = {integrity, elapsed, currency};
+    const char *lines[4] = {operation, integrity, elapsed, currency};
     const char *layout_strings[5];
-    const pt_campaign_def *campaign = pt_campaign(game->campaign);
+    const pt_campaign_def *campaign = pt_game_campaign(game);
     uint64_t total_seconds =
         game->elapsed > 0.0 ? (uint64_t)game->elapsed : UINT64_C(0);
 
+    (void)snprintf(operation, sizeof operation, "%s / %s",
+                   pt_map(game->board.map)->name, campaign->name);
     (void)snprintf(integrity, sizeof integrity,
                    "Integrity remaining: %d / %d",
                    game->economy.integrity, game->economy.integrity_max);
@@ -1024,14 +1271,14 @@ bool pt_hud_layout_audit(unsigned int text_scale)
         "One block. Two sides. Hold the line.",
         "Every wave is shown before it arrives.",
         "Fixtures can be destroyed. Plan repairs.",
-        "[ENTER / A] Campaigns   [Q] Quit"
+        "[ENTER / A] Campaigns   [ESC] Menu"
     };
     static const char *const pause_strings[] = {
         "Resume operation",
         "[P / ESC / A] Resume "
     };
     static const char *const inspector_strings[] = {
-        "[U] Upgrade  cost 4294967295",
+        "[U] Upgrade  cost 4294967295  range 5.0 > 5.5",
         "[R] Repair  cost 4294967295",
         "[BACKSPACE] Sell  refund 4294967295",
         "[T] First [ACTIVE]  selected",
@@ -1046,6 +1293,12 @@ bool pt_hud_layout_audit(unsigned int text_scale)
 
     if (text_scale < 1u || text_scale > 3u) return false;
     preferred = (int)text_scale;
+    for (uint8_t map = 0u; map < PT_MAP_COUNT; ++map) {
+        const pt_map_def *level = pt_map(map);
+        if (sr_text_width(level->name, 1) > PT_MAP_TAB_WIDTH - 24 ||
+            sr_text_width(level->description, 1) > PT_LOGICAL_WIDTH - 16)
+            return false;
+    }
     if (!audit_string_group(
             title_strings,
             sizeof title_strings / sizeof title_strings[0],
@@ -1118,7 +1371,7 @@ bool pt_hud_layout_audit(unsigned int text_scale)
                        "%s %d", campaign->currency_name,
                        campaign->starting_currency);
         (void)snprintf(core_text[2], sizeof core_text[2],
-                       "WAVE %u/%u", (unsigned int)campaign->wave_count,
+                       "WAVE %u/%u AIR!", (unsigned int)campaign->wave_count,
                        (unsigned int)campaign->wave_count);
         (void)snprintf(core_text[3], sizeof core_text[3],
                        "BUILD 20s  [TAB] +%u",
@@ -1149,27 +1402,19 @@ bool pt_hud_layout_audit(unsigned int text_scale)
                 PT_MAX_FIXTURES);
             shop_strings[index + 1u] = shop_text[index + 1u];
             for (tier = 0u; tier < PT_MAX_TIER; ++tier) {
-                char meter[96];
-                const char *selected_strings[3];
-
-                (void)snprintf(meter, sizeof meter,
-                               "INTEGRITY %d/%d",
-                               fixture->tiers[tier].integrity,
-                               fixture->tiers[tier].integrity);
-                selected_strings[0] = fixture->name;
-                selected_strings[2] = meter;
                 for (mode = 0u; mode < PT_TARGET_MODE_COUNT; ++mode) {
                     char detail[96];
-
-                    (void)snprintf(
-                        detail, sizeof detail,
-                        "Tier %u | Target: %s",
-                        (unsigned int)tier + 1u,
-                        target_mode_names[mode]);
-                    selected_strings[1] = detail;
+                    const char *selected_strings[] = {detail};
+                    pt_fixture selected = {
+                        .kind = (uint16_t)index, .tier = (uint8_t)tier,
+                        .mode = (uint8_t)mode, .present = 1u, .range_scale = 1.2f,
+                        .integrity = fixture->tiers[tier].integrity,
+                        .integrity_max = fixture->tiers[tier].integrity
+                    };
+                    selected_summary(&game, &selected, detail, sizeof detail);
                     if (!audit_string_group(
-                            selected_strings, 3u, 1,
-                            HUD_SELECTED_WIDTH - 12))
+                            selected_strings, 1u, 1,
+                            HUD_SELECTED_WIDTH - 10))
                         return false;
                 }
             }
@@ -1196,7 +1441,7 @@ bool pt_hud_layout_audit(unsigned int text_scale)
             if (wave == NULL || layout.scale < 1 ||
                 layout.scale > preferred ||
                 layout.rows < 1 ||
-                layout.height > PT_PLAYFIELD_HEIGHT ||
+                layout.height > PT_HUD_PREVIEW_HEIGHT ||
                 preview_count != wave->group_count)
                 return false;
         }
@@ -1286,8 +1531,17 @@ void pt_hud_draw(pt_renderer *renderer, const pt_game *game)
     case PT_PHASE_TITLE:
         draw_title_screen(renderer, &view);
         break;
+    case PT_PHASE_HELP:
+        draw_help_screen(renderer, game, &view);
+        break;
+    case PT_PHASE_INTEL:
+        draw_intel_screen(renderer, game, &view);
+        break;
     case PT_PHASE_CAMPAIGN_SELECT:
         draw_campaign_screen(renderer, &view);
+        break;
+    case PT_PHASE_MAP_SELECT:
+        draw_map_screen(renderer, &view);
         break;
     case PT_PHASE_PAUSE:
         draw_pause_screen(renderer, &view);

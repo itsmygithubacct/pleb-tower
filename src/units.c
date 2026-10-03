@@ -16,11 +16,12 @@ static void retire_unit(pt_unit_pool *pool, pt_unit *unit)
     if (pool->live > 0u) --pool->live;
 }
 
-void pt_units_reset(pt_unit_pool *pool)
+void pt_units_reset(pt_unit_pool *pool, uint8_t campaign)
 {
     if (!pool) return;
     memset(pool, 0, sizeof *pool);
     pool->next_serial = 1u;
+    pool->campaign = campaign < PT_CAMPAIGN_COUNT ? campaign : 0u;
 }
 
 pt_unit *pt_units_spawn(pt_unit_pool *pool, uint16_t kind, float x, float y)
@@ -29,10 +30,7 @@ pt_unit *pt_units_spawn(pt_unit_pool *pool, uint16_t kind, float x, float y)
 
     if (!pool) return NULL;
 
-    /* The public spawn signature has no campaign argument. Both 1.0
-     * campaigns deliberately have stat-parity unit slots, so campaign zero
-     * is the canonical initializer for the shared runtime representation. */
-    def = pt_unit_def_at(0u, kind);
+    def = pt_unit_def_at(pool->campaign, kind);
     if (!def) return NULL;
 
     if (pool->live >= PT_MAX_UNITS) {
@@ -90,7 +88,7 @@ static uint16_t wave_kind_at(const pt_wave_def *wave, uint16_t ordinal)
 
 static void spawn_scheduled_unit(pt_game *game, const pt_wave_def *wave)
 {
-    const pt_campaign_def *campaign = pt_campaign(game->campaign);
+    const pt_campaign_def *campaign = pt_game_campaign(game);
     uint16_t kind = wave_kind_at(wave, game->wave.spawned);
     float x = (float)campaign->spawn_x + 0.5f;
     float y = (float)campaign->spawn_y + 0.5f;
@@ -104,7 +102,7 @@ static void update_wave_schedule(pt_game *game, double dt)
     const pt_wave_def *wave;
 
     if (!game->wave.active) return;
-    wave = pt_wave_def_at(game->campaign, game->wave.index);
+    wave = pt_game_wave(game, game->wave.index);
     if (!wave) return;
 
     if (game->wave.total == 0u) game->wave.total = wave->total_units;
@@ -278,7 +276,7 @@ static pt_fixture *nearest_fixture(pt_game *game, const pt_unit *unit,
         float distance;
 
         if (!fixture->present) continue;
-        pad = pt_pad(fixture->pad);
+        pad = pt_game_pad(game, fixture->pad);
         if (!pad) continue;
         dx = ((float)pad->x + 0.5f) - unit->x;
         dy = ((float)pad->y + 0.5f) - unit->y;
@@ -292,10 +290,37 @@ static pt_fixture *nearest_fixture(pt_game *game, const pt_unit *unit,
     return nearest;
 }
 
+static void vision_penalties(const pt_game *game, const pt_unit *unit,
+                              float *range_scale, float *damage_scale)
+{
+    float range_penalty = 0.0f;
+    float accuracy_penalty = 0.0f;
+    for (size_t i = 0u; i < PT_MAX_FIXTURES; ++i) {
+        const pt_fixture *fixture = &game->fixtures[i];
+        const pt_fixture_def *definition;
+        const pt_pad_def *pad;
+        if (!fixture->present) continue;
+        definition = pt_fixture_def_at(game->campaign, fixture->kind);
+        pad = pt_game_pad(game, fixture->pad);
+        if (!definition || !pad || definition->role != PT_ROLE_VISION) continue;
+        const pt_tier_def *tier = &definition->tiers[fixture->tier];
+        float dx = unit->x - ((float)pad->x + 0.5f);
+        float dy = unit->y - ((float)pad->y + 0.5f);
+        float radius = tier->range * fixture->range_scale;
+        if (dx * dx + dy * dy > radius * radius) continue;
+        range_penalty = fmaxf(range_penalty, tier->enemy_range_penalty);
+        accuracy_penalty = fmaxf(accuracy_penalty, tier->enemy_accuracy_penalty);
+    }
+    *range_scale = 1.0f - range_penalty;
+    *damage_scale = 1.0f - accuracy_penalty;
+}
+
 static void update_halt_attack(pt_game *game, pt_unit *unit,
                                const pt_unit_def *def, double dt)
 {
-    pt_fixture *target = nearest_fixture(game, unit, def->attack_range);
+    float range_scale, damage_scale;
+    vision_penalties(game, unit, &range_scale, &damage_scale);
+    pt_fixture *target = nearest_fixture(game, unit, def->attack_range * range_scale);
     int32_t damage;
 
     unit->halted = target ? 1u : 0u;
@@ -304,11 +329,11 @@ static void update_halt_attack(pt_game *game, pt_unit *unit,
         return;
     }
 
-    damage = accrue_whole_points(&unit->attack_timer, def->attack_dps, dt);
+    damage = accrue_whole_points(&unit->attack_timer, def->attack_dps * damage_scale, dt);
     if (damage > 0) {
         pt_combat_damage_fixture(game, target, damage);
         if (!target->present &&
-            nearest_fixture(game, unit, def->attack_range) == NULL)
+            nearest_fixture(game, unit, def->attack_range * range_scale) == NULL)
             unit->halted = 0u;
     }
 }
@@ -318,6 +343,9 @@ static void update_passing_attack(pt_game *game, pt_unit *unit,
 {
     bool in_range = false;
     int32_t damage;
+    float range_scale, damage_scale;
+    vision_penalties(game, unit, &range_scale, &damage_scale);
+    (void)range_scale; /* Passing attacks are contact damage. */
 
     for (size_t i = 0; i < PT_MAX_FIXTURES; ++i) {
         const pt_fixture *fixture = &game->fixtures[i];
@@ -326,7 +354,7 @@ static void update_passing_attack(pt_game *game, pt_unit *unit,
         float dy;
 
         if (!fixture->present) continue;
-        pad = pt_pad(fixture->pad);
+        pad = pt_game_pad(game, fixture->pad);
         if (!pad) continue;
         dx = ((float)pad->x + 0.5f) - unit->x;
         dy = ((float)pad->y + 0.5f) - unit->y;
@@ -340,7 +368,7 @@ static void update_passing_attack(pt_game *game, pt_unit *unit,
         return;
     }
 
-    damage = accrue_whole_points(&unit->attack_timer, def->attack_dps, dt);
+    damage = accrue_whole_points(&unit->attack_timer, def->attack_dps * damage_scale, dt);
     if (damage <= 0) return;
 
     for (size_t i = 0; i < PT_MAX_FIXTURES; ++i) {
@@ -350,7 +378,7 @@ static void update_passing_attack(pt_game *game, pt_unit *unit,
         float dy;
 
         if (!fixture->present) continue;
-        pad = pt_pad(fixture->pad);
+        pad = pt_game_pad(game, fixture->pad);
         if (!pad) continue;
         dx = ((float)pad->x + 0.5f) - unit->x;
         dy = ((float)pad->y + 0.5f) - unit->y;
@@ -362,11 +390,11 @@ static void update_passing_attack(pt_game *game, pt_unit *unit,
 static void move_unit(pt_game *game, pt_unit *unit,
                       const pt_unit_def *def, double dt)
 {
-    float step = def->speed * (float)dt;
+    float step = def->speed * (1.0f - unit->decoy_slow) * (float)dt;
 
     if (step <= 0.0f) return;
     if (def->air) {
-        const pt_campaign_def *campaign = pt_campaign(game->campaign);
+        const pt_campaign_def *campaign = pt_game_campaign(game);
         float goal_x = (float)campaign->goal_x + 0.5f;
         float goal_y = (float)campaign->goal_y + 0.5f;
         float dx = goal_x - unit->x;
@@ -401,6 +429,9 @@ void pt_units_update(pt_game *game, double dt)
         dt > (double)FLT_MAX)
         return;
     update_wave_schedule(game, dt);
+    /* Count all targets before moving any of them, including this tick's
+     * scheduled spawns. This makes sharing independent of pool slot order. */
+    pt_decoy_update(game);
 
     /* Units emitted during this update begin acting on the next tick. */
     for (size_t i = 0; i < PT_MAX_UNITS; ++i)
@@ -410,6 +441,7 @@ void pt_units_update(pt_game *game, double dt)
         pt_unit *unit = &game->units.slots[i];
         const pt_unit_def *def;
         bool frozen = false;
+        bool was_stunned;
 
         if (!update_slot[i] || !unit->alive) continue;
         def = pt_unit_def_at(game->campaign, unit->kind);
@@ -417,6 +449,7 @@ void pt_units_update(pt_game *game, double dt)
             retire_unit(&game->units, unit);
             continue;
         }
+        was_stunned = !def->hardened && unit->stun_remaining > 0.0f;
 
         if (at_goal(game, unit)) {
             pt_economy_leak(game, unit);
@@ -429,14 +462,14 @@ void pt_units_update(pt_game *game, double dt)
         update_emit(game, unit, def, dt);
         update_aura(game, unit, def, dt);
 
-        if (def->attack_kind == PT_ATTACK_FIXTURE)
+        if (!was_stunned && def->attack_kind == PT_ATTACK_FIXTURE)
             update_halt_attack(game, unit, def, dt);
         else
             unit->halted = 0u;
 
         if (!frozen && !unit->halted) move_unit(game, unit, def, dt);
 
-        if (def->attack_kind == PT_ATTACK_PASSING)
+        if (!was_stunned && def->attack_kind == PT_ATTACK_PASSING)
             update_passing_attack(game, unit, def, dt);
 
         if (unit->alive && at_goal(game, unit)) {

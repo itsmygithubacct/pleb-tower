@@ -84,6 +84,43 @@ static uint16_t fire_and_target(pt_game *game, pt_fixture *fixture,
     return UINT16_MAX;
 }
 
+static void test_upgrades_extend_reach(void)
+{
+    for (uint8_t campaign = 0u; campaign < PT_CAMPAIGN_COUNT; ++campaign) {
+        pt_game game;
+        pt_game_init(&game, campaign, UINT64_C(0x1234));
+        game.economy.currency = 10000;
+        for (uint16_t kind = 0u; kind < pt_campaign(campaign)->fixture_count; ++kind) {
+            PT_CHECK(pt_fixture_place(&game, 10u, kind), "place fixture for upgrade reach");
+            pt_fixture *fixture = pt_fixture_at_pad(&game, 10u);
+            if (fixture == NULL) continue;
+            for (uint8_t tier = 1u; tier < PT_MAX_TIER; ++tier) {
+                float before = pt_fixture_range(&game, fixture, fixture->tier);
+                PT_CHECK(pt_fixture_upgrade(&game, 10u), "upgrade fixture reach");
+                PT_CHECK(pt_fixture_range(&game, fixture, fixture->tier) > before,
+                    "campaign %u fixture %u tier %u extends range or effect radius",
+                    campaign, kind, tier + 1u);
+            }
+            PT_CHECK(pt_fixture_sell(&game, 10u), "clear pad after upgrade reach check");
+        }
+
+        PT_CHECK(pt_fixture_place(&game, 10u, 0u), "place ranged tower");
+        pt_fixture *fixture = pt_fixture_at_pad(&game, 10u);
+        const pt_pad_def *pad = pt_pad(10u);
+        if (fixture == NULL || pad == NULL) continue;
+        pt_unit *enemy = put_unit(&game, 0u, 0.0f, 0.0f, 100, 42u);
+        for (uint8_t tier = 1u; tier < PT_MAX_TIER; ++tier) {
+            float old_range = pt_fixture_range(&game, fixture, fixture->tier);
+            float new_range = pt_fixture_range(&game, fixture, tier);
+            enemy->x = (float)pad->x + 0.5f + (old_range + new_range) * 0.5f;
+            enemy->y = (float)pad->y + 0.5f;
+            PT_CHECK_EQ_INT(fire_and_target(&game, fixture, PT_TARGET_FIRST), UINT16_MAX);
+            PT_CHECK(pt_fixture_upgrade(&game, 10u), "upgrade to reach distant enemy");
+            PT_CHECK_EQ_INT(fire_and_target(&game, fixture, PT_TARGET_FIRST), enemy->serial);
+        }
+    }
+}
+
 static void test_targeting_comparators(void)
 {
     pt_game game;
@@ -121,6 +158,85 @@ static void test_targeting_comparators(void)
     for (mode = PT_TARGET_FIRST; mode < PT_TARGET_MODE_COUNT;
          mode = (pt_target_mode)((int)mode + 1))
         PT_CHECK_EQ_INT(fire_and_target(&game, fixture, mode), 2);
+}
+
+static void test_targeting_route_distance(void)
+{
+    for (uint8_t campaign = 0u; campaign < PT_CAMPAIGN_COUNT; ++campaign) {
+        pt_game game;
+        pt_game_init(&game, campaign, UINT64_C(0x1234));
+        game.economy.currency = 1000;
+        PT_CHECK(pt_fixture_place(&game, 10u, 0u), "place fractional targeting tower");
+        pt_fixture *fixture = pt_fixture_at_pad(&game, 10u);
+        if (fixture == NULL) continue;
+        pt_unit *left = put_unit(&game, 0u, 9.25f, 8.5f, 100, 40u);
+        pt_unit *right = put_unit(&game, 1u, 9.75f, 8.5f, 100, 2u);
+        PT_CHECK_EQ_INT(fire_and_target(&game, fixture, PT_TARGET_FIRST),
+            campaign == 0u ? 40 : 2);
+        PT_CHECK_EQ_INT(fire_and_target(&game, fixture, PT_TARGET_LAST),
+            campaign == 0u ? 2 : 40);
+        /* Crossing a tile boundary must not reverse their order. */
+        left->x = 9.95f; right->x = 10.05f;
+        PT_CHECK_EQ_INT(fire_and_target(&game, fixture, PT_TARGET_FIRST),
+            campaign == 0u ? 40 : 2);
+        PT_CHECK_EQ_INT(fire_and_target(&game, fixture, PT_TARGET_LAST),
+            campaign == 0u ? 2 : 40);
+
+        pt_game_init(&game, campaign, UINT64_C(0x1234));
+        game.economy.currency = 1000;
+        uint8_t pad = campaign == 0u ? 21u : 3u;
+        PT_CHECK(pt_fixture_place(&game, pad, 0u) &&
+            pt_fixture_upgrade(&game, pad) && pt_fixture_upgrade(&game, pad),
+            "place dual-plane targeting tower");
+        fixture = pt_fixture_at_pad(&game, pad);
+        if (fixture == NULL) continue;
+        const pt_campaign_def *definition = pt_campaign(campaign);
+        float goal_x = (float)definition->goal_x + 0.5f;
+        float goal_y = (float)definition->goal_y + 0.5f;
+        float direction = campaign == 0u ? -1.0f : 1.0f;
+        put_unit(&game, 0u, goal_x + direction, goal_y, 100, 40u);
+        pt_unit *air = put_unit(&game, 1u, goal_x + 2.0f * direction,
+            goal_y - direction, 100, 2u);
+        air->kind = 3u;
+        PT_CHECK_EQ_INT(fire_and_target(&game, fixture, PT_TARGET_FIRST), 40);
+        PT_CHECK_EQ_INT(fire_and_target(&game, fixture, PT_TARGET_LAST), 2);
+        air->x = goal_x + 0.5f * direction;
+        air->y = goal_y;
+        PT_CHECK_EQ_INT(fire_and_target(&game, fixture, PT_TARGET_FIRST), 2);
+        PT_CHECK_EQ_INT(fire_and_target(&game, fixture, PT_TARGET_LAST), 40);
+    }
+}
+
+static void test_status_weapons_choose_susceptible_targets(void)
+{
+    const uint16_t kinds[] = {2u, 5u};
+    for (uint8_t campaign = 0u; campaign < PT_CAMPAIGN_COUNT; ++campaign) {
+        for (size_t role = 0u; role < sizeof kinds / sizeof kinds[0]; ++role) {
+            pt_game game;
+            pt_game_init(&game, campaign, UINT64_C(0x1234));
+            game.economy.currency = 1000;
+            PT_CHECK(pt_fixture_place(&game, 10u, kinds[role]), "place status tower");
+            pt_fixture *fixture = pt_fixture_at_pad(&game, 10u);
+            if (fixture == NULL) continue;
+            pt_unit *hardened = put_unit(&game, 0u, 10.5f, 8.5f, 520, 1u);
+            hardened->kind = 2u;
+            pt_fixtures_update(&game, 0.0);
+            PT_CHECK(fixture->cooldown == 0.0f,
+                "all-immune crowd does not consume a shot");
+            pt_unit *normal = put_unit(&game, 1u, 10.5f, 8.5f, 100, 2u);
+            for (uint8_t mode = 0u; mode < PT_TARGET_MODE_COUNT; ++mode) {
+                fixture->cooldown = 0.0f;
+                fixture->mode = mode;
+                normal->hold_remaining = normal->stun_remaining = 0.0f;
+                pt_fixtures_update(&game, 0.0);
+                PT_CHECK(role == 0u ? normal->hold_remaining > 0.0f :
+                    normal->stun_remaining > 0.0f,
+                    "mode %u chooses a susceptible enemy over an immune priority target", mode);
+                PT_CHECK(hardened->hold_remaining == 0.0f && hardened->stun_remaining == 0.0f,
+                    "hardened enemy remains immune");
+            }
+        }
+    }
 }
 
 static void test_support_cache_invalidation(void)
@@ -242,13 +358,37 @@ static void test_cycle_mode_wraps(void)
     PT_CHECK_EQ_INT(fixture->mode, PT_TARGET_FIRST);
 }
 
+static void test_workshop_reaches_authored_neighbors(void)
+{
+    pt_game game;
+    init_game(&game);
+    game.economy.currency = 1000;
+    PT_CHECK(pt_fixture_place(&game, 4u, 0u), "place left hairpin fixture");
+    PT_CHECK(pt_fixture_place(&game, 5u, 0u), "place right hairpin fixture");
+    PT_CHECK(pt_fixture_place(&game, 8u, 7u), "place nearby Workshop");
+    pt_fixture *left = pt_fixture_at_pad(&game, 4u);
+    pt_fixture *right = pt_fixture_at_pad(&game, 5u);
+    if (!left || !right) return;
+    PT_CHECK(left->damage_scale > 1.0f && right->damage_scale > 1.0f,
+             "base Workshop buffs neighboring authored pads");
+    left->integrity -= 10;
+    right->integrity -= 10;
+    pt_fixtures_update(&game, 1.0);
+    PT_CHECK_EQ_INT(left->integrity, left->integrity_max - 6);
+    PT_CHECK_EQ_INT(right->integrity, right->integrity_max - 6);
+}
+
 void pt_test_fixture(void)
 {
     test_place_upgrade_sell_arithmetic();
     test_sell_refund_floors();
+    test_upgrades_extend_reach();
     test_targeting_comparators();
+    test_targeting_route_distance();
+    test_status_weapons_choose_susceptible_targets();
     test_support_cache_invalidation();
     test_hardened_refuses_hold_and_stun();
     test_reroute_failure_is_atomic();
     test_cycle_mode_wraps();
+    test_workshop_reaches_authored_neighbors();
 }

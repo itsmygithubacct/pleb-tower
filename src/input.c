@@ -27,7 +27,11 @@ enum pt_input_action {
     PT_ACTION_CALL_WAVE,
     PT_ACTION_PAUSE,
     PT_ACTION_ZOOM,
-    PT_ACTION_QUIT
+    PT_ACTION_HELP,
+    PT_ACTION_MUTE,
+    PT_ACTION_SPEED,
+    PT_ACTION_INTEL,
+    PT_ACTION_GAMEPAD_WAVE
 };
 
 enum pt_ui_panel_kind {
@@ -49,19 +53,26 @@ enum {
 
 typedef struct pt_ui_runtime {
     kilix_ui_focus focus;
+    kilix_ui_focus pause_focus;
+    kilix_ui_focus map_focus;
+    uint8_t selected_campaign;
     pt_settings settings;
     pt_records records;
     int32_t pointer_x;
     int32_t pointer_y;
     uint8_t panel;
     uint8_t pause_return;
+    uint8_t help_return;
+    uint8_t intel_return;
+    uint16_t intel_kind;
     bool pointer_pending;
     bool primary_click;
     bool secondary_click;
     bool zoom_2x;
+    bool zoom_anchored;
+    int zoom_x, zoom_y;
     bool left_bumper;
     bool left_bumper_used;
-    bool outcome_recorded;
 } pt_ui_runtime;
 
 static kittyin_action_map action_map;
@@ -72,6 +83,7 @@ static pt_ui_runtime ui;
  * second public header. */
 unsigned int pt_input_ui_panel(void);
 size_t pt_input_ui_focus(void);
+size_t pt_input_pause_focus(void);
 unsigned int pt_input_text_scale(void);
 bool pt_input_zoom_enabled(void);
 bool pt_input_campaign_is_unlocked(uint8_t campaign);
@@ -88,6 +100,13 @@ size_t pt_input_ui_focus(void)
     return ui.focus.selected;
 }
 
+size_t pt_input_pause_focus(void) { return ui.pause_focus.selected; }
+uint8_t pt_input_selected_map(void) { return (uint8_t)ui.map_focus.selected; }
+uint8_t pt_input_selected_campaign(void) { return ui.selected_campaign; }
+const pt_records *pt_input_records(void) { return &ui.records; }
+uint16_t pt_input_intel_kind(void) { return ui.intel_kind; }
+bool pt_input_reduced_motion(void) { return ui.settings.reduced_motion; }
+
 unsigned int pt_input_text_scale(void)
 {
     unsigned int scale = (unsigned int)ui.settings.text_scale;
@@ -97,6 +116,20 @@ unsigned int pt_input_text_scale(void)
 bool pt_input_zoom_enabled(void)
 {
     return ui.zoom_2x;
+}
+
+void pt_input_zoom_origin(const pt_game *game, int *x, int *y)
+{
+    if (ui.zoom_anchored) {
+        *x = ui.zoom_x;
+        *y = ui.zoom_y;
+    } else pt_render_zoom_origin(game, x, y);
+}
+
+static void center_zoom(const pt_game *game)
+{
+    pt_render_zoom_origin(game, &ui.zoom_x, &ui.zoom_y);
+    ui.zoom_anchored = ui.zoom_2x;
 }
 
 bool pt_input_campaign_is_unlocked(uint8_t campaign)
@@ -145,7 +178,12 @@ static void configure_actions(void)
     bind_key(PT_ACTION_CALL_WAVE, KITTYKB_KEY_TAB);
     bind_key(PT_ACTION_PAUSE, (uint32_t)'p');
     bind_key(PT_ACTION_ZOOM, (uint32_t)'z');
-    bind_key(PT_ACTION_QUIT, (uint32_t)'q');
+    bind_key(PT_ACTION_HELP, (uint32_t)'h');
+    bind_key(PT_ACTION_HELP, (uint32_t)'?');
+    bind_key(PT_ACTION_MUTE, (uint32_t)'m');
+    bind_key(PT_ACTION_SPEED, (uint32_t)'f');
+    bind_key(PT_ACTION_INTEL, (uint32_t)'i');
+    bind_button(PT_ACTION_INTEL, 6u);        /* Back / Select */
 
     /* Linux's conventional Xbox-compatible button order. Both common right
      * stick-click indices are accepted because older js drivers expose one
@@ -154,7 +192,7 @@ static void configure_actions(void)
     bind_button(PT_ACTION_CANCEL, 1u);        /* B */
     bind_button(PT_ACTION_CYCLE, 2u);         /* X */
     bind_button(PT_ACTION_UPGRADE, 3u);       /* Y */
-    bind_button(PT_ACTION_CALL_WAVE, 5u);     /* RB */
+    bind_button(PT_ACTION_GAMEPAD_WAVE, 5u);  /* RB: wave / combat speed */
     bind_button(PT_ACTION_PAUSE, 7u);         /* Start */
     bind_button(PT_ACTION_ZOOM, 9u);
     bind_button(PT_ACTION_ZOOM, 10u);         /* RS click */
@@ -236,9 +274,11 @@ static void consume_action(pt_input_state *input,
     case PT_ACTION_ZOOM:
         input->zoom = true;
         break;
-    case PT_ACTION_QUIT:
-        input->quit = true;
-        break;
+    case PT_ACTION_HELP: input->help = true; break;
+    case PT_ACTION_MUTE: input->mute = true; break;
+    case PT_ACTION_SPEED: input->speed = true; break;
+    case PT_ACTION_INTEL: input->intel = true; break;
+    case PT_ACTION_GAMEPAD_WAVE: input->gamepad_wave = true; break;
     default:
         break;
     }
@@ -354,13 +394,15 @@ static void apply_pointer_to_board(pt_game *game)
     if (!ui.pointer_pending || game == NULL) return;
     x = clamp_int((int)ui.pointer_x, 0, PT_LOGICAL_WIDTH - 1);
     y = clamp_int((int)ui.pointer_y, 0, PT_LOGICAL_HEIGHT - 1);
-    if ((ui.panel == PT_UI_PANEL_BUILD &&
-         x >= 8 && x < 472 && y >= 31 && y < 238) ||
-        (ui.panel == PT_UI_PANEL_INSPECTOR &&
-         x >= 8 && x < 472 && y >= 73 && y < 238))
-        return;
+    if (ui.panel != PT_UI_PANEL_NONE) return;
     if (y < PT_PLAYFIELD_HEIGHT &&
         (game->phase == PT_PHASE_BUILD || game->phase == PT_PHASE_WAVE)) {
+        if (ui.zoom_2x) {
+            int source_x, source_y;
+            pt_input_zoom_origin(game, &source_x, &source_y);
+            x = source_x + x / 2;
+            y = source_y + y / 2;
+        }
         game->cursor.x = (int8_t)(x / PT_CELL_PIXELS);
         game->cursor.y = (int8_t)(y / PT_CELL_PIXELS);
         resolve_cursor_pad(game);
@@ -385,45 +427,112 @@ static void apply_pointer_to_controls(pt_game *game, pt_input_state *input)
     int visual_row;
     size_t item;
 
-    if (game == NULL || input == NULL || !ui.primary_click) return;
+    if (game == NULL || input == NULL) return;
     x = clamp_int((int)ui.pointer_x, 0, PT_LOGICAL_WIDTH - 1);
     y = clamp_int((int)ui.pointer_y, 0, PT_LOGICAL_HEIGHT - 1);
     row_height = ui_row_height();
 
-    if (game->phase == PT_PHASE_BUILD &&
-        y >= PT_PLAYFIELD_HEIGHT && x >= 236) {
-        input->call_wave = true;
-        input->confirm = false;
+    /* Hover previews a weapon without spending funds or opening a panel. */
+    if (!ui.primary_click) {
+        first_row = 31 + 5 + row_height;
+        if (ui.pointer_pending && ui.panel == PT_UI_PANEL_BUILD &&
+            (game->phase == PT_PHASE_BUILD || game->phase == PT_PHASE_WAVE) &&
+            x >= 8 && x < 472 && y >= first_row &&
+            y < first_row + row_height * PT_ROLE_COUNT)
+            ui.focus.selected = (size_t)((y - first_row) / row_height);
         return;
     }
-    if (game->phase == PT_PHASE_CAMPAIGN_SELECT &&
-        x >= 78 && x < 402 && y >= 70 && y < 174) {
+
+    if (game->phase == PT_PHASE_PAUSE) {
+        if (x >= 8 && x < 472 && y >= 78 && y < 78 + PT_PAUSE_MENU_COUNT * row_height)
+            ui.pause_focus.selected = (size_t)((y - 78) / row_height);
+        else input->confirm = false;
+        return;
+    }
+    if (game->phase == PT_PHASE_INTEL) {
+        input->confirm = false;
+        if (y >= PT_INTEL_NAV_Y && y < PT_INTEL_NAV_Y + 24) {
+            if (x >= 16 && x < 160) input->move_x = -1;
+            else if (x >= 176 && x < 320) input->move_x = 1;
+            else if (x >= 336 && x < 464) input->cancel = true;
+        }
+        return;
+    }
+
+    if ((game->phase == PT_PHASE_BUILD || game->phase == PT_PHASE_WAVE) &&
+        y >= PT_PLAYFIELD_HEIGHT) {
+        input->confirm = false;
+        if (y >= PT_PLAYFIELD_HEIGHT + PT_HUD_STATUS_HEIGHT) {
+            if (pt_hud_preview_pick(game, x, y, &ui.intel_kind)) input->intel = true;
+            return;
+        }
+        if (y >= PT_HUD_ACTION_Y && x >= PT_HUD_HELP_X && x < 472)
+            input->help = true;
+        else if (y >= PT_HUD_ACTION_Y && x >= PT_HUD_ACTION_X &&
+                 x < PT_HUD_HELP_X - 8)
+            input->confirm = ui.panel == PT_UI_PANEL_NONE;
+        else if (y < PT_HUD_ACTION_Y && x >= PT_HUD_ACTION_X &&
+                 game->phase == PT_PHASE_BUILD)
+            input->call_wave = true;
+        else if (y < PT_HUD_ACTION_Y && x >= PT_HUD_SPEED_X &&
+                 game->phase == PT_PHASE_WAVE)
+            input->speed = true;
+        return;
+    }
+    if (game->phase == PT_PHASE_MAP_SELECT) {
+        input->confirm = false;
+        if (y >= PT_MAP_TABS_Y && y < PT_MAP_TABS_Y + 24 && x >= 8 && x < 472) {
+            size_t map = (size_t)((x - 8) / PT_MAP_TAB_WIDTH);
+            if (map < PT_MAP_COUNT && (x - 8) % PT_MAP_TAB_WIDTH < PT_MAP_TAB_WIDTH - 8)
+                ui.map_focus.selected = map;
+        } else if (y >= PT_MAP_DEPLOY_Y && y < PT_MAP_DEPLOY_Y + 24) {
+            if (x >= 16 && x < 320) input->confirm = true;
+            else if (x >= 336 && x < 464) input->cancel = true;
+        }
+        return;
+    }
+    if (game->phase == PT_PHASE_CAMPAIGN_SELECT) {
+        input->confirm = false;
+        if (x < 8 || x >= 472 || y < 75 ||
+            y >= 75 + row_height * PT_CAMPAIGN_COUNT) return;
         first_row = 70 + 5;
         visual_row = (y - first_row) / row_height;
         item = ui.focus.first_visible +
                (size_t)(visual_row < 0 ? 0 : visual_row);
-        if (item < PT_CAMPAIGN_COUNT) ui.focus.selected = item;
+        if (item < PT_CAMPAIGN_COUNT &&
+            pt_input_campaign_is_unlocked((uint8_t)item)) {
+            ui.focus.selected = item;
+            input->confirm = true;
+        } else {
+            if (!game->headless) pt_audio_cue(PT_CUE_UI_INVALID);
+        }
         return;
     }
-    if (ui.panel == PT_UI_PANEL_BUILD &&
-        x >= 8 && x < 472 && y >= 31 && y < 238) {
+    if (ui.panel == PT_UI_PANEL_BUILD) {
+        input->confirm = false;
         first_row = 31 + 5 + row_height;
-        if (y < first_row) {
-            input->confirm = false;
-            return;
-        }
+        if (x < 8 || x >= 472 || y < first_row ||
+            y >= first_row + row_height * PT_ROLE_COUNT) return;
         visual_row = (y - first_row) / row_height;
         item = ui.focus.first_visible + (size_t)visual_row;
-        if (item < PT_ROLE_COUNT) ui.focus.selected = item;
+        if (item < PT_ROLE_COUNT) {
+            ui.focus.selected = item;
+            input->confirm = true;
+        }
         return;
     }
-    if (ui.panel == PT_UI_PANEL_INSPECTOR &&
-        x >= 8 && x < 472 && y >= 73 && y < 238) {
-        first_row = 73 + 5;
+    if (ui.panel == PT_UI_PANEL_INSPECTOR) {
+        input->confirm = false;
+        first_row = PT_INSPECTOR_Y + 5;
+        if (x < 8 || x >= 472 || y < first_row ||
+            y >= first_row + row_height * PT_INSPECT_COUNT) return;
         visual_row = (y - first_row) / row_height;
         item = ui.focus.first_visible +
                (size_t)(visual_row < 0 ? 0 : visual_row);
-        if (item < PT_INSPECT_COUNT) ui.focus.selected = item;
+        if (item < PT_INSPECT_COUNT) {
+            ui.focus.selected = item;
+            input->confirm = true;
+        }
     }
 }
 
@@ -433,7 +542,7 @@ static void build_enabled(const pt_game *game, bool enabled[PT_ROLE_COUNT])
     size_t index;
 
     if (enabled == NULL) return;
-    campaign = game != NULL ? pt_campaign(game->campaign) : NULL;
+    campaign = game != NULL ? pt_game_campaign(game) : NULL;
     for (index = 0u; index < PT_ROLE_COUNT; ++index) {
         const pt_fixture_def *fixture =
             game != NULL ? pt_fixture_def_at(game->campaign,
@@ -498,24 +607,18 @@ static size_t focus_page_size(size_t item_count)
 
 static void open_panel(pt_game *game)
 {
-    bool enabled[PT_ROLE_COUNT];
     pt_fixture *fixture;
 
     if (game == NULL || game->cursor.pad == 0u) return;
     fixture = pt_fixture_at_pad(game, game->cursor.pad);
     if (fixture == NULL) {
         ui.panel = PT_UI_PANEL_BUILD;
-        build_enabled(game, enabled);
         kilix_ui_focus_init(&ui.focus, PT_ROLE_COUNT,
                             focus_page_size(PT_ROLE_COUNT));
-        (void)kilix_ui_focus_set_items(&ui.focus, PT_ROLE_COUNT, enabled);
     } else {
         ui.panel = PT_UI_PANEL_INSPECTOR;
-        inspector_enabled(game, enabled);
         kilix_ui_focus_init(&ui.focus, PT_INSPECT_COUNT,
                             focus_page_size(PT_INSPECT_COUNT));
-        (void)kilix_ui_focus_set_items(
-            &ui.focus, PT_INSPECT_COUNT, enabled);
     }
 }
 
@@ -528,22 +631,14 @@ static kilix_ui_action focus_action(const pt_input_state *input)
     return KILIX_UI_ACTION_NONE;
 }
 
-static void move_panel_focus(pt_game *game, const pt_input_state *input)
+static void move_panel_focus(const pt_input_state *input)
 {
-    bool enabled[PT_ROLE_COUNT];
     kilix_ui_action action = focus_action(input);
 
     if (action == KILIX_UI_ACTION_NONE) return;
-    if (ui.panel == PT_UI_PANEL_BUILD) {
-        build_enabled(game, enabled);
-        (void)kilix_ui_focus_set_items(&ui.focus, PT_ROLE_COUNT, enabled);
-        (void)kilix_ui_focus_apply(&ui.focus, action, enabled);
-    } else if (ui.panel == PT_UI_PANEL_INSPECTOR) {
-        inspector_enabled(game, enabled);
-        (void)kilix_ui_focus_set_items(
-            &ui.focus, PT_INSPECT_COUNT, enabled);
-        (void)kilix_ui_focus_apply(&ui.focus, action, enabled);
-    }
+    /* Every row can be inspected. Affordability gates activation only, so
+     * opening an inspector never jumps to Sell when an upgrade is unavailable. */
+    (void)kilix_ui_focus_apply(&ui.focus, action, NULL);
 }
 
 static void move_board_cursor(pt_game *game, const pt_input_state *input)
@@ -554,6 +649,7 @@ static void move_board_cursor(pt_game *game, const pt_input_state *input)
     game->cursor.x = (int8_t)clamp_int(x, 0, PT_COLUMNS - 1);
     game->cursor.y = (int8_t)clamp_int(y, 0, PT_ROWS - 1);
     resolve_cursor_pad(game);
+    if (ui.zoom_2x && (input->move_x || input->move_y)) center_zoom(game);
 }
 
 static void activate_inspector(pt_game *game)
@@ -630,15 +726,13 @@ static void note_outcome(pt_game *game)
     bool cleared;
 
     if (game->phase != PT_PHASE_VICTORY &&
-        game->phase != PT_PHASE_DEFEAT) {
-        ui.outcome_recorded = false;
+        game->phase != PT_PHASE_DEFEAT)
         return;
-    }
-    if (ui.outcome_recorded) return;
+    if (game->outcome_recorded) return;
     cleared = game->phase == PT_PHASE_VICTORY;
     pt_save_note_run(&ui.records, game, cleared);
     (void)pt_save_store_records(&ui.records);
-    ui.outcome_recorded = true;
+    game->outcome_recorded = true;
 }
 
 static void begin_campaign_select(void)
@@ -654,13 +748,20 @@ static void begin_campaign_select(void)
     ui.panel = PT_UI_PANEL_NONE;
 }
 
+static void open_pause_menu(pt_game *game)
+{
+    ui.pause_return = game->phase;
+    kilix_ui_focus_init(&ui.pause_focus, PT_PAUSE_MENU_COUNT, PT_PAUSE_MENU_COUNT);
+    pt_game_set_phase(game, PT_PHASE_PAUSE);
+}
+
 static void apply_title(pt_game *game, pt_input_state *input)
 {
     if (input->confirm) {
         begin_campaign_select();
         pt_game_set_phase(game, PT_PHASE_CAMPAIGN_SELECT);
     } else if (input->cancel) {
-        input->quit = true;
+        open_pause_menu(game);
     }
 }
 
@@ -683,34 +784,51 @@ static void apply_campaign_select(pt_game *game, pt_input_state *input)
                kilix_ui_focus_accepts(
                    &ui.focus, KILIX_UI_ACTION_ACCEPT, enabled) &&
                ui.focus.selected < PT_CAMPAIGN_COUNT) {
-        uint8_t campaign = (uint8_t)ui.focus.selected;
+        ui.selected_campaign = (uint8_t)ui.focus.selected;
+        kilix_ui_focus_init(&ui.map_focus, PT_MAP_COUNT, PT_MAP_COUNT);
+        ui.map_focus.selected = game->board.map;
+        pt_game_set_phase(game, PT_PHASE_MAP_SELECT);
+    }
+}
+
+static void apply_map_select(pt_game *game, pt_input_state *input)
+{
+    kilix_ui_action action = focus_action(input);
+    if (action != KILIX_UI_ACTION_NONE)
+        (void)kilix_ui_focus_apply(&ui.map_focus, action, NULL);
+    if (input->cancel) {
+        begin_campaign_select();
+        ui.focus.selected = ui.selected_campaign;
+        pt_game_set_phase(game, PT_PHASE_CAMPAIGN_SELECT);
+    } else if (input->confirm && ui.map_focus.selected < PT_MAP_COUNT) {
         uint64_t seed = game->rng;
-        pt_game_init(game, campaign, seed);
+        pt_game_init_map(game, (uint8_t)ui.map_focus.selected, ui.selected_campaign, seed);
+        center_zoom(game);
         ui.panel = PT_UI_PANEL_NONE;
-        ui.outcome_recorded = false;
+        game->outcome_recorded = false;
     }
 }
 
 static void apply_play(pt_game *game, pt_input_state *input)
 {
+    if ((input->speed || input->gamepad_wave) && game->phase == PT_PHASE_WAVE)
+        game->speed = game->speed == 2u ? 1u : 2u;
     if (input->pause) {
-        ui.pause_return = game->phase;
-        pt_game_set_phase(game, PT_PHASE_PAUSE);
+        open_pause_menu(game);
         return;
     }
     if (ui.panel != PT_UI_PANEL_NONE)
-        move_panel_focus(game, input);
+        move_panel_focus(input);
     else
         move_board_cursor(game, input);
 
     direct_fixture_actions(game, input);
-    if (input->call_wave) pt_game_call_wave_early(game);
+    if (input->call_wave || input->gamepad_wave) pt_game_call_wave_early(game);
     if (input->cancel) {
         if (ui.panel != PT_UI_PANEL_NONE)
             ui.panel = PT_UI_PANEL_NONE;
-        else if (game->phase == PT_PHASE_BUILD) {
-            begin_campaign_select();
-            pt_game_set_phase(game, PT_PHASE_CAMPAIGN_SELECT);
+        else {
+            open_pause_menu(game);
         }
     } else if (input->confirm) {
         if (ui.panel == PT_UI_PANEL_NONE)
@@ -720,10 +838,33 @@ static void apply_play(pt_game *game, pt_input_state *input)
     }
 }
 
-static void apply_pause(pt_game *game, const pt_input_state *input)
+static void apply_pause(pt_game *game, pt_input_state *input)
 {
+    bool enabled[PT_PAUSE_MENU_COUNT] = {true, true, true, true};
+    kilix_ui_action action = focus_action(input);
+    if (action != KILIX_UI_ACTION_NONE)
+        (void)kilix_ui_focus_apply(&ui.pause_focus, action, enabled);
     if (!input->pause && !input->cancel && !input->confirm) return;
-    if (ui.pause_return != PT_PHASE_BUILD &&
+    if (input->confirm && ui.pause_focus.selected == 3u) {
+        input->quit = true;
+        return;
+    }
+    if (input->confirm && ui.pause_focus.selected == 1u) {
+        uint8_t campaign = game->campaign;
+        uint64_t seed = game->rng;
+        pt_game_init_map(game, game->board.map, campaign, seed);
+        center_zoom(game);
+        ui.panel = PT_UI_PANEL_NONE;
+        game->outcome_recorded = false;
+        return;
+    }
+    if (input->confirm && ui.pause_focus.selected == 2u) {
+        begin_campaign_select();
+        pt_game_set_phase(game, PT_PHASE_CAMPAIGN_SELECT);
+        return;
+    }
+    if (ui.pause_return != PT_PHASE_TITLE &&
+        ui.pause_return != PT_PHASE_BUILD &&
         ui.pause_return != PT_PHASE_WAVE)
         ui.pause_return = game->wave.active ?
                           PT_PHASE_WAVE : PT_PHASE_BUILD;
@@ -741,6 +882,11 @@ static void clear_transient(pt_input_state *input)
     ui.secondary_click = false;
 }
 
+pt_phase pt_input_help_return_phase(void)
+{
+    return (pt_phase)ui.help_return;
+}
+
 void pt_input_apply(pt_game *game, pt_input_state *input)
 {
     kittyin_action_event repeats[8];
@@ -751,10 +897,41 @@ void pt_input_apply(pt_game *game, pt_input_state *input)
         &action_map, 1000u / PT_TICK_HZ, repeats,
         sizeof repeats / sizeof repeats[0]);
     consume_actions(input, repeats, repeat_count);
+    if (ui.zoom_2x && !ui.zoom_anchored) center_zoom(game);
     apply_pointer_to_board(game);
     apply_pointer_to_controls(game, input);
-    if (input->zoom) ui.zoom_2x = !ui.zoom_2x;
+    if (input->zoom) {
+        ui.zoom_2x = !ui.zoom_2x;
+        center_zoom(game);
+    }
+    if (input->mute) pt_audio_set_muted(!pt_audio_is_muted());
+    if (!game->headless) {
+        if (input->move_x || input->move_y) pt_audio_cue(PT_CUE_UI_CURSOR);
+        if (input->confirm) pt_audio_cue(PT_CUE_UI_CONFIRM);
+        if (input->cancel) pt_audio_cue(PT_CUE_UI_CANCEL);
+    }
     note_outcome(game);
+    if (input->intel && (game->phase == PT_PHASE_BUILD || game->phase == PT_PHASE_WAVE)) {
+        ui.intel_return = game->phase;
+        if (!ui.primary_click) {
+            uint16_t next = (uint16_t)(game->wave.index + (game->phase == PT_PHASE_WAVE ? 1u : 0u));
+            const pt_wave_def *wave = pt_game_wave(game, next);
+            ui.intel_kind = wave != NULL && wave->group_count > 0u ? wave->groups[0].type : 0u;
+        }
+        pt_game_set_phase(game, PT_PHASE_INTEL);
+        clear_transient(input);
+        return;
+    }
+    if (input->help) {
+        if (game->phase == PT_PHASE_HELP)
+            pt_game_set_phase(game, (pt_phase)ui.help_return);
+        else {
+            ui.help_return = game->phase;
+            pt_game_set_phase(game, PT_PHASE_HELP);
+        }
+        clear_transient(input);
+        return;
+    }
 
     switch ((pt_phase)game->phase) {
     case PT_PHASE_TITLE:
@@ -763,6 +940,9 @@ void pt_input_apply(pt_game *game, pt_input_state *input)
     case PT_PHASE_CAMPAIGN_SELECT:
         apply_campaign_select(game, input);
         break;
+    case PT_PHASE_MAP_SELECT:
+        apply_map_select(game, input);
+        break;
     case PT_PHASE_BUILD:
     case PT_PHASE_WAVE:
         apply_play(game, input);
@@ -770,6 +950,26 @@ void pt_input_apply(pt_game *game, pt_input_state *input)
     case PT_PHASE_PAUSE:
         apply_pause(game, input);
         break;
+    case PT_PHASE_HELP:
+        if (input->confirm || input->cancel)
+            pt_game_set_phase(game, (pt_phase)ui.help_return);
+        break;
+    case PT_PHASE_INTEL: {
+        uint16_t count = pt_game_campaign(game)->unit_count;
+        if (input->cancel || input->confirm || input->intel)
+            pt_game_set_phase(game, (pt_phase)ui.intel_return);
+        else if (input->pause) {
+            pt_game_set_phase(game, (pt_phase)ui.intel_return);
+            open_pause_menu(game);
+        } else if (count > 0u) {
+            if (input->move_x < 0 || input->move_y < 0)
+                ui.intel_kind = ui.intel_kind == 0u ? (uint16_t)(count - 1u) :
+                    (uint16_t)(ui.intel_kind - 1u);
+            else if (input->move_x > 0 || input->move_y > 0)
+                ui.intel_kind = (uint16_t)((ui.intel_kind + 1u) % count);
+        }
+        break;
+    }
     case PT_PHASE_VICTORY:
     case PT_PHASE_DEFEAT:
         if (input->confirm || input->cancel) {

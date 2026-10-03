@@ -29,6 +29,7 @@ void pt_combat_reset(pt_game *game)
 {
     if (!game) return;
     memset(&game->projectiles, 0, sizeof game->projectiles);
+    memset(game->effects, 0, sizeof game->effects);
 }
 
 static uint8_t source_currency_tick(pt_game *game, uint16_t source_pad)
@@ -75,6 +76,7 @@ static void kill_unit_with_tick(pt_game *game, pt_unit *unit,
     on_death = def->on_death;
     x = unit->x;
     y = unit->y;
+    pt_effect_emit(game, PT_EFFECT_DESTROY, x, y, def->mass >= 5u ? 1.0f : 0.55f);
     unit->integrity = 0;
     unit->shield = 0;
     unit->alive = 0u;
@@ -82,12 +84,15 @@ static void kill_unit_with_tick(pt_game *game, pt_unit *unit,
     if (game->units.live > 0u) --game->units.live;
 
     /* Step 7: base currency, then the one cached largest support tick. */
+    if (!game->headless) pt_audio_cue(PT_CUE_UNIT_DEATH);
     pt_economy_award(game, def->currency);
     if (currency_tick > 0u)
         pt_economy_award(game, (uint32_t)currency_tick);
 
-    if (on_death.active && on_death.count > 0u)
+    if (on_death.active && on_death.count > 0u) {
+        if (!game->headless) pt_audio_cue(PT_CUE_UNIT_SPLIT);
         spawn_hook_units(game, &on_death, x, y, true);
+    }
 }
 
 void pt_combat_kill_unit(pt_game *game, pt_unit *unit)
@@ -107,6 +112,7 @@ static void fire_threshold_hook(pt_game *game, pt_unit *unit,
     if ((double)previous_integrity > boundary &&
         (double)unit->integrity <= boundary) {
         unit->threshold_fired = 1u;
+        if (!game->headless) pt_audio_cue(PT_CUE_UNIT_BOSS_SPLIT);
         spawn_hook_units(game, threshold, unit->x, unit->y, false);
     }
 }
@@ -158,6 +164,7 @@ static int32_t apply_damage_from(pt_game *game, pt_unit *unit,
     int32_t remaining;
     int32_t applied = 0;
     int32_t previous_integrity;
+    int32_t previous_shield;
 
     if (!game || !unit || !unit->alive || damage <= 0 ||
         damage_type == PT_DAMAGE_NONE)
@@ -183,6 +190,7 @@ static int32_t apply_damage_from(pt_game *game, pt_unit *unit,
     if (resolved < 1) resolved = 1;
     remaining = resolved;
     previous_integrity = unit->integrity;
+    previous_shield = unit->shield;
     unit->shield_idle = 0.0f;
 
     /* Step 5: shield first. Splash has half effect while a shield is taking
@@ -211,6 +219,12 @@ static int32_t apply_damage_from(pt_game *game, pt_unit *unit,
         applied += integrity_damage;
     }
 
+    if (applied > 0) {
+        bool shield_broken = previous_shield > 0 && unit->shield == 0;
+        pt_effect_emit(game, shield_broken ? PT_EFFECT_SHIELD : PT_EFFECT_HIT,
+            unit->x, unit->y, shield_broken ? 0.75f : 0.35f);
+        if (shield_broken && !game->headless) pt_audio_cue(PT_CUE_IMPACT_SHIELD_BREAK);
+    }
     fire_threshold_hook(game, unit, def, previous_integrity);
     if (unit->integrity <= 0)
         kill_unit_with_tick(game, unit,
@@ -232,12 +246,18 @@ void pt_combat_damage_fixture(pt_game *game, pt_fixture *fixture,
     bool was_reroute = false;
 
     if (!game || !fixture || !fixture->present || damage <= 0) return;
+    const pt_pad_def *hit_pad = pt_game_pad(game, fixture->pad);
+    if (hit_pad != NULL)
+        pt_effect_emit(game, damage >= fixture->integrity ? PT_EFFECT_DESTROY : PT_EFFECT_HIT,
+            (float)hit_pad->x + 0.5f, (float)hit_pad->y + 0.5f, 0.7f);
     if (damage < fixture->integrity) {
         fixture->integrity -= damage;
+        if (!game->headless) pt_audio_cue(PT_CUE_FIXTURE_HIT);
         return;
     }
 
     destroyed_pad = fixture->pad;
+    if (!game->headless) pt_audio_cue(PT_CUE_FIXTURE_DESTROYED);
     {
         const pt_fixture_def *def =
             pt_fixture_def_at(game->campaign, fixture->kind);
@@ -250,7 +270,7 @@ void pt_combat_damage_fixture(pt_game *game, pt_fixture *fixture,
     if (game->fixtures_lost < UINT32_MAX) ++game->fixtures_lost;
 
     if (was_reroute) {
-        const pt_pad_def *pad = pt_pad(destroyed_pad);
+        const pt_pad_def *pad = pt_game_pad(game, destroyed_pad);
         if (pad) {
             uint16_t cell = pt_cell_index((int)pad->x, (int)pad->y);
             pt_board_set_bias(&game->board, cell, 0u);
@@ -332,8 +352,14 @@ static void resolve_impact(pt_game *game, pt_projectile *projectile,
 
     projectile->x = projectile->target_x;
     projectile->y = projectile->target_y;
+    if (!game->headless)
+        pt_audio_cue(projectile->splash_radius > 0.0f ?
+            PT_CUE_IMPACT_SPLASH : projectile->damage_type == PT_DAMAGE_PIERCE ?
+            PT_CUE_IMPACT_PIERCE : PT_CUE_IMPACT_IMPACT);
 
     if (projectile->splash_radius > 0.0f) {
+        pt_effect_emit(game, PT_EFFECT_BLAST, projectile->x, projectile->y,
+            projectile->splash_radius);
         splash_impact(game, projectile, projectile->x, projectile->y);
     } else if (target) {
         (void)apply_damage_from(game, target, projectile->damage,

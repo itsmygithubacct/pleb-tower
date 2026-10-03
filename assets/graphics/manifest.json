@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "game": "pleb-tower",
-  "generated_at": "2026-07-28",
+  "generated_at": "2026-10-03",
   "generator": {
-    "name": "Google Gemini gemini-3-pro-image",
+    "name": "Google Gemini sprite sheets; OpenAI imagegen level scenery",
     "mode": "text-to-image from project-authored prompts",
     "postprocess": "magenta chroma key, despill, connected-component sprite extraction, aspect-preserving fit to an exact cell grid"
   },
@@ -159,9 +159,13 @@
     {
       "id": "maple-loop",
       "path": "assets/graphics/bitmaps/levels/maple-loop.png",
-      "source": "assets/graphics/source/maple-loop-ground.png",
-      "sha256": "294748436e413b24292ac5b64ed525d6a14f8d52cdbaa8b02f2e0d0f72fe4b12",
-      "sha256_source": "7bf3202ec0b3c5aa04688d261d39dda80e60fb11fa97c8a5ee3fcfec6aa276cd",
+      "source": "assets/graphics/source/maple-loop-route.png",
+      "sha256": "ffa147d3c82ef437556311637af752c0113825d221138732c4ea9bfa77d476eb",
+      "sha256_source": "ae78de1768614bd1d9a039822a0d27b220480747e34ee0fc13692e1b70121360",
+      "layout_sha256": "5e090fe675e2c319bc998f0dd2f158724c5478fbbbed764c95c43b0f830aafaa",
+      "layout_reference": "assets/graphics/source/maple-loop-layout.png",
+      "layout_source": "assets/graphics/source/maple-loop-layout.json",
+      "generator": "OpenAI imagegen, exact map layout reference",
       "alpha_required": false,
       "grid": {
         "columns": 1,
@@ -171,7 +175,28 @@
         "cell_width": 480,
         "cell_height": 240
       },
-      "prompt_brief": "Ground cover only \u2014 lawns, houses, driveways, fences. The lane is carried by terrain tiles so painted road and authored map cannot disagree."
+      "prompt_brief": "Scenery authored around the exact Maple Loop road. Sheltered neighborhood bends. Build overlapping defenses. Empty concrete foundations mark each build pad."
+    },
+    {
+      "id": "rail-yard",
+      "path": "assets/graphics/bitmaps/levels/rail-yard.png",
+      "source": "assets/graphics/source/rail-yard-scenery.png",
+      "sha256": "6e7f5f6ac564ca614a681c9939da6f412f729746c0fb3f9f5845c55fc5d4e451",
+      "sha256_source": "f49756d22403f520099ed979c468cae8e6e305363b44b02d9f7aa32f6fcfed64",
+      "layout_sha256": "b0208783cdf1f16124b3ad9ada9464356fff59c8164f4ab7188dc158435dd7b1",
+      "layout_reference": "assets/graphics/source/rail-yard-layout.png",
+      "layout_source": "assets/graphics/source/rail-yard-layout.json",
+      "generator": "OpenAI imagegen, exact map layout reference",
+      "alpha_required": false,
+      "grid": {
+        "columns": 1,
+        "rows": 1,
+        "width": 480,
+        "height": 240,
+        "cell_width": 480,
+        "cell_height": 240
+      },
+      "prompt_brief": "Scenery authored around the exact Rail Yard road. Long straights. An exposed bend. Guard your guns. Foundations are drawn at runtime at exact build coordinates."
     }
   ]
 }

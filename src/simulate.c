@@ -18,7 +18,6 @@
  * declarations requested in implementation/HEADER_REQUESTS.md.  Keeping the
  * order layout private lets this file compile while that request is being
  * reconciled, without defining the shared struct in an owned file. */
-typedef struct pt_sim_order_entry pt_sim_order_entry;
 int pt_simulate_run(uint8_t campaign, const pt_sim_order_entry *order,
                     size_t order_count, bool verbose);
 
@@ -75,7 +74,7 @@ static bool fixture_in_range(const pt_game *game, const pt_unit *unit,
         float dy;
 
         if (!fixture->present) continue;
-        pad = pt_pad(fixture->pad);
+        pad = pt_game_pad(game, fixture->pad);
         if (pad == NULL) continue;
         dx = (float)pad->x + 0.5f - unit->x;
         dy = (float)pad->y + 0.5f - unit->y;
@@ -104,13 +103,13 @@ static bool unit_will_leak(const pt_game *game, const pt_unit *unit)
         fixture_in_range(game, unit, definition->attack_range))
         return false;
 
-    step = definition->speed * (float)PT_STEP_SECONDS;
+    step = definition->speed * (1.0f - unit->decoy_slow) * (float)PT_STEP_SECONDS;
     if (!(step > 0.0f)) return false;
     next_x = unit->x;
     next_y = unit->y;
 
     if (definition->air) {
-        const pt_campaign_def *campaign = pt_campaign(game->campaign);
+        const pt_campaign_def *campaign = pt_game_campaign(game);
         float goal_x = (float)campaign->goal_x + 0.5f;
         float goal_y = (float)campaign->goal_y + 0.5f;
         float dx = goal_x - next_x;
@@ -204,21 +203,21 @@ static void record_step_leaks(
     }
 }
 
-static bool order_is_valid(uint8_t campaign,
+static bool order_is_valid(uint8_t map, uint8_t campaign,
                            const pt_sim_order_entry *order,
                            size_t order_count)
 {
-    const pt_campaign_def *definition = pt_campaign(campaign);
+    const pt_campaign_def *definition = pt_campaign_on_map(map, campaign);
 
-    if (campaign >= PT_CAMPAIGN_COUNT) return false;
+    if (map >= PT_MAP_COUNT || campaign >= PT_CAMPAIGN_COUNT) return false;
     if (order_count > 0u && order == NULL) return false;
     for (size_t index = 0u; index < order_count; ++index) {
         pt_sim_order_layout entry = order_entry_at(order, index);
 
         if (entry.wave == 0u || entry.wave > definition->wave_count ||
-            pt_pad(entry.pad) == NULL ||
+            pt_map_pad(map, entry.pad) == NULL ||
             entry.kind >= definition->fixture_count ||
-            entry.tier >= PT_MAX_TIER)
+            (entry.tier >= PT_MAX_TIER && entry.tier != PT_SIM_REPAIR_TIER))
             return false;
     }
     return true;
@@ -229,6 +228,10 @@ static bool apply_order_entry(pt_game *game,
 {
     pt_fixture *fixture = pt_fixture_at_pad(game, entry->pad);
 
+    if (entry->tier == PT_SIM_REPAIR_TIER) {
+        if (fixture == NULL || fixture->kind != entry->kind) return false;
+        return fixture->integrity == fixture->integrity_max || pt_fixture_repair(game, entry->pad);
+    }
     if (fixture == NULL) {
         if (!pt_fixture_place(game, entry->pad, entry->kind)) return false;
         fixture = pt_fixture_at_pad(game, entry->pad);
@@ -302,6 +305,12 @@ static void print_invalid_result(uint8_t campaign)
 int pt_simulate_run(uint8_t campaign, const pt_sim_order_entry *order,
                     size_t order_count, bool verbose)
 {
+    return pt_simulate_map_run(0u, campaign, order, order_count, verbose);
+}
+
+int pt_simulate_map_run(uint8_t map, uint8_t campaign, const pt_sim_order_entry *order,
+                        size_t order_count, bool verbose)
+{
     pt_game game;
     const pt_campaign_def *campaign_definition;
     uint32_t total_leaks[PT_UNITS_PER_CAMPAIGN] = { 0u };
@@ -310,13 +319,13 @@ int pt_simulate_run(uint8_t campaign, const pt_sim_order_entry *order,
     uint16_t waves_run = 0u;
     bool stalled = false;
 
-    if (!order_is_valid(campaign, order, order_count)) {
+    if (!order_is_valid(map, campaign, order, order_count)) {
         print_invalid_result(campaign);
         return PT_SIM_ERROR;
     }
 
-    campaign_definition = pt_campaign(campaign);
-    pt_game_init(&game, campaign, PT_SIM_SEED);
+    campaign_definition = pt_campaign_on_map(map, campaign);
+    pt_game_init_map(&game, map, campaign, PT_SIM_SEED);
     game.headless = true;
 
     while (game.phase == PT_PHASE_BUILD || game.phase == PT_PHASE_WAVE) {
@@ -334,7 +343,7 @@ int pt_simulate_run(uint8_t campaign, const pt_sim_order_entry *order,
             stalled = true;
             break;
         }
-        wave = pt_wave_def_at(campaign, game.wave.index);
+        wave = pt_game_wave(&game, game.wave.index);
         if (wave == NULL) {
             stalled = true;
             break;
@@ -347,11 +356,7 @@ int pt_simulate_run(uint8_t campaign, const pt_sim_order_entry *order,
             &game, order, order_count, wave->index);
         total_order_failures += order_failures;
 
-        /* Skip authored thinking time without claiming an early-call bonus.
-         * Python applies each order immediately before the same wave; this
-         * preserves that economy timing while still taking the normal
-         * pt_game_step transition. */
-        game.wave.build_remaining = 0.0;
+        pt_game_call_wave_early(&game);
         pt_game_step(&game, PT_STEP_SECONDS);
         if (game.phase != PT_PHASE_WAVE) {
             stalled = true;
@@ -362,6 +367,7 @@ int pt_simulate_run(uint8_t campaign, const pt_sim_order_entry *order,
                wave_ticks < PT_SIM_WAVE_TICK_LIMIT) {
             int32_t integrity_before = game.economy.integrity;
 
+            pt_decoy_update(&game);
             snapshot_units(&game, snapshot);
             pt_game_step(&game, PT_STEP_SECONDS);
             record_step_leaks(&game, snapshot, integrity_before, wave_leaks);
@@ -404,6 +410,16 @@ int pt_simulate_run(uint8_t campaign, const pt_sim_order_entry *order,
                 (double)wave_ticks / (double)PT_TICK_HZ,
                 order_failures, game.units.overflow,
                 game.projectiles.overflow);
+            (void)printf("PT_SIM_DEFENSES map=%s campaign=%s wave=%u",
+                pt_map(map)->id, campaign_definition->id, (unsigned int)wave->index);
+            for (size_t slot = 0u; slot < PT_MAX_FIXTURES; ++slot) {
+                const pt_fixture *fixture = &game.fixtures[slot];
+                if (!fixture->present) continue;
+                (void)printf(" %u:%s:T%u:%dhp", (unsigned int)fixture->pad,
+                    pt_fixture_def_at(campaign, fixture->kind)->id,
+                    (unsigned int)fixture->tier + 1u, fixture->integrity);
+            }
+            (void)printf("\n");
         }
         if (stalled || game.phase == PT_PHASE_DEFEAT ||
             game.phase == PT_PHASE_VICTORY)
@@ -426,9 +442,9 @@ int pt_simulate_run(uint8_t campaign, const pt_sim_order_entry *order,
         }
 
         (void)printf(
-            "PT_SIM_RESULT campaign=%s status=%s waves=%" PRIu16
+            "PT_SIM_RESULT map=%s campaign=%s status=%s waves=%" PRIu16
             " leak_count=%" PRIu32,
-            campaign_definition->id, status, waves_run,
+            pt_map(map)->id, campaign_definition->id, status, waves_run,
             leak_count(total_leaks, campaign_definition->unit_count));
         print_leaks(campaign_definition, total_leaks);
         (void)printf(
@@ -446,4 +462,39 @@ int pt_simulate_run(uint8_t campaign, const pt_sim_order_entry *order,
             game.projectiles.overflow);
         return result;
     }
+}
+
+int pt_simulate_file(uint8_t campaign, const char *path)
+{
+    return pt_simulate_map_file(0u, campaign, path);
+}
+
+int pt_simulate_map_file(uint8_t map, uint8_t campaign, const char *path)
+{
+    pt_sim_order_entry order[256];
+    size_t count = 0u;
+    char line[256];
+    FILE *file = fopen(path, "r");
+    if (!file || campaign >= PT_CAMPAIGN_COUNT) {
+        if (file) (void)fclose(file);
+        return PT_SIM_ERROR;
+    }
+    while (fgets(line, sizeof line, file)) {
+        unsigned int wave, pad, kind, tier;
+        char extra;
+        if (line[0] == '#' || line[0] == '\n') continue;
+        if (count == sizeof order / sizeof order[0] ||
+            sscanf(line, "%u %u %u %u %c", &wave, &pad, &kind, &tier, &extra) != 4 ||
+            wave > UINT16_MAX || pad > UINT8_MAX ||
+            kind > UINT16_MAX || tier > UINT8_MAX) {
+            (void)fclose(file);
+            return PT_SIM_ERROR;
+        }
+        order[count++] = (pt_sim_order_entry){
+            (uint16_t)wave, (uint8_t)pad, (uint16_t)kind, (uint8_t)tier};
+    }
+    bool ok = !ferror(file);
+    if (fclose(file) != 0) ok = false;
+    if (!ok) return PT_SIM_ERROR;
+    return pt_simulate_map_run(map, campaign, order, count, true);
 }

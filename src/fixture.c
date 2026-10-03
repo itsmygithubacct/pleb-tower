@@ -24,9 +24,9 @@ static uint32_t add_u32_saturating(uint32_t first, uint32_t second)
     return first + second;
 }
 
-static bool pad_position(uint8_t pad_id, float *out_x, float *out_y)
+static bool pad_position(const pt_game *game, uint8_t pad_id, float *out_x, float *out_y)
 {
-    const pt_pad_def *pad = pt_pad(pad_id);
+    const pt_pad_def *pad = pt_game_pad(game, pad_id);
 
     if (pad == NULL || out_x == NULL || out_y == NULL) return false;
     *out_x = (float)pad->x + 0.5f;
@@ -34,9 +34,9 @@ static bool pad_position(uint8_t pad_id, float *out_x, float *out_y)
     return true;
 }
 
-static uint16_t pad_cell(uint8_t pad_id)
+static uint16_t pad_cell(const pt_game *game, uint8_t pad_id)
 {
-    const pt_pad_def *pad = pt_pad(pad_id);
+    const pt_pad_def *pad = pt_game_pad(game, pad_id);
 
     if (pad == NULL) return PT_CELL_COUNT;
     return pt_cell_index((int)pad->x, (int)pad->y);
@@ -78,7 +78,7 @@ static bool rebuild_with_bias(pt_game *game, uint8_t pad, uint16_t bias,
     uint16_t cell;
 
     if (game == NULL) return false;
-    cell = pad_cell(pad);
+    cell = pad_cell(game, pad);
     if (cell >= PT_CELL_COUNT) return false;
     if (old_bias != NULL) *old_bias = game->board.bias[cell];
     pt_board_set_bias(&game->board, cell, bias);
@@ -100,7 +100,7 @@ void pt_fixtures_reset(pt_game *game)
 
         if (!fixture->present || !fixture_is_reroute(game, fixture))
             continue;
-        cell = pad_cell(fixture->pad);
+        cell = pad_cell(game, fixture->pad);
         if (cell >= PT_CELL_COUNT || game->board.bias[cell] == 0u)
             continue;
         pt_board_set_bias(&game->board, cell, 0u);
@@ -132,7 +132,7 @@ bool pt_fixture_place(pt_game *game, uint8_t pad, uint16_t kind)
     pt_economy economy_before;
     uint16_t old_bias = 0u;
 
-    if (game == NULL || pt_pad(pad) == NULL) return false;
+    if (game == NULL || pt_game_pad(game, pad) == NULL) return false;
     fixture = fixture_slot(game, pad);
     definition = pt_fixture_def_at(game->campaign, kind);
     if (fixture == NULL || fixture->present || definition == NULL)
@@ -163,6 +163,7 @@ bool pt_fixture_place(pt_game *game, uint8_t pad, uint16_t kind)
     }
 
     pt_fixtures_refresh_support(game);
+    if (!game->headless) pt_audio_cue(PT_CUE_BUILD_PLACE);
     return true;
 }
 
@@ -201,6 +202,7 @@ bool pt_fixture_upgrade(pt_game *game, uint8_t pad)
     }
 
     pt_fixtures_refresh_support(game);
+    if (!game->headless) pt_audio_cue(PT_CUE_BUILD_UPGRADE);
     return true;
 }
 
@@ -233,6 +235,7 @@ bool pt_fixture_sell(pt_game *game, uint8_t pad)
     fixture->damage_scale = 1.0f;
     fixture->range_scale = 1.0f;
     pt_fixtures_refresh_support(game);
+    if (!game->headless) pt_audio_cue(PT_CUE_BUILD_SELL);
     return true;
 }
 
@@ -259,6 +262,7 @@ bool pt_fixture_repair(pt_game *game, uint8_t pad)
 
     fixture->integrity = fixture->integrity_max;
     fixture->invested = add_u32_saturating(fixture->invested, cost);
+    if (!game->headless) pt_audio_cue(PT_CUE_BUILD_REPAIR);
     return true;
 }
 
@@ -270,6 +274,7 @@ void pt_fixture_cycle_mode(pt_game *game, uint8_t pad)
     fixture->mode =
         (uint8_t)(((unsigned int)fixture->mode + 1u) %
                   (unsigned int)PT_TARGET_MODE_COUNT);
+    if (!game->headless) pt_audio_cue(PT_CUE_BUILD_MODE);
 }
 
 void pt_fixtures_refresh_support(pt_game *game)
@@ -288,7 +293,7 @@ void pt_fixtures_refresh_support(pt_game *game)
         target->range_scale = 1.0f;
         target->currency_tick = 0u;
         if (!target->present ||
-            !pad_position(target->pad, &target_x, &target_y))
+            !pad_position(game, target->pad, &target_x, &target_y))
             continue;
 
         for (support_index = 0u; support_index < PT_MAX_FIXTURES;
@@ -306,7 +311,7 @@ void pt_fixtures_refresh_support(pt_game *game)
             if (!support->present) continue;
             tier = fixture_tier(game, support, &definition);
             if (tier == NULL || definition->role != PT_ROLE_SUPPORT ||
-                !pad_position(support->pad, &support_x, &support_y))
+                !pad_position(game, support->pad, &support_x, &support_y))
                 continue;
             dx = target_x - support_x;
             dy = target_y - support_y;
@@ -343,7 +348,7 @@ static float unit_progress(const pt_game *game, const pt_unit *unit,
                            const pt_unit_def *definition)
 {
     if (definition->air) {
-        const pt_campaign_def *campaign = pt_campaign(game->campaign);
+        const pt_campaign_def *campaign = pt_game_campaign(game);
         float goal_x = (float)campaign->goal_x + 0.5f;
         float goal_y = (float)campaign->goal_y + 0.5f;
         float dx = unit->x - goal_x;
@@ -352,14 +357,7 @@ static float unit_progress(const pt_game *game, const pt_unit *unit,
         return sqrtf(dx * dx + dy * dy);
     }
 
-    {
-        int x = (int)floorf(unit->x);
-        int y = (int)floorf(unit->y);
-
-        if (x < 0 || x >= PT_COLUMNS || y < 0 || y >= PT_ROWS)
-            return (float)PT_DISTANCE_UNREACHABLE;
-        return (float)game->board.distance[pt_cell_index(x, y)];
-    }
+    return pt_board_distance_at(&game->board, unit->x, unit->y);
 }
 
 static bool target_is_better(const pt_game *game,
@@ -404,6 +402,17 @@ static bool target_is_better(const pt_game *game,
     return better || (tied && candidate->serial < best->serial);
 }
 
+float pt_fixture_range(const pt_game *game, const pt_fixture *fixture, uint8_t tier)
+{
+    if (game == NULL || fixture == NULL || tier >= PT_MAX_TIER) return 0.0f;
+    const pt_fixture_def *definition = pt_fixture_def_at(game->campaign, fixture->kind);
+    if (definition == NULL) return 0.0f;
+    const pt_tier_def *stats = &definition->tiers[tier];
+    if (definition->role == PT_ROLE_SUPPORT) return stats->radius;
+    if (definition->role == PT_ROLE_REROUTE) return (float)stats->pull_cells;
+    return stats->range * (fixture->present ? fixture->range_scale : 1.0f);
+}
+
 static pt_unit *acquire_target(pt_game *game, const pt_fixture *fixture,
                                const pt_tier_def *tier)
 {
@@ -417,7 +426,7 @@ static pt_unit *acquire_target(pt_game *game, const pt_fixture *fixture,
     size_t index;
 
     if (game == NULL || fixture == NULL || tier == NULL ||
-        !pad_position(fixture->pad, &fixture_x, &fixture_y))
+        !pad_position(game, fixture->pad, &fixture_x, &fixture_y))
         return NULL;
     range = tier->range * fixture->range_scale;
     if (!(range >= 0.0f) || !isfinite(range)) return NULL;
@@ -436,6 +445,9 @@ static pt_unit *acquire_target(pt_game *game, const pt_fixture *fixture,
         candidate_definition =
             pt_unit_def_at(game->campaign, candidate->kind);
         if (!unit_plane_is_targeted(tier, candidate_definition))
+            continue;
+        if (candidate_definition->hardened &&
+            (tier->hold_seconds > 0.0f || tier->stun_seconds > 0.0f))
             continue;
         dx = candidate->x - fixture_x;
         dy = candidate->y - fixture_y;
@@ -463,6 +475,8 @@ static void apply_status_effect(pt_game *game, pt_unit *unit,
     if (game == NULL || unit == NULL || !(seconds > 0.0f)) return;
     definition = pt_unit_def_at(game->campaign, unit->kind);
     if (definition == NULL || definition->hardened) return;
+    pt_effect_emit(game, effect == PT_STATUS_HOLD ? PT_EFFECT_HOLD : PT_EFFECT_STUN,
+        unit->x, unit->y, 0.7f);
     if (effect == PT_STATUS_HOLD) {
         if (seconds > unit->hold_remaining)
             unit->hold_remaining = seconds;
@@ -492,7 +506,7 @@ static void emit_projectile(pt_game *game, const pt_fixture *fixture,
         float source_y;
 
         if (projectile->alive) continue;
-        if (!pad_position(fixture->pad, &source_x, &source_y)) return;
+        if (!pad_position(game, fixture->pad, &source_x, &source_y)) return;
         (void)memset(projectile, 0, sizeof *projectile);
         projectile->x = source_x;
         projectile->y = source_y;
@@ -516,6 +530,15 @@ static void fire_fixture(pt_game *game, const pt_fixture *fixture,
                          const pt_fixture_def *definition,
                          const pt_tier_def *tier, pt_unit *target)
 {
+    if (!game->headless) {
+        const uint32_t cues[PT_ROLE_COUNT] = {
+            PT_CUE_FIRE_RAPID, PT_CUE_FIRE_ARTILLERY, PT_CUE_FIRE_CONTROL,
+            PT_CUE_BUILD_REROUTE, PT_CUE_FIRE_ANTIAIR, PT_CUE_FIRE_DISABLE,
+            0u, 0u
+        };
+        if (definition->role < PT_ROLE_COUNT)
+            pt_audio_cue(cues[definition->role]);
+    }
     switch ((pt_fixture_role)definition->role) {
     case PT_ROLE_CONTROL:
         apply_status_effect(game, target, PT_STATUS_HOLD,
@@ -586,7 +609,7 @@ static void update_support(pt_game *game, pt_fixture *support,
     size_t index;
 
     if (!(tier->repair_per_second > 0.0f) ||
-        !pad_position(support->pad, &support_x, &support_y))
+        !pad_position(game, support->pad, &support_x, &support_y))
         return;
     support->cooldown += tier->repair_per_second * dt;
     if (support->cooldown < 1.0f) return;
@@ -606,7 +629,7 @@ static void update_support(pt_game *game, pt_fixture *support,
         float dy;
 
         if (!target->present ||
-            !pad_position(target->pad, &target_x, &target_y))
+            !pad_position(game, target->pad, &target_x, &target_y))
             continue;
         dx = target_x - support_x;
         dy = target_y - support_y;
@@ -622,12 +645,12 @@ static void sync_reroute_biases(pt_game *game)
     bool changed = false;
     uint8_t pad_id;
 
-    for (pad_id = 1u; pad_id <= PT_PAD_COUNT; ++pad_id) {
+    for (pad_id = 1u; pad_id <= pt_map(game->board.map)->pad_count; ++pad_id) {
         const pt_fixture *fixture = pt_fixture_at_pad(game, pad_id);
         const pt_fixture_def *definition = NULL;
         const pt_tier_def *tier = NULL;
         uint16_t expected = 0u;
-        uint16_t cell = pad_cell(pad_id);
+        uint16_t cell = pad_cell(game, pad_id);
 
         old_bias[pad_id - 1u] = game->board.bias[cell];
         if (fixture != NULL) {
@@ -641,8 +664,8 @@ static void sync_reroute_biases(pt_game *game)
         }
     }
     if (!changed || pt_board_rebuild(&game->board)) return;
-    for (pad_id = 1u; pad_id <= PT_PAD_COUNT; ++pad_id)
-        pt_board_set_bias(&game->board, pad_cell(pad_id),
+    for (pad_id = 1u; pad_id <= pt_map(game->board.map)->pad_count; ++pad_id)
+        pt_board_set_bias(&game->board, pad_cell(game, pad_id),
                           old_bias[pad_id - 1u]);
 }
 

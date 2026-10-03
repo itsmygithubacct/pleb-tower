@@ -10,7 +10,7 @@ static void reset_game(pt_game *game)
     memset(game, 0, sizeof *game);
     game->campaign = 0u;
     PT_CHECK(pt_board_init(&game->board, game->campaign), "board init");
-    pt_units_reset(&game->units);
+    pt_units_reset(&game->units, game->campaign);
     pt_combat_reset(game);
     pt_fixtures_reset(game);
     pt_economy_reset(game);

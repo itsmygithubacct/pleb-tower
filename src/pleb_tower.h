@@ -25,16 +25,31 @@ typedef struct pt_game pt_game;
 /* ------------------------------------------------------------- geometry -- */
 
 #define PT_LOGICAL_WIDTH   480
-#define PT_LOGICAL_HEIGHT  270
-#define PT_HUD_HEIGHT      30
+#define PT_LOGICAL_HEIGHT  342
+#define PT_HUD_STATUS_HEIGHT 30
+#define PT_HUD_PREVIEW_HEIGHT 48
+#define PT_HUD_SELECTION_HEIGHT 24
+#define PT_HUD_HEIGHT      (PT_HUD_STATUS_HEIGHT + PT_HUD_PREVIEW_HEIGHT + PT_HUD_SELECTION_HEIGHT)
 #define PT_PLAYFIELD_HEIGHT (PT_LOGICAL_HEIGHT - PT_HUD_HEIGHT)
 #define PT_CELL_PIXELS     16
 #define PT_CELL_COUNT      (PT_COLUMNS * PT_ROWS)
 
+/* HUD action labels and their pointer regions share this layout. */
+#define PT_HUD_ACTION_X    280
+#define PT_HUD_ACTION_Y    (PT_PLAYFIELD_HEIGHT + 14)
+#define PT_HUD_HELP_X      392
+#define PT_HUD_SPEED_X     424
+#define PT_INTEL_NAV_Y     300
+#define PT_INSPECTOR_Y     31
+#define PT_PAUSE_MENU_COUNT 4
+#define PT_MAP_TABS_Y 34
+#define PT_MAP_TAB_WIDTH ((PT_LOGICAL_WIDTH - 16) / PT_MAP_COUNT)
+#define PT_MAP_DEPLOY_Y 304
+
 #define PT_TICK_HZ         60
 #define PT_STEP_SECONDS    (1.0 / (double)PT_TICK_HZ)
 
-/* Fixed pools. Overflow is counted and asserted zero by the test suite. */
+/* Gameplay pools count overflow; visual effects recycle old slots. */
 #define PT_MAX_UNITS       192
 #define PT_MAX_PROJECTILES 96
 #define PT_MAX_EFFECTS     64
@@ -45,7 +60,7 @@ typedef struct pt_game pt_game;
 /* ---------------------------------------------------------------- board -- */
 
 typedef struct pt_board {
-    uint16_t distance[PT_CELL_COUNT];  /* BFS steps to goal */
+    uint16_t distance[PT_CELL_COUNT];  /* weighted path costs to goal */
     int8_t   flow_x[PT_CELL_COUNT];    /* negative gradient, -1/0/+1 */
     int8_t   flow_y[PT_CELL_COUNT];
     uint8_t  pad_index[PT_CELL_COUNT]; /* 0 = not a pad, else 1-based pad id */
@@ -54,6 +69,7 @@ typedef struct pt_board {
     uint16_t goal_cell;
     uint16_t spawn_cell;
     uint32_t rebuild_count;
+    uint8_t map;                /* stable index into the map catalog */
 } pt_board;
 
 static inline uint16_t pt_cell_index(int x, int y)
@@ -62,12 +78,15 @@ static inline uint16_t pt_cell_index(int x, int y)
 }
 
 bool pt_board_init(pt_board *board, uint8_t campaign);
+bool pt_board_init_map(pt_board *board, uint8_t map, uint8_t campaign);
 /* Rebuilds distance + flow from the current bias field. Returns false when the
  * goal became unreachable, in which case the previous field is left intact. */
 bool pt_board_rebuild(pt_board *board);
 void pt_board_set_bias(pt_board *board, uint16_t cell, uint16_t bias);
 bool pt_board_flow_at(const pt_board *board, float x, float y,
                       float *out_dx, float *out_dy);
+/* Remaining route distance in cells, interpolated between cell centres. */
+float pt_board_distance_at(const pt_board *board, float x, float y);
 
 /* ---------------------------------------------------------------- units -- */
 
@@ -78,6 +97,7 @@ typedef struct pt_unit {
     float    shield_idle;       /* seconds since last damage */
     float    hold_remaining;    /* entangle */
     float    stun_remaining;    /* EMP */
+    float    decoy_slow;        /* movement reduction, 0..1; rebuilt each tick */
     float    emit_timer;
     float    attack_timer;
     uint16_t kind;              /* index into pt_units[] */
@@ -92,9 +112,10 @@ typedef struct pt_unit_pool {
     uint16_t live;
     uint16_t next_serial;
     uint32_t overflow;          /* asserted zero on the authored waves */
+    uint8_t  campaign;
 } pt_unit_pool;
 
-void pt_units_reset(pt_unit_pool *pool);
+void pt_units_reset(pt_unit_pool *pool, uint8_t campaign);
 pt_unit *pt_units_spawn(pt_unit_pool *pool, uint16_t kind, float x, float y);
 void pt_units_update(pt_game *game, double dt);
 
@@ -130,13 +151,24 @@ bool pt_fixture_sell(pt_game *game, uint8_t pad);
 bool pt_fixture_repair(pt_game *game, uint8_t pad);
 void pt_fixture_cycle_mode(pt_game *game, uint8_t pad);
 pt_fixture *pt_fixture_at_pad(pt_game *game, uint8_t pad);
+/* Effective reach in cells, including support bonuses; tier may preview an upgrade. */
+float pt_fixture_range(const pt_game *game, const pt_fixture *fixture, uint8_t tier);
+#define PT_DESCRIPTION_LINES 4
+#define PT_DESCRIPTION_CAPACITY 128
+bool pt_fixture_describe(const pt_game *game, const pt_fixture *fixture,
+                         bool upgrade,
+                         char lines[PT_DESCRIPTION_LINES][PT_DESCRIPTION_CAPACITY]);
+#define PT_INTEL_LINES 7
+#define PT_INTEL_LINE_CAPACITY 96
+bool pt_unit_describe(uint8_t campaign, uint16_t kind,
+                      char lines[PT_INTEL_LINES][PT_INTEL_LINE_CAPACITY]);
 /* Recomputes every fixture's cached support buffs. Call after any board or
  * fixture change; never call per shot. */
 void pt_fixtures_refresh_support(pt_game *game);
 void pt_fixtures_update(pt_game *game, double dt);
 
-/* Decoy Beacon gather (DECISIONS.md D-05). Runs after unit movement. */
-void pt_gather_update(pt_game *game, double dt);
+/* Shared decoy slowdown. Recompute after spawning, before unit movement. */
+void pt_decoy_update(pt_game *game);
 
 /* --------------------------------------------------------------- combat -- */
 
@@ -173,6 +205,20 @@ void pt_combat_kill_unit(pt_game *game, pt_unit *unit);
 void pt_combat_damage_fixture(pt_game *game, pt_fixture *fixture,
                               int32_t damage);
 
+/* Visual events use a fixed pool and never draw from the gameplay PRNG. */
+typedef enum pt_effect_kind {
+    PT_EFFECT_HIT, PT_EFFECT_BLAST, PT_EFFECT_STUN, PT_EFFECT_HOLD,
+    PT_EFFECT_DESTROY, PT_EFFECT_SHIELD, PT_EFFECT_COUNT
+} pt_effect_kind;
+
+typedef struct pt_effect {
+    float x, y, radius, remaining, duration;
+    uint8_t kind;
+} pt_effect;
+
+void pt_effect_emit(pt_game *game, pt_effect_kind kind, float x, float y, float radius);
+void pt_effects_update(pt_game *game, double dt);
+
 /* -------------------------------------------------------------- economy -- */
 
 typedef struct pt_economy {
@@ -195,11 +241,14 @@ uint32_t pt_economy_early_call_bonus(double seconds_remaining);
 typedef enum pt_phase {
     PT_PHASE_TITLE = 0,
     PT_PHASE_CAMPAIGN_SELECT,
+    PT_PHASE_MAP_SELECT,
     PT_PHASE_BUILD,
     PT_PHASE_WAVE,
     PT_PHASE_PAUSE,
     PT_PHASE_VICTORY,
     PT_PHASE_DEFEAT,
+    PT_PHASE_HELP,
+    PT_PHASE_INTEL,
     PT_PHASE_COUNT
 } pt_phase;
 
@@ -210,6 +259,7 @@ typedef struct pt_wave_runtime {
     double   spawn_timer;
     double   build_remaining;
     bool     active;
+    bool     awaiting_call;
 } pt_wave_runtime;
 
 typedef struct pt_cursor {
@@ -221,26 +271,47 @@ struct pt_game {
     pt_board            board;
     pt_unit_pool        units;
     pt_projectile_pool  projectiles;
+    pt_effect           effects[PT_MAX_EFFECTS];
     pt_fixture          fixtures[PT_MAX_FIXTURES];
     pt_economy          economy;
     pt_wave_runtime     wave;
     pt_cursor           cursor;
-    uint8_t             campaign;      /* index into pt_campaigns[] */
+    uint8_t             campaign;      /* campaign within the selected map */
     uint8_t             phase;
+    uint8_t             speed;         /* 1x or 2x during combat only */
     uint64_t            tick;
     uint64_t            rng;           /* game-owned deterministic PRNG */
     double              elapsed;
     uint32_t            fixtures_lost;
     bool                headless;
+    bool                outcome_recorded; /* one score per run, including UI reloads */
 };
 
 void pt_game_init(pt_game *game, uint8_t campaign, uint64_t seed);
+void pt_game_init_map(pt_game *game, uint8_t map, uint8_t campaign, uint64_t seed);
 void pt_game_step(pt_game *game, double dt);
+/* One host tick: fast-forward repeats fixed steps without changing their size. */
+void pt_game_advance(pt_game *game, double dt);
 void pt_game_set_phase(pt_game *game, pt_phase phase);
 void pt_game_call_wave_early(pt_game *game);
 uint32_t pt_rand(pt_game *game);
 /* Deterministic [0,1) — never use rand() or drand48() anywhere in this tree. */
 double pt_rand_unit(pt_game *game);
+
+#define PT_SIM_REPAIR_TIER UINT8_MAX
+
+typedef struct pt_sim_order_entry {
+    uint16_t wave;
+    uint8_t pad;
+    uint16_t kind;
+    uint8_t tier;
+} pt_sim_order_entry;
+int pt_simulate_run(uint8_t campaign, const pt_sim_order_entry *order,
+                    size_t count, bool verbose);
+int pt_simulate_file(uint8_t campaign, const char *path);
+int pt_simulate_map_run(uint8_t map, uint8_t campaign, const pt_sim_order_entry *order,
+                        size_t count, bool verbose);
+int pt_simulate_map_file(uint8_t map, uint8_t campaign, const char *path);
 
 /* --------------------------------------------------------------- render -- */
 
@@ -249,8 +320,10 @@ struct ki_td_soft_renderer;
 typedef struct pt_renderer {
     struct ki_td_soft_renderer *soft;
     const uint8_t *rgba;
+    uint8_t *display;
     int width;
     int height;
+    int view_x, view_y, view_width, view_height;
     bool zoom_2x;
 } pt_renderer;
 
@@ -258,25 +331,48 @@ bool pt_render_init(pt_renderer *renderer, int width, int height);
 void pt_render_shutdown(pt_renderer *renderer);
 bool pt_render_resize(pt_renderer *renderer, int width, int height);
 void pt_render_frame(pt_renderer *renderer, const pt_game *game, double alpha);
+void pt_render_unit_icon(pt_renderer *renderer, uint8_t campaign, uint16_t kind,
+                          int x, int y, int size);
+void pt_render_map_preview(pt_renderer *renderer, uint8_t map, uint8_t campaign,
+                            int x, int y, int width);
 bool pt_render_write_ppm(const pt_renderer *renderer, const char *path);
+bool pt_render_pointer(const pt_renderer *renderer, int x, int y,
+                       int *logical_x, int *logical_y);
+void pt_render_zoom_origin(const pt_game *game, int *x, int *y);
+bool pt_asset_path(const char *relative, char *path, size_t capacity);
 
 /* ------------------------------------------------------------------ hud -- */
 
+#define PT_AIR_WARNING_LINES 3
+#define PT_AIR_WARNING_LINE_CAPACITY 96
+bool pt_hud_air_warning_text(const pt_game *game,
+    char lines[PT_AIR_WARNING_LINES][PT_AIR_WARNING_LINE_CAPACITY]);
+bool pt_hud_preview_pick(const pt_game *game, int x, int y, uint16_t *kind);
 void pt_hud_draw(pt_renderer *renderer, const pt_game *game);
 
 /* ---------------------------------------------------------------- input -- */
 
 struct kittyin_event;
+struct kittyin_gamepad_event;
 
 typedef struct pt_input_state {
     int8_t move_x, move_y;
     bool   confirm, cancel, upgrade, sell, repair, cycle_mode;
     bool   call_wave, pause, zoom, quit;
+    bool   help, mute, speed, intel, gamepad_wave;
 } pt_input_state;
 
 void pt_input_reset(pt_input_state *input);
 void pt_input_event(pt_input_state *input, const struct kittyin_event *event);
 void pt_input_apply(pt_game *game, pt_input_state *input);
+pt_phase pt_input_help_return_phase(void);
+uint16_t pt_input_intel_kind(void);
+uint8_t pt_input_selected_map(void);
+uint8_t pt_input_selected_campaign(void);
+bool pt_input_reduced_motion(void);
+void pt_input_zoom_origin(const pt_game *game, int *x, int *y);
+void pt_input_gamepad_event(pt_input_state *input,
+                            const struct kittyin_gamepad_event *event);
 
 /* ---------------------------------------------------------------- audio -- */
 
@@ -285,15 +381,19 @@ void pt_audio_shutdown(void);
 void pt_audio_cue(uint32_t cue);
 void pt_audio_scene(uint32_t scene);
 void pt_audio_update(double dt);
+void pt_audio_set_muted(bool value);
+bool pt_audio_is_muted(void);
+bool pt_audio_render_test(const char *path);
+void pt_audio_sync(const pt_game *game);
 
 /* ----------------------------------------------------------------- save -- */
 
 typedef struct pt_records {
-    uint16_t best_integrity[PT_CAMPAIGN_COUNT];
-    uint32_t fastest_clear_ms[PT_CAMPAIGN_COUNT];
-    uint32_t best_unspent[PT_CAMPAIGN_COUNT];
-    uint32_t runs[PT_CAMPAIGN_COUNT];
-    uint8_t  cleared[PT_CAMPAIGN_COUNT];
+    uint16_t best_integrity[PT_MAP_COUNT][PT_CAMPAIGN_COUNT];
+    uint32_t fastest_clear_ms[PT_MAP_COUNT][PT_CAMPAIGN_COUNT];
+    uint32_t best_unspent[PT_MAP_COUNT][PT_CAMPAIGN_COUNT];
+    uint32_t runs[PT_MAP_COUNT][PT_CAMPAIGN_COUNT];
+    uint8_t  cleared[PT_MAP_COUNT][PT_CAMPAIGN_COUNT];
 } pt_records;
 
 typedef struct pt_settings {
@@ -310,6 +410,7 @@ void pt_settings_defaults(pt_settings *settings);
 bool pt_save_load_settings(pt_settings *settings);
 bool pt_save_store_settings(const pt_settings *settings);
 
+const pt_records *pt_input_records(void);
 bool pt_save_load_records(pt_records *records);
 bool pt_save_store_records(const pt_records *records);
 void pt_save_note_run(pt_records *records, const pt_game *game, bool cleared);
@@ -317,6 +418,13 @@ bool pt_campaign_unlocked(const pt_records *records, uint8_t campaign);
 
 /* -------------------------------------------------------------- content -- */
 
+const pt_map_def      *pt_map(uint8_t map);
+const pt_campaign_def *pt_campaign_on_map(uint8_t map, uint8_t campaign);
+const pt_campaign_def *pt_game_campaign(const pt_game *game);
+const pt_wave_def     *pt_game_wave(const pt_game *game, uint16_t wave);
+const pt_pad_def      *pt_map_pad(uint8_t map, uint8_t pad_id);
+const pt_pad_def      *pt_game_pad(const pt_game *game, uint8_t pad_id);
+/* Compatibility accessors use Maple Loop. Fixtures and enemies are shared. */
 const pt_campaign_def *pt_campaign(uint8_t campaign);
 const pt_fixture_def  *pt_fixture_def_at(uint8_t campaign, uint16_t kind);
 const pt_unit_def     *pt_unit_def_at(uint8_t campaign, uint16_t kind);

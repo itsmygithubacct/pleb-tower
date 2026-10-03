@@ -128,16 +128,23 @@ bool pt_board_rebuild(pt_board *board)
 
 bool pt_board_init(pt_board *board, uint8_t campaign)
 {
-    const pt_campaign_def *def = pt_campaign(campaign);
+    return pt_board_init_map(board, 0u, campaign);
+}
+
+bool pt_board_init_map(pt_board *board, uint8_t map, uint8_t campaign)
+{
+    const pt_map_def *level = pt_map(map);
+    const pt_campaign_def *def = pt_campaign_on_map(map, campaign);
     if (!board) return false;
 
     memset(board, 0, sizeof *board);
+    board->map = map < PT_MAP_COUNT ? map : 0u;
     for (int y = 0; y < PT_ROWS; ++y)
         for (int x = 0; x < PT_COLUMNS; ++x)
-            board->lane[pt_cell_index(x, y)] = pt_lane_cells[y][x];
+            board->lane[pt_cell_index(x, y)] = level->lane[y][x];
 
-    for (uint8_t id = 1u; id <= PT_PAD_COUNT; ++id) {
-        const pt_pad_def *pad = pt_pad(id);
+    for (uint8_t id = 1u; id <= level->pad_count; ++id) {
+        const pt_pad_def *pad = pt_map_pad(map, id);
         board->pad_index[pt_cell_index((int)pad->x, (int)pad->y)] = id;
     }
 
@@ -151,6 +158,33 @@ void pt_board_set_bias(pt_board *board, uint16_t cell, uint16_t bias)
 {
     if (!board || cell >= PT_CELL_COUNT) return;
     board->bias[cell] = bias;
+}
+
+/* Sample progress in cells, using the same road neighbours as movement.
+ * Keeping fractional progress prevents targeting ties within a single tile. */
+float pt_board_distance_at(const pt_board *board, float x, float y)
+{
+    if (board == NULL || !isfinite(x) || !isfinite(y) ||
+        x < 0.0f || y < 0.0f || x >= PT_COLUMNS || y >= PT_ROWS)
+        return (float)PT_DISTANCE_UNREACHABLE;
+
+    float fx = x - 0.5f, fy = y - 0.5f;
+    int x0 = (int)floorf(fx), y0 = (int)floorf(fy);
+    float tx = fx - (float)x0, ty = fy - (float)y0;
+    float sum = 0.0f, weight = 0.0f;
+    for (int j = 0; j < 2; ++j) {
+        for (int i = 0; i < 2; ++i) {
+            int cx = x0 + i, cy = y0 + j;
+            if (!cell_is_lane(board, cx, cy)) continue;
+            uint16_t distance = board->distance[pt_cell_index(cx, cy)];
+            if (distance == PT_DISTANCE_UNREACHABLE) continue;
+            float w = (i ? tx : 1.0f - tx) * (j ? ty : 1.0f - ty);
+            sum += (float)distance * w;
+            weight += w;
+        }
+    }
+    return weight > 0.0f ? sum / (weight * (float)PT_STEP_COST) :
+        (float)PT_DISTANCE_UNREACHABLE;
 }
 
 /* Bilinear blend of the four nearest cell-centre flow vectors, so movement is

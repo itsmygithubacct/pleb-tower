@@ -1,6 +1,7 @@
 /* Economy formula and repair-price tests. */
 #include "pt_test.h"
 #include "pleb_tower.h"
+#include "kilix_state.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -142,10 +143,10 @@ static void test_records_round_trip_and_corrupt_defaults(void)
     game.economy.currency = 321;
     game.elapsed = 12.345;
     pt_save_note_run(&records, &game, true);
-    PT_CHECK_EQ_INT(records.runs[0], 1);
-    PT_CHECK_EQ_INT(records.best_integrity[0], 17);
-    PT_CHECK_EQ_INT(records.fastest_clear_ms[0], 12345);
-    PT_CHECK_EQ_INT(records.best_unspent[0], 321);
+    PT_CHECK_EQ_INT(records.runs[0][0], 1);
+    PT_CHECK_EQ_INT(records.best_integrity[0][0], 17);
+    PT_CHECK_EQ_INT(records.fastest_clear_ms[0][0], 12345);
+    PT_CHECK_EQ_INT(records.best_unspent[0][0], 321);
     PT_CHECK(pt_campaign_unlocked(&records, 1u),
              "cleared prerequisite unlocks campaign");
     PT_CHECK(pt_save_store_records(&records), "store records");
@@ -154,6 +155,58 @@ static void test_records_round_trip_and_corrupt_defaults(void)
     PT_CHECK(pt_save_load_records(&loaded), "load stored records");
     PT_CHECK(memcmp(&loaded, &records, sizeof records) == 0,
              "records round trip exactly");
+
+    pt_game_init_map(&game, 1u, 0u, 123u);
+    game.economy.integrity = 13;
+    game.economy.currency = 72;
+    game.elapsed = 19.876;
+    pt_save_note_run(&records, &game, true);
+    PT_CHECK_EQ_INT(records.best_integrity[0][0], 17);
+    PT_CHECK_EQ_INT(records.best_integrity[1][0], 13);
+    PT_CHECK_EQ_INT(records.fastest_clear_ms[1][0], 19876);
+    PT_CHECK_EQ_INT(records.best_unspent[1][0], 72);
+    PT_CHECK_EQ_INT(records.runs[1][0], 1);
+    records.cleared[0][0] = 0u;
+    PT_CHECK(pt_campaign_unlocked(&records, 1u), "Rail Yard clear also unlocks CORDON");
+    records.cleared[0][0] = 1u;
+    PT_CHECK(pt_save_store_records(&records), "store separate map scores");
+    PT_CHECK(pt_save_load_records(&loaded), "load separate map scores");
+    PT_CHECK(memcmp(&loaded, &records, sizeof records) == 0, "all map records round trip");
+
+    /* A real v1 payload: Maple 17 HP, 12.345s, 321 unspent, 2 runs; CORDON blank. */
+    {
+        const uint8_t legacy[34] = {
+            1, 0, 0, 0, 17, 0, 57, 48, 0, 0, 65, 1, 0, 0, 2, 0, 0, 0, 1
+        };
+        kilixstate_store store;
+        kilixstate_options options;
+        memset(&store, 0, sizeof store);
+        kilixstate_options_init(&options);
+        options.app_id = "pleb-tower";
+        options.filename = "records.state";
+        options.max_payload = 256u;
+        options.format = KILIXSTATE_FORMAT_CRC32;
+        PT_CHECK(kilixstate_store_init(&store, &options) == KILIXSTATE_OK, "open migration fixture");
+        PT_CHECK(kilixstate_save(&store, legacy, sizeof legacy) == KILIXSTATE_OK, "write v1 fixture");
+        kilixstate_store_close(&store);
+        PT_CHECK(pt_save_load_records(&loaded), "load legacy records");
+        PT_CHECK_EQ_INT(loaded.best_integrity[0][0], 17);
+        PT_CHECK_EQ_INT(loaded.fastest_clear_ms[0][0], 12345);
+        PT_CHECK_EQ_INT(loaded.best_unspent[0][0], 321);
+        PT_CHECK_EQ_INT(loaded.runs[0][0], 2);
+        PT_CHECK_EQ_INT(loaded.cleared[0][0], 1);
+        PT_CHECK(pt_campaign_unlocked(&loaded, 1u), "legacy unlock survives migration");
+        for (uint8_t campaign = 0u; campaign < PT_CAMPAIGN_COUNT; ++campaign) {
+            PT_CHECK_EQ_INT(loaded.runs[1][campaign], 0);
+            PT_CHECK_EQ_INT(loaded.cleared[1][campaign], 0);
+            PT_CHECK_EQ_INT(loaded.best_integrity[1][campaign], 0);
+            PT_CHECK_EQ_INT(loaded.fastest_clear_ms[1][campaign], 0);
+            PT_CHECK_EQ_INT(loaded.best_unspent[1][campaign], 0);
+        }
+        PT_CHECK(pt_save_store_records(&loaded), "migrated records can be saved as v2");
+        PT_CHECK(pt_save_load_records(&records), "reload migrated v2 records");
+        PT_CHECK(memcmp(&loaded, &records, sizeof loaded) == 0, "migration is durable");
+    }
 
     PT_CHECK(join_test_path(app_directory, sizeof app_directory,
                             directory, "/pleb-tower"),

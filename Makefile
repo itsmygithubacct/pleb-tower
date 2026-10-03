@@ -46,17 +46,19 @@ BIN := pleb-tower
 SRC := src/main.c src/game.c src/board.c src/units.c src/fixture.c \
 	src/combat.c src/economy.c src/render.c src/hud.c src/input.c \
 	src/audio.c src/save.c src/content.c src/gather.c \
-	src/simulate.c
+	src/simulate.c src/description.c src/effects.c
 OBJ := $(patsubst src/%.c,build/%.o,$(SRC))
 DEPENDENCIES := $(OBJ:.o=.d)
 
 CONTENT_SRC := content/campaigns.json content/stable_ids.json
 CONTENT_HDR := build/content_generated.h
 CONTENT_TOOL := tools/compile_content.py
+AUDIO_HDR := build/audio_generated.h
+ORDERS_HDR := build/orders_generated.h
 
-TEST_SRC := tests/test_main.c tests/test_board.c tests/test_units.c \
+TEST_SRC := tests/test_main.c tests/test_board.c tests/test_maps.c tests/test_units.c \
 	tests/test_fixture.c tests/test_combat.c tests/test_economy.c \
-	tests/test_simulate.c tests/test_hud.c
+	tests/test_simulate.c tests/test_hud.c tests/test_playthrough.c tests/test_feedback.c
 TEST_OBJ := $(patsubst tests/%.c,build/tests/%.o,$(TEST_SRC))
 GAME_OBJ_NO_MAIN := $(filter-out build/main.o,$(OBJ))
 TEST_BIN := build/pleb-tower-tests
@@ -70,6 +72,16 @@ $(BIN): $(OBJ) $(LIBS)
 
 $(CONTENT_HDR): $(CONTENT_SRC) $(CONTENT_TOOL) | build
 	$(PYTHON) $(CONTENT_TOOL) --out $@
+
+$(AUDIO_HDR): assets/audio/manifest.json content/stable_ids.json tools/compile_audio_runtime.py | build
+	$(PYTHON) tools/compile_audio_runtime.py --out $@
+
+build/audio.o: $(AUDIO_HDR)
+
+$(ORDERS_HDR): content/build_orders.json content/campaigns.json tools/compile_build_orders.py | build
+	$(PYTHON) tools/compile_build_orders.py --out $@
+
+build/tests/test_playthrough.o: $(ORDERS_HDR)
 
 content: $(CONTENT_HDR)
 
@@ -92,6 +104,7 @@ test: test-content $(BIN) $(TEST_BIN)
 	$(TEST_BIN)
 	./$(BIN) --selftest
 	./$(BIN) --render-test build/preview.ppm
+	./$(BIN) --audio-test build/audio-preview.wav
 
 test-deps:
 	$(MAKE) -C $(KILIX_GAME_KIT_ROOT) test
@@ -123,17 +136,23 @@ audio:
 verify-audio:
 	$(PYTHON) tools/verify_audio.py
 
-balance: $(CONTENT_HDR)
-	$(PYTHON) tools/balance_sim.py --all
+balance: $(BIN)
+	$(PYTHON) tools/balance_runtime.py --all
 
-release-gate: test sanitize test-content verify-graphics verify-audio balance
+test-terminal: $(BIN)
+	$(PYTHON) tools/test_terminal.py
+
+release-gate:
+	$(MAKE) test
+	$(MAKE) sanitize
+	$(MAKE) all test-content verify-graphics verify-audio balance test-terminal verify-link
 	@echo "release gate: PASS"
 
 clean:
 	$(RM) -r build $(BIN)
 
 .PHONY: all clean content test test-content test-deps sanitize balance \
-	verify-link graphics verify-graphics audio verify-audio release-gate
+	verify-link graphics verify-graphics audio verify-audio release-gate test-terminal
 
 -include $(DEPENDENCIES)
 -include $(TEST_DEPENDENCIES)

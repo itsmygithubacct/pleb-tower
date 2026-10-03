@@ -23,11 +23,14 @@ extern int pt_test_checks;
              #actual " == %ld, want %ld", (long)(actual), (long)(expected))
 
 void pt_test_board(void);
+void pt_test_maps(void);
 void pt_test_units(void);
 void pt_test_combat(void);
 void pt_test_fixture(void);
 void pt_test_economy(void);
 void pt_test_simulate(void);
 void pt_test_hud(void);
+void pt_test_playthrough(void);
+void pt_test_feedback(void);
 
 #endif

@@ -5,10 +5,10 @@ Runs the authored waves against scripted build orders and reports what actually
 happens: leaks by type, integrity remaining, currency curve, fixtures lost, and
 clear time. Balance is a test result, not an opinion.
 
-This is a deliberate second implementation of the combat and economy rules,
-driven by the same content/campaigns.json the runtime compiles. Two independent
-implementations that agree are evidence; one implementation checking itself is
-not. `--cross-check` compares against the C runtime's own trace.
+This historical approximate model is useful for exploring orders. It omits
+projectile travel, ranged attack halts, vision debuffs, and several timing rules.
+It must not be used to claim the game can be cleared. `make balance` runs
+tools/balance_runtime.py against the shipping C implementation instead.
 
 Standard library only. Python 3.10+.
 """
@@ -34,7 +34,7 @@ STEP_CAP = 900.0          # seconds; a wave that runs this long has stalled
 
 class Board:
     def __init__(self, doc: dict, campaign: dict) -> None:
-        m = doc["map"]
+        m = doc["maps"][0]
         self.cols = m["columns"]
         self.rows = m["rows"]
         self.lane: set[tuple[int, int]] = set()

@@ -1,236 +1,909 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "game": "pleb-tower",
-  "map": {
-    "id": "maple-loop",
-    "name": "Maple Loop",
-    "columns": 30,
-    "rows": 15,
-    "cell_pixels": 16,
-    "backdrop": "assets/graphics/bitmaps/levels/maple-loop.png",
-    "endpoints": {
-      "relay": {
-        "x": 1,
-        "y": 12
-      },
-      "block": {
-        "x": 27,
-        "y": 2
-      }
-    },
-    "lane": [
-      {
-        "from": {
+  "maps": [
+    {
+      "id": "maple-loop",
+      "name": "Maple Loop",
+      "columns": 30,
+      "rows": 15,
+      "cell_pixels": 16,
+      "backdrop": "assets/graphics/bitmaps/levels/maple-loop.png",
+      "endpoints": {
+        "relay": {
           "x": 1,
           "y": 12
         },
-        "to": {
-          "x": 10,
-          "y": 12
-        }
-      },
-      {
-        "from": {
-          "x": 10,
-          "y": 12
-        },
-        "to": {
-          "x": 10,
-          "y": 8
-        }
-      },
-      {
-        "from": {
-          "x": 10,
-          "y": 8
-        },
-        "to": {
-          "x": 3,
-          "y": 8
-        }
-      },
-      {
-        "from": {
-          "x": 3,
-          "y": 8
-        },
-        "to": {
-          "x": 3,
-          "y": 5
-        }
-      },
-      {
-        "from": {
-          "x": 3,
-          "y": 5
-        },
-        "to": {
-          "x": 20,
-          "y": 5
-        }
-      },
-      {
-        "from": {
-          "x": 20,
-          "y": 5
-        },
-        "to": {
-          "x": 20,
-          "y": 2
-        }
-      },
-      {
-        "from": {
-          "x": 20,
-          "y": 2
-        },
-        "to": {
+        "block": {
           "x": 27,
           "y": 2
         }
-      }
-    ],
-    "pads": [
-      {
-        "id": 1,
-        "x": 3,
-        "y": 14,
-        "tags": []
       },
-      {
-        "id": 2,
-        "x": 7,
-        "y": 14,
-        "tags": []
+      "lane": [
+        {
+          "from": {
+            "x": 1,
+            "y": 12
+          },
+          "to": {
+            "x": 10,
+            "y": 12
+          }
+        },
+        {
+          "from": {
+            "x": 10,
+            "y": 12
+          },
+          "to": {
+            "x": 10,
+            "y": 8
+          }
+        },
+        {
+          "from": {
+            "x": 10,
+            "y": 8
+          },
+          "to": {
+            "x": 3,
+            "y": 8
+          }
+        },
+        {
+          "from": {
+            "x": 3,
+            "y": 8
+          },
+          "to": {
+            "x": 3,
+            "y": 5
+          }
+        },
+        {
+          "from": {
+            "x": 3,
+            "y": 5
+          },
+          "to": {
+            "x": 20,
+            "y": 5
+          }
+        },
+        {
+          "from": {
+            "x": 20,
+            "y": 5
+          },
+          "to": {
+            "x": 20,
+            "y": 2
+          }
+        },
+        {
+          "from": {
+            "x": 20,
+            "y": 2
+          },
+          "to": {
+            "x": 27,
+            "y": 2
+          }
+        }
+      ],
+      "pads": [
+        {
+          "id": 1,
+          "x": 3,
+          "y": 14,
+          "tags": []
+        },
+        {
+          "id": 2,
+          "x": 7,
+          "y": 14,
+          "tags": []
+        },
+        {
+          "id": 3,
+          "x": 2,
+          "y": 10,
+          "tags": []
+        },
+        {
+          "id": 4,
+          "x": 4,
+          "y": 10,
+          "tags": []
+        },
+        {
+          "id": 5,
+          "x": 6,
+          "y": 10,
+          "tags": []
+        },
+        {
+          "id": 6,
+          "x": 8,
+          "y": 10,
+          "tags": []
+        },
+        {
+          "id": 7,
+          "x": 1,
+          "y": 6,
+          "tags": []
+        },
+        {
+          "id": 8,
+          "x": 5,
+          "y": 7,
+          "tags": []
+        },
+        {
+          "id": 9,
+          "x": 7,
+          "y": 7,
+          "tags": []
+        },
+        {
+          "id": 10,
+          "x": 10,
+          "y": 7,
+          "tags": []
+        },
+        {
+          "id": 11,
+          "x": 13,
+          "y": 7,
+          "tags": []
+        },
+        {
+          "id": 12,
+          "x": 16,
+          "y": 7,
+          "tags": []
+        },
+        {
+          "id": 13,
+          "x": 19,
+          "y": 7,
+          "tags": []
+        },
+        {
+          "id": 14,
+          "x": 5,
+          "y": 3,
+          "tags": []
+        },
+        {
+          "id": 15,
+          "x": 8,
+          "y": 3,
+          "tags": []
+        },
+        {
+          "id": 16,
+          "x": 11,
+          "y": 3,
+          "tags": []
+        },
+        {
+          "id": 17,
+          "x": 14,
+          "y": 3,
+          "tags": []
+        },
+        {
+          "id": 18,
+          "x": 17,
+          "y": 3,
+          "tags": []
+        },
+        {
+          "id": 19,
+          "x": 18,
+          "y": 2,
+          "tags": []
+        },
+        {
+          "id": 20,
+          "x": 22,
+          "y": 4,
+          "tags": []
+        },
+        {
+          "id": 21,
+          "x": 25,
+          "y": 4,
+          "tags": []
+        },
+        {
+          "id": 22,
+          "x": 23,
+          "y": 0,
+          "tags": []
+        },
+        {
+          "id": 23,
+          "x": 26,
+          "y": 0,
+          "tags": []
+        }
+      ],
+      "description": "Sheltered neighborhood bends. Build overlapping defenses."
+    },
+    {
+      "id": "rail-yard",
+      "name": "Rail Yard",
+      "description": "Long straights. An exposed bend. Guard your guns.",
+      "columns": 30,
+      "rows": 15,
+      "cell_pixels": 16,
+      "backdrop": "assets/graphics/bitmaps/levels/rail-yard.png",
+      "endpoints": {
+        "relay": {
+          "x": 1,
+          "y": 12
+        },
+        "block": {
+          "x": 28,
+          "y": 3
+        }
       },
-      {
-        "id": 3,
-        "x": 2,
-        "y": 10,
-        "tags": []
+      "lane": [
+        {
+          "from": {
+            "x": 1,
+            "y": 12
+          },
+          "to": {
+            "x": 24,
+            "y": 12
+          }
+        },
+        {
+          "from": {
+            "x": 24,
+            "y": 12
+          },
+          "to": {
+            "x": 24,
+            "y": 7
+          }
+        },
+        {
+          "from": {
+            "x": 24,
+            "y": 7
+          },
+          "to": {
+            "x": 12,
+            "y": 7
+          }
+        },
+        {
+          "from": {
+            "x": 12,
+            "y": 7
+          },
+          "to": {
+            "x": 12,
+            "y": 3
+          }
+        },
+        {
+          "from": {
+            "x": 12,
+            "y": 3
+          },
+          "to": {
+            "x": 28,
+            "y": 3
+          }
+        }
+      ],
+      "pads": [
+        {
+          "id": 1,
+          "x": 3,
+          "y": 10,
+          "tags": []
+        },
+        {
+          "id": 2,
+          "x": 7,
+          "y": 10,
+          "tags": []
+        },
+        {
+          "id": 3,
+          "x": 11,
+          "y": 10,
+          "tags": []
+        },
+        {
+          "id": 4,
+          "x": 15,
+          "y": 10,
+          "tags": []
+        },
+        {
+          "id": 5,
+          "x": 19,
+          "y": 10,
+          "tags": []
+        },
+        {
+          "id": 6,
+          "x": 22,
+          "y": 10,
+          "tags": []
+        },
+        {
+          "id": 7,
+          "x": 22,
+          "y": 8,
+          "tags": []
+        },
+        {
+          "id": 8,
+          "x": 26,
+          "y": 7,
+          "tags": []
+        },
+        {
+          "id": 9,
+          "x": 22,
+          "y": 5,
+          "tags": []
+        },
+        {
+          "id": 10,
+          "x": 19,
+          "y": 5,
+          "tags": []
+        },
+        {
+          "id": 11,
+          "x": 16,
+          "y": 5,
+          "tags": []
+        },
+        {
+          "id": 12,
+          "x": 14,
+          "y": 5,
+          "tags": []
+        },
+        {
+          "id": 13,
+          "x": 10,
+          "y": 5,
+          "tags": []
+        },
+        {
+          "id": 14,
+          "x": 10,
+          "y": 2,
+          "tags": []
+        },
+        {
+          "id": 15,
+          "x": 14,
+          "y": 1,
+          "tags": []
+        },
+        {
+          "id": 16,
+          "x": 18,
+          "y": 1,
+          "tags": []
+        },
+        {
+          "id": 17,
+          "x": 22,
+          "y": 1,
+          "tags": []
+        },
+        {
+          "id": 18,
+          "x": 26,
+          "y": 1,
+          "tags": []
+        },
+        {
+          "id": 19,
+          "x": 26,
+          "y": 5,
+          "tags": []
+        },
+        {
+          "id": 20,
+          "x": 21,
+          "y": 9,
+          "tags": []
+        }
+      ],
+      "campaigns": {
+        "holdout": {
+          "waves": [
+            {
+              "index": 1,
+              "build_seconds": 20,
+              "interval": 1.6,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "walker",
+                  "count": 8
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "build_seconds": 20,
+              "interval": 1.1,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "walker",
+                  "count": 14
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "build_seconds": 20,
+              "interval": 1.0,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "walker",
+                  "count": 10
+                },
+                {
+                  "type": "shielded",
+                  "count": 3
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "build_seconds": 20,
+              "interval": 0.9,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "shielded",
+                  "count": 8
+                },
+                {
+                  "type": "walker",
+                  "count": 8
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "build_seconds": 20,
+              "interval": 0.9,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "splitter",
+                  "count": 6
+                },
+                {
+                  "type": "walker",
+                  "count": 10
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "build_seconds": 20,
+              "interval": 0.9,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "scout",
+                  "count": 6
+                },
+                {
+                  "type": "walker",
+                  "count": 10
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "build_seconds": 20,
+              "interval": 0.8,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "breacher",
+                  "count": 4
+                },
+                {
+                  "type": "walker",
+                  "count": 12
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "build_seconds": 20,
+              "interval": 0.8,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "shielded",
+                  "count": 10
+                },
+                {
+                  "type": "scout",
+                  "count": 5
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "build_seconds": 20,
+              "interval": 0.8,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "suppressor",
+                  "count": 3
+                },
+                {
+                  "type": "walker",
+                  "count": 14
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "build_seconds": 20,
+              "interval": 0.8,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "siege",
+                  "count": 1
+                },
+                {
+                  "type": "walker",
+                  "count": 10
+                },
+                {
+                  "type": "splitter",
+                  "count": 4
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "build_seconds": 20,
+              "interval": 0.7,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "breacher",
+                  "count": 5
+                },
+                {
+                  "type": "splitter",
+                  "count": 8
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "build_seconds": 20,
+              "interval": 0.7,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "repair",
+                  "count": 3
+                },
+                {
+                  "type": "shielded",
+                  "count": 12
+                },
+                {
+                  "type": "scout",
+                  "count": 8
+                }
+              ]
+            },
+            {
+              "index": 13,
+              "build_seconds": 20,
+              "interval": 0.7,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "suppressor",
+                  "count": 6
+                },
+                {
+                  "type": "breacher",
+                  "count": 4
+                },
+                {
+                  "type": "scout",
+                  "count": 6
+                }
+              ]
+            },
+            {
+              "index": 14,
+              "build_seconds": 20,
+              "interval": 0.7,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "siege",
+                  "count": 2
+                },
+                {
+                  "type": "splitter",
+                  "count": 10
+                },
+                {
+                  "type": "scout",
+                  "count": 8
+                }
+              ]
+            },
+            {
+              "index": 15,
+              "build_seconds": 20,
+              "interval": 0.7,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "controller",
+                  "count": 1
+                },
+                {
+                  "type": "shielded",
+                  "count": 10
+                },
+                {
+                  "type": "repair",
+                  "count": 4
+                },
+                {
+                  "type": "scout",
+                  "count": 6
+                }
+              ]
+            }
+          ]
+        },
+        "cordon": {
+          "waves": [
+            {
+              "index": 1,
+              "build_seconds": 20,
+              "interval": 1.0,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "resident",
+                  "count": 8
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "build_seconds": 20,
+              "interval": 1.0,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "resident",
+                  "count": 10
+                },
+                {
+                  "type": "shield-line",
+                  "count": 3
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "build_seconds": 20,
+              "interval": 0.9,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "scatter-group",
+                  "count": 6
+                },
+                {
+                  "type": "resident",
+                  "count": 10
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "build_seconds": 20,
+              "interval": 0.9,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "camera-drone",
+                  "count": 6
+                },
+                {
+                  "type": "resident",
+                  "count": 12
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "build_seconds": 20,
+              "interval": 0.8,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "barricade-crew",
+                  "count": 4
+                },
+                {
+                  "type": "shield-line",
+                  "count": 8
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "build_seconds": 20,
+              "interval": 0.8,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "shouter",
+                  "count": 3
+                },
+                {
+                  "type": "resident",
+                  "count": 14
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "build_seconds": 20,
+              "interval": 0.8,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "convoy",
+                  "count": 1
+                },
+                {
+                  "type": "scatter-group",
+                  "count": 8
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "build_seconds": 20,
+              "interval": 0.7,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "medic",
+                  "count": 3
+                },
+                {
+                  "type": "shield-line",
+                  "count": 12
+                },
+                {
+                  "type": "camera-drone",
+                  "count": 6
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "build_seconds": 20,
+              "interval": 0.7,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "barricade-crew",
+                  "count": 5
+                },
+                {
+                  "type": "shouter",
+                  "count": 7
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "build_seconds": 20,
+              "interval": 0.7,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "convoy",
+                  "count": 2
+                },
+                {
+                  "type": "scatter-group",
+                  "count": 12
+                },
+                {
+                  "type": "camera-drone",
+                  "count": 8
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "build_seconds": 20,
+              "interval": 0.7,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "medic",
+                  "count": 4
+                },
+                {
+                  "type": "barricade-crew",
+                  "count": 6
+                },
+                {
+                  "type": "shouter",
+                  "count": 8
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "build_seconds": 20,
+              "interval": 0.7,
+              "hp_scale": 1.0,
+              "groups": [
+                {
+                  "type": "assembly",
+                  "count": 1
+                },
+                {
+                  "type": "shield-line",
+                  "count": 12
+                },
+                {
+                  "type": "medic",
+                  "count": 4
+                },
+                {
+                  "type": "camera-drone",
+                  "count": 8
+                }
+              ]
+            }
+          ],
+          "starting_currency": 350
+        }
       },
-      {
-        "id": 4,
-        "x": 4,
-        "y": 10,
-        "tags": []
-      },
-      {
-        "id": 5,
-        "x": 6,
-        "y": 10,
-        "tags": []
-      },
-      {
-        "id": 6,
-        "x": 8,
-        "y": 10,
-        "tags": []
-      },
-      {
-        "id": 7,
-        "x": 1,
-        "y": 6,
-        "tags": []
-      },
-      {
-        "id": 8,
-        "x": 5,
-        "y": 7,
-        "tags": []
-      },
-      {
-        "id": 9,
-        "x": 7,
-        "y": 7,
-        "tags": []
-      },
-      {
-        "id": 10,
-        "x": 10,
-        "y": 7,
-        "tags": []
-      },
-      {
-        "id": 11,
-        "x": 13,
-        "y": 7,
-        "tags": []
-      },
-      {
-        "id": 12,
-        "x": 16,
-        "y": 7,
-        "tags": []
-      },
-      {
-        "id": 13,
-        "x": 19,
-        "y": 7,
-        "tags": []
-      },
-      {
-        "id": 14,
-        "x": 5,
-        "y": 3,
-        "tags": []
-      },
-      {
-        "id": 15,
-        "x": 8,
-        "y": 3,
-        "tags": []
-      },
-      {
-        "id": 16,
-        "x": 11,
-        "y": 3,
-        "tags": []
-      },
-      {
-        "id": 17,
-        "x": 14,
-        "y": 3,
-        "tags": []
-      },
-      {
-        "id": 18,
-        "x": 17,
-        "y": 3,
-        "tags": []
-      },
-      {
-        "id": 19,
-        "x": 18,
-        "y": 2,
-        "tags": []
-      },
-      {
-        "id": 20,
-        "x": 22,
-        "y": 4,
-        "tags": []
-      },
-      {
-        "id": 21,
-        "x": 25,
-        "y": 4,
-        "tags": []
-      },
-      {
-        "id": 22,
-        "x": 23,
-        "y": 0,
-        "tags": []
-      },
-      {
-        "id": 23,
-        "x": 26,
-        "y": 0,
-        "tags": []
-      }
-    ]
-  },
+      "runtime_foundations": true,
+      "backdrop_master": "rail-yard-scenery.png"
+    }
+  ],
   "economy": {
     "stipend_base": 25,
     "stipend_per_wave": 5,
@@ -547,7 +1220,7 @@
               "range_buff": 0.1,
               "currency_tick": 1,
               "repair_per_second": 4.0,
-              "radius": 1.5
+              "radius": 3.2
             },
             {
               "cost": 110,
@@ -561,7 +1234,7 @@
               "range_buff": 0.15,
               "currency_tick": 2,
               "repair_per_second": 7.0,
-              "radius": 1.8
+              "radius": 3.5
             },
             {
               "cost": 170,
@@ -575,7 +1248,7 @@
               "range_buff": 0.2,
               "currency_tick": 3,
               "repair_per_second": 11.0,
-              "radius": 2.2
+              "radius": 3.8
             }
           ]
         }
@@ -704,8 +1377,8 @@
           "atlas_row": 5,
           "attack": {
             "kind": "fixture",
-            "range": 3.5,
-            "damage_per_second": 10.0,
+            "range": 3.0,
+            "damage_per_second": 6.0,
             "halts": true
           },
           "on_death": null,
@@ -1356,7 +2029,7 @@
               "range_buff": 0.1,
               "currency_tick": 1,
               "repair_per_second": 4.0,
-              "radius": 1.5
+              "radius": 3.2
             },
             {
               "cost": 110,
@@ -1370,7 +2043,7 @@
               "range_buff": 0.15,
               "currency_tick": 2,
               "repair_per_second": 7.0,
-              "radius": 1.8
+              "radius": 3.5
             },
             {
               "cost": 170,
@@ -1384,7 +2057,7 @@
               "range_buff": 0.2,
               "currency_tick": 3,
               "repair_per_second": 11.0,
-              "radius": 2.2
+              "radius": 3.8
             }
           ]
         }
@@ -1513,8 +2186,8 @@
           "atlas_row": 5,
           "attack": {
             "kind": "fixture",
-            "range": 3.5,
-            "damage_per_second": 10.0,
+            "range": 3.0,
+            "damage_per_second": 6.0,
             "halts": true
           },
           "on_death": null,

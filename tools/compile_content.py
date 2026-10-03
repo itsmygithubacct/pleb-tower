@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import sys
 from collections import deque
 from pathlib import Path
@@ -21,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / "content" / "campaigns.json"
 STABLE_IDS = ROOT / "content" / "stable_ids.json"
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 TIER_COUNT = 3
 ROLES = ("rapid", "artillery", "control", "reroute",
          "antiair", "disable", "vision", "support")
@@ -84,9 +85,26 @@ def validate_structural(doc: dict) -> None:
         unlock = c.get("unlocked_by")
         if unlock is not None and unlock not in ids:
             fail(1, f"campaign {c['id']} unlocked_by unknown id {unlock!r}")
-    for pad in doc["map"]["pads"]:
-        if pad.get("tags"):
-            fail(3, f"pad {pad['id']} tags must be empty in 1.0")
+    maps = doc.get("maps")
+    if not isinstance(maps, list) or not maps:
+        fail(1, "at least one map is required")
+    # Slots are part of the versioned records format. New catalog entries need
+    # a save migration as well as content, so reordering cannot erase scores.
+    if [m["id"] for m in maps] != ["maple-loop", "rail-yard"]:
+        fail(1, "map catalog order must be maple-loop, rail-yard for records v2")
+    for m in maps:
+        if (m["columns"], m["rows"], m["cell_pixels"]) != (30, 15, 16):
+            fail(5, "maps must use the 30 x 15, 16-pixel board")
+        if sorted(p["id"] for p in m["pads"]) != list(range(1, len(m["pads"]) + 1)):
+            fail(8, "pad ids must be contiguous and start at one")
+        if not 1 <= len(m["pads"]) < 255:
+            fail(8, "map must contain 1..254 pads")
+        for pad in m["pads"]:
+            if pad.get("tags"):
+                fail(3, f"pad {pad['id']} tags must be empty")
+        for cid, override in m.get("campaigns", {}).items():
+            if cid not in ids or set(override) - {"waves", "starting_currency"}:
+                fail(1, f"invalid campaign override in map {m['id']}")
     for c in campaigns:
         for f in c["fixtures"]:
             if f.get("branch") is not None:
@@ -311,6 +329,12 @@ def validate_waves(campaign: dict) -> None:
                      f"integrity {integrity}")
 
     for w in waves:
+        if w.get("hp_scale") != 1.0:
+            fail(3, f"{cid} wave {w['index']} hp_scale must be 1.0")
+        if not math.isfinite(w["interval"]) or w["interval"] <= 0:
+            fail(19, f"{cid} wave {w['index']} needs a positive spawn interval")
+        if not math.isfinite(w["build_seconds"]) or w["build_seconds"] < 0:
+            fail(19, f"{cid} wave {w['index']} needs nonnegative build time")
         if not w["groups"]:
             fail(1, f"{cid} wave {w['index']} has no groups")
         for g in w["groups"]:
@@ -371,16 +395,26 @@ def validate_stable_ids(doc: dict) -> None:
             seen[value] = name
 
 
-def validate(doc: dict) -> set[tuple[int, int]]:
+def map_campaigns(doc: dict, level: dict) -> list[dict]:
+    return [dict(c, **level.get("campaigns", {}).get(c["id"], {}))
+            for c in doc["campaigns"]]
+
+
+def validate(doc: dict) -> list[set[tuple[int, int]]]:
     validate_structural(doc)
-    lane = validate_map(doc)
+    lanes = [validate_map(dict(doc, map=m)) for m in doc["maps"]]
     atlas_ids = load_atlas_ids()
     for campaign in doc["campaigns"]:
         validate_fixtures(campaign, atlas_ids)
         validate_units(campaign)
         validate_waves(campaign)
+    for level in doc["maps"]:
+        for campaign in map_campaigns(doc, level):
+            validate_waves(campaign)
+            if campaign["starting_currency"] < 0:
+                fail(1, "starting currency cannot be negative")
     validate_stable_ids(doc)
-    return lane
+    return lanes
 
 
 # -------------------------------------------------------------- emission --
@@ -430,10 +464,9 @@ def hook_literal(spec: dict | None, index_of: dict[str, int]) -> str:
             f", .value = {float(value):.6f}f }}")
 
 
-def emit(doc: dict, lane: set[tuple[int, int]]) -> str:
-    m = doc["map"]
+def emit(doc: dict, lanes: list[set[tuple[int, int]]]) -> str:
+    m = doc["maps"][0]
     cols, rows = m["columns"], m["rows"]
-    pads = sorted(m["pads"], key=lambda p: p["id"])
     econ = doc["economy"]
     campaigns = doc["campaigns"]
     digest = hashlib.sha256(
@@ -448,16 +481,24 @@ def emit(doc: dict, lane: set[tuple[int, int]]) -> str:
     add("#include <stdbool.h>")
     add("#include <stdint.h>")
     add("")
+    stable_ids = json.loads(STABLE_IDS.read_text())
+    for group, prefix in (("cues", "CUE"), ("scenes", "SCENE")):
+        for name, value in stable_ids[group].items():
+            symbol = name.upper().replace(".", "_").replace("-", "_")
+            add(f"#define PT_{prefix}_{symbol} {value}u")
+    add("")
     add(f"#define PT_COLUMNS {cols}")
     add(f"#define PT_ROWS {rows}")
     add(f'#define PT_CELL_PIXELS {m["cell_pixels"]}')
-    add(f"#define PT_PAD_COUNT {len(pads)}")
+    add(f"#define PT_PAD_COUNT {max(len(m['pads']) for m in doc['maps'])}")
+    add(f"#define PT_MAP_COUNT {len(doc['maps'])}")
     add(f"#define PT_CAMPAIGN_COUNT {len(campaigns)}")
     add(f"#define PT_MAX_TIER {TIER_COUNT}")
     add(f"#define PT_FIXTURES_PER_CAMPAIGN {len(ROLES)}")
     max_units = max(len(c["units"]) for c in campaigns)
     max_waves = max(len(c["waves"]) for c in campaigns)
-    max_groups = max(len(w["groups"]) for c in campaigns for w in c["waves"])
+    max_groups = max(len(w["groups"]) for m in doc["maps"]
+                     for c in map_campaigns(doc, m) for w in c["waves"])
     add(f"#define PT_UNITS_PER_CAMPAIGN {max_units}")
     add(f"#define PT_MAX_WAVES {max_waves}")
     add(f"#define PT_MAX_WAVE_GROUPS {max_groups}")
@@ -590,6 +631,16 @@ def emit(doc: dict, lane: set[tuple[int, int]]) -> str:
     add("} pt_pad_def;")
     add("")
 
+    add("typedef struct pt_map_def {")
+    add("    const char *id, *name, *description, *backdrop;")
+    add("    uint16_t pad_count;")
+    add("    bool runtime_foundations;")
+    add("    const pt_pad_def *pads;")
+    add("    const uint8_t (*lane)[PT_COLUMNS];")
+    add("    const pt_campaign_def *campaigns;")
+    add("} pt_map_def;")
+    add("")
+
     campaign_index = {c["id"]: i for i, c in enumerate(campaigns)}
 
     for campaign in campaigns:
@@ -650,65 +701,82 @@ def emit(doc: dict, lane: set[tuple[int, int]]) -> str:
         add("};")
         add("")
 
-        add(f"static const pt_wave_def pt_waves_{cid}"
-            f"[{len(campaign['waves'])}] = {{")
-        appeared: set[str] = set()
-        for w in campaign["waves"]:
-            mask = 0
-            for g in w["groups"]:
-                if g["type"] not in appeared:
-                    mask |= 1 << unit_index[g["type"]]
-                    appeared.add(g["type"])
-            total = sum(int(g["count"]) for g in w["groups"])
-            groups = ", ".join(
-                f'{{ {unit_index[g["type"]]}u, {int(g["count"])}u }}'
-                for g in w["groups"])
-            add(f"    {{ .index = {w['index']}u, "
-                f".build_seconds = {float(w['build_seconds']):.6f}f, "
-                f".interval = {float(w['interval']):.6f}f, "
-                f".group_count = {len(w['groups'])}u, "
-                f".total_units = {total}u, "
-                f".first_appearance = 0x{mask:08x}u, "
-                f".groups = {{ {groups} }} }},")
+    for m, lane in zip(doc["maps"], lanes):
+        mid = m["id"].replace("-", "_")
+        for campaign in map_campaigns(doc, m):
+            cid = campaign["id"].replace("-", "_")
+            unit_index = {u["id"]: i for i, u in enumerate(campaign["units"])}
+            add(f"static const pt_wave_def pt_waves_{mid}_{cid}"
+                f"[{len(campaign['waves'])}] = {{")
+            appeared: set[str] = set()
+            for w in campaign["waves"]:
+                mask = 0
+                for g in w["groups"]:
+                    if g["type"] not in appeared:
+                        mask |= 1 << unit_index[g["type"]]
+                        appeared.add(g["type"])
+                total = sum(int(g["count"]) for g in w["groups"])
+                groups = ", ".join(
+                    f'{{ {unit_index[g["type"]]}u, {int(g["count"])}u }}'
+                    for g in w["groups"])
+                add(f"    {{ .index = {w['index']}u, "
+                    f".build_seconds = {float(w['build_seconds']):.6f}f, "
+                    f".interval = {float(w['interval']):.6f}f, "
+                    f".group_count = {len(w['groups'])}u, "
+                    f".total_units = {total}u, "
+                    f".first_appearance = 0x{mask:08x}u, "
+                    f".groups = {{ {groups} }} }},")
+            add("};")
+            add("")
+
+        add(f"static const pt_campaign_def pt_campaigns_{mid}[PT_CAMPAIGN_COUNT] = {{")
+        for campaign in map_campaigns(doc, m):
+            cid = campaign["id"].replace("-", "_")
+            endpoints = m["endpoints"]
+            spawn = endpoints[campaign["spawn"]]
+            goal = endpoints[campaign["goal"]]
+            unlock = campaign.get("unlocked_by")
+            unlock_index = -1 if unlock is None else campaign_index[unlock]
+            add("    { "
+                f".id = {c_string(campaign['id'])}, "
+                f".name = {c_string(campaign['name'])}, "
+                f".currency_name = {c_string(campaign['currency_name'])}, "
+                f".spawn_x = {spawn['x']}u, .spawn_y = {spawn['y']}u, "
+                f".goal_x = {goal['x']}u, .goal_y = {goal['y']}u, "
+                f".starting_integrity = {campaign['starting_integrity']}, "
+                f".starting_currency = {campaign['starting_currency']}, "
+                f".unlocked_by = {unlock_index}, "
+                f".fixture_count = {len(campaign['fixtures'])}u, "
+                f".unit_count = {len(campaign['units'])}u, "
+                f".wave_count = {len(campaign['waves'])}u, "
+                f".fixtures = pt_fixtures_{cid}, "
+                f".units = pt_units_{cid}, "
+                f".waves = pt_waves_{mid}_{cid} }},")
         add("};")
         add("")
 
-    add(f"static const pt_campaign_def pt_campaigns[PT_CAMPAIGN_COUNT] = {{")
-    for campaign in campaigns:
-        cid = campaign["id"].replace("-", "_")
-        endpoints = m["endpoints"]
-        spawn = endpoints[campaign["spawn"]]
-        goal = endpoints[campaign["goal"]]
-        unlock = campaign.get("unlocked_by")
-        unlock_index = -1 if unlock is None else campaign_index[unlock]
+        add(f"static const pt_pad_def pt_pads_{mid}[{len(m['pads'])}] = {{")
+        for pad in sorted(m["pads"], key=lambda p: p["id"]):
+            add(f"    {{ {pad['id']}u, {pad['x']}u, {pad['y']}u }},")
+        add("};")
+        add("")
+
+        add(f"static const uint8_t pt_lane_{mid}[PT_ROWS][PT_COLUMNS] = {{")
+        for y in range(rows):
+            row = ", ".join("1" if (x, y) in lane else "0" for x in range(cols))
+            add(f"    {{ {row} }},")
+        add("};")
+        add("")
+    add("static const pt_map_def pt_maps[PT_MAP_COUNT] = {")
+    for m in doc["maps"]:
+        mid = m["id"].replace("-", "_")
         add("    { "
-            f".id = {c_string(campaign['id'])}, "
-            f".name = {c_string(campaign['name'])}, "
-            f".currency_name = {c_string(campaign['currency_name'])}, "
-            f".spawn_x = {spawn['x']}u, .spawn_y = {spawn['y']}u, "
-            f".goal_x = {goal['x']}u, .goal_y = {goal['y']}u, "
-            f".starting_integrity = {campaign['starting_integrity']}, "
-            f".starting_currency = {campaign['starting_currency']}, "
-            f".unlocked_by = {unlock_index}, "
-            f".fixture_count = {len(campaign['fixtures'])}u, "
-            f".unit_count = {len(campaign['units'])}u, "
-            f".wave_count = {len(campaign['waves'])}u, "
-            f".fixtures = pt_fixtures_{cid}, "
-            f".units = pt_units_{cid}, "
-            f".waves = pt_waves_{cid} }},")
-    add("};")
-    add("")
-
-    add("static const pt_pad_def pt_pads[PT_PAD_COUNT] = {")
-    for pad in pads:
-        add(f"    {{ {pad['id']}u, {pad['x']}u, {pad['y']}u }},")
-    add("};")
-    add("")
-
-    add("static const uint8_t pt_lane_cells[PT_ROWS][PT_COLUMNS] = {")
-    for y in range(rows):
-        row = ", ".join("1" if (x, y) in lane else "0" for x in range(cols))
-        add(f"    {{ {row} }},")
+            f".id = {c_string(m['id'])}, .name = {c_string(m['name'])}, "
+            f".description = {c_string(m['description'])}, "
+            f".backdrop = {c_string(m['backdrop'].removeprefix('assets/'))}, "
+            f".pad_count = {len(m['pads'])}u, .pads = pt_pads_{mid}, "
+            f".runtime_foundations = {str(m.get('runtime_foundations', False)).lower()}, "
+            f".lane = pt_lane_{mid}, .campaigns = pt_campaigns_{mid} }},")
     add("};")
     add("")
     add(f"static const char pt_content_sha256[] = {c_string(digest)};")
@@ -735,10 +803,10 @@ def main(argv: list[str]) -> int:
         return 1
 
     campaigns = doc["campaigns"]
-    lane_cells = len(lane)
+    lane_cells = sum(map(len, lane))
     if args.check:
         print(f"content OK: {len(campaigns)} campaigns, "
-              f"{lane_cells} lane cells, {len(doc['map']['pads'])} pads, "
+              f"{len(doc['maps'])} maps, {lane_cells} lane cells, "
               + ", ".join(f"{c['id']}={len(c['waves'])}w" for c in campaigns))
         return 0
 

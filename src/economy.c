@@ -19,7 +19,7 @@ void pt_economy_reset(pt_game *game)
     const pt_campaign_def *campaign;
 
     if (game == NULL) return;
-    campaign = pt_campaign(game->campaign);
+    campaign = pt_game_campaign(game);
     game->economy.integrity = campaign->starting_integrity;
     game->economy.integrity_max = campaign->starting_integrity;
     game->economy.currency = campaign->starting_currency;
@@ -62,6 +62,7 @@ void pt_economy_leak(pt_game *game, const pt_unit *unit)
     if (definition == NULL) return;
 
     mass = (int32_t)definition->mass;
+    if (!game->headless) pt_audio_cue(PT_CUE_STATE_INTEGRITY_LOST);
     if (game->economy.integrity <= mass)
         game->economy.integrity = 0;
     else

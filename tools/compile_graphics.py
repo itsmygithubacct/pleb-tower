@@ -309,29 +309,47 @@ def cook(spec: SheetSpec, verbose: bool) -> dict | None:
     }
 
 
-def cook_backdrop() -> dict | None:
-    src = SOURCE / "maple-loop-ground.png"
+def backdrop_layout_digest(map_id: str) -> str:
+    levels = json.loads((ROOT / "content/campaigns.json").read_text())["maps"]
+    level = next(m for m in levels if m["id"] == map_id)
+    layout = {key: level[key] for key in ("columns", "rows", "cell_pixels", "lane", "pads")}
+    return hashlib.sha256(json.dumps(layout, sort_keys=True).encode()).hexdigest()
+
+
+def cook_backdrop(level: dict) -> dict | None:
+    map_id = level["id"]
+    src = SOURCE / level.get("backdrop_master", f"{map_id}-route.png")
     if not src.is_file():
         return None
+    authored = json.loads((SOURCE / f"{map_id}-layout.json").read_text())
+    authored_digest = hashlib.sha256(json.dumps(authored, sort_keys=True).encode()).hexdigest()
+    if authored_digest != backdrop_layout_digest(map_id):
+        raise ValueError("Map layout changed: regenerate the layout guide and scenery before cooking")
     target = (480, 240)
     image = Image.open(src).convert("RGB").resize(target, Image.LANCZOS)
     out_dir = BITMAPS / "levels"
     out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = out_dir / "maple-loop.png"
+    out_path = out_dir / f"{map_id}.png"
     image.save(out_path)
     return {
-        "id": "maple-loop",
+        "id": map_id,
         "path": str(out_path.relative_to(ROOT)),
         "source": str(src.relative_to(ROOT)),
         "sha256": hashlib.sha256(out_path.read_bytes()).hexdigest(),
         "sha256_source": hashlib.sha256(src.read_bytes()).hexdigest(),
+        "layout_sha256": backdrop_layout_digest(map_id),
+        "layout_reference": f"assets/graphics/source/{map_id}-layout.png",
+        "layout_source": f"assets/graphics/source/{map_id}-layout.json",
+        "generator": "OpenAI imagegen, exact map layout reference",
         "alpha_required": False,
         "grid": {"columns": 1, "rows": 1, "width": target[0],
                  "height": target[1], "cell_width": target[0],
                  "cell_height": target[1]},
-        "prompt_brief": ("Ground cover only — lawns, houses, driveways, "
-                         "fences. The lane is carried by terrain tiles so "
-                         "painted road and authored map cannot disagree."),
+        "prompt_brief": ("Scenery authored around the exact " + level["name"] +
+                         " road. " + level["description"] +
+                         (" Foundations are drawn at runtime at exact build coordinates."
+                          if level.get("runtime_foundations") else
+                          " Empty concrete foundations mark each build pad.")),
     }
 
 
@@ -347,7 +365,21 @@ def main(argv: list[str]) -> int:
             return 1
         data = json.loads(MANIFEST.read_text(encoding="utf-8"))
         bad = 0
+        levels = json.loads((ROOT / "content/campaigns.json").read_text())["maps"]
+        expected_maps = {level["id"]: level["backdrop"] for level in levels}
+        actual_maps = {entry["id"]: entry["path"] for entry in data.get("bitmaps", [])}
+        if actual_maps != expected_maps:
+            print("graphics: every map must have its authored backdrop in the manifest", file=sys.stderr)
+            bad += 1
         for entry in data.get("atlases", []) + data.get("bitmaps", []):
+            if entry.get("layout_sha256") and entry["layout_sha256"] != backdrop_layout_digest(entry["id"]):
+                print("graphics: map layout changed; redraw backdrop using the new lane and pads",
+                      file=sys.stderr)
+                bad += 1
+            source = ROOT / entry["source"]
+            if not source.is_file() or hashlib.sha256(source.read_bytes()).hexdigest() != entry["sha256_source"]:
+                print(f"graphics: {entry['source']} master changed; recook the asset", file=sys.stderr)
+                bad += 1
             path = ROOT / entry["path"]
             if not path.is_file():
                 print(f"graphics: missing {entry['path']}", file=sys.stderr)
@@ -374,14 +406,15 @@ def main(argv: list[str]) -> int:
     print("cooking graphics")
     atlases = [entry for entry in
                (cook(spec, args.verbose) for spec in SHEETS) if entry]
-    bitmaps = [entry for entry in (cook_backdrop(),) if entry]
+    levels = json.loads((ROOT / "content/campaigns.json").read_text())["maps"]
+    bitmaps = [entry for entry in (cook_backdrop(level) for level in levels) if entry]
 
     manifest = {
         "schema_version": 1,
         "game": "pleb-tower",
-        "generated_at": "2026-07-28",
+        "generated_at": "2026-10-03",
         "generator": {
-            "name": "Google Gemini gemini-3-pro-image",
+            "name": "Google Gemini sprite sheets; OpenAI imagegen level scenery",
             "mode": "text-to-image from project-authored prompts",
             "postprocess": ("magenta chroma key, despill, connected-component "
                             "sprite extraction, aspect-preserving fit to an "
