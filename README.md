@@ -58,7 +58,7 @@ make
 ./pleb-tower
 ```
 
-Needs a C11 compiler, zlib, libm, pthreads, and a Kitty-protocol terminal.
+Needs a C11 compiler, make, Python 3, zlib, libm, pthreads, and a Kitty-protocol terminal.
 
 ```sh
 ./pleb-tower --campaign 1        # start on Maple Loop / CORDON

@@ -182,7 +182,7 @@
       "path": "assets/graphics/bitmaps/levels/rail-yard.png",
       "source": "assets/graphics/source/rail-yard-scenery.png",
       "sha256": "6e7f5f6ac564ca614a681c9939da6f412f729746c0fb3f9f5845c55fc5d4e451",
-      "sha256_source": "f49756d22403f520099ed979c468cae8e6e305363b44b02d9f7aa32f6fcfed64",
+      "sha256_source": "de30683218d604bd74f6a9766538a5e1b75c2150c5cec49aca6bf3c7e4a6db5a",
       "layout_sha256": "b0208783cdf1f16124b3ad9ada9464356fff59c8164f4ab7188dc158435dd7b1",
       "layout_reference": "assets/graphics/source/rail-yard-layout.png",
       "layout_source": "assets/graphics/source/rail-yard-layout.json",
